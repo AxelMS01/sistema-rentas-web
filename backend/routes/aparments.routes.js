@@ -52,6 +52,7 @@ router.get("/apartments", authMiddleware, async (req, res) => {
 router.get('/apartments/:id', authMiddleware, async (req, res) => {
   const { id } = req.params;
   const ownerId = req.user.id;
+
   try {
     let result;
     try {

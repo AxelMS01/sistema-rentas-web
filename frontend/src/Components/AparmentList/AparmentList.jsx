@@ -212,9 +212,12 @@ const Viviendas = () => {
           />
         </div>
 
+        {/* Descomentar esta parte para ver el PDF del contrato o de los pagarés.
+
         <PDFViewer width={500} height={800}>
           <DocumentoContrato />
         </PDFViewer>
+        */}
 
         {/* STATUS INDICATORS */}
         <div className="mb-3">

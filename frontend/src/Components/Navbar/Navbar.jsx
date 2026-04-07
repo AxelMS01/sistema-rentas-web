@@ -83,7 +83,8 @@ const Navbar = () => {
 
   function actualizarFirma() {
     setLienzoFirma(false);
-    setFirmaURL(firmaRef.current.getTrimmedCanvas().toDataURL("firma/png"));
+    const url = firmaRef.current.getTrimmedCanvas().toDataURL("firma/png");
+    setFirmaURL(url);
 
     // Lógica aquí para guardar la firma en la base de datos u otro medio
     // como un repositorio privado, en caso de que queramos llamar las firmas por su URL.
