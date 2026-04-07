@@ -42,6 +42,8 @@ export function DocumentoContrato(informacion) {
                         </Text>
                     </Text>
                 </View>
+
+                <SeccionDeclaraciones/>
             </Page>
         </Document>
     );

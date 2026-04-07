@@ -212,7 +212,7 @@ const Viviendas = () => {
         </div>
 
         <PDFViewer width={500} height={800}>
-          <DocumentoPagare />
+          <DocumentoContrato />
         </PDFViewer>
 
         {/* STATUS INDICATORS */}
