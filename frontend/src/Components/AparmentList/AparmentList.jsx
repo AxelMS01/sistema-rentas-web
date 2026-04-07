@@ -16,6 +16,7 @@ import { PDFViewer, Page, Document, Text, View } from '@react-pdf/renderer';
 const token = localStorage.getItem("token");
 
 const Viviendas = () => {
+  const [signUrl, setSignUrl] = useState();
   const [propiedades, setPropiedades] = useState([]);
   const [showPropiertiesModal, setShowPropiertiesModal] = useState(false);
   const [showContractModal, setShowContractModal] = useState(false);

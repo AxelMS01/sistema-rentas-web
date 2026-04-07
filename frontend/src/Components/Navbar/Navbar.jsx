@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import SignatureCanvas from "react-signature-canvas";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Settings, Bell, X } from "lucide-react";
 import "./Navbar.css";
@@ -14,6 +15,9 @@ const Navbar = () => {
   const isTenant = role === "tenant";
 
   const [showModal, setShowModal] = useState(false);
+  const firmaRef = useRef(null);
+  const [firma, setFirma] = useState();
+  const [firmaURL, setFirmaURL] = useState();
   const [activeTab, setActiveTab] = useState("pagos");
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef(null);
@@ -79,10 +83,11 @@ const Navbar = () => {
 
   function actualizarFirma() {
     setLienzoFirma(false);
+    setFirmaURL(firmaRef.current.getTrimmedCanvas().toDataURL("firma/png"));
 
     // Lógica aquí para guardar la firma en la base de datos u otro medio
     // como un repositorio privado, en caso de que queramos llamar las firmas por su URL.
-  }
+  };
 
   return (
     <>
@@ -379,9 +384,7 @@ const Navbar = () => {
                           <div className="col-md-6 mb-3">
                             <label className="form-label">Firma actual</label>
                             <div>
-                              <img>
-                                {/* Imagen de la firma del usuario aquí: BLOB o link a la imagen */}
-                              </img>
+                              <img src={firmaURL} />
                             </div>
                           </div>
                         </div>
@@ -398,9 +401,13 @@ const Navbar = () => {
 
                     {lienzoFirma && (
                       <>
-                        <LienzoFirma />
+                        <div className="container" style={{ borderWidth: 1, borderColor: "grey", borderRadius: 10, borderStyle: "solid" }}>
+                          <SignatureCanvas
+                            ref={firmaRef}
+                          />
+                        </div>
 
-                        <div style={{marginTop: 20}} className="botones">
+                        <div style={{ marginTop: 20 }} className="botones">
                           <button
                             className="btn btn-primary px-4"
                             onClick={actualizarFirma}
@@ -432,6 +439,7 @@ const Navbar = () => {
               <button className="btn btn-outline-secondary px-4" onClick={() => setShowModal(false)}>
                 Cancelar
               </button>
+
               <button
                 className="btn btn-primary px-4"
                 onClick={handleSave}
