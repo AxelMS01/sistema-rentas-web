@@ -10,3 +10,5 @@ const useUser = create((set) => ({
     loggedUser: 0,
     updateLoggedUser: (newId) => set({ loggedUser: newId })
 }));
+
+export default useUser;

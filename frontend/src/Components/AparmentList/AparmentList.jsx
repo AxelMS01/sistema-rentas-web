@@ -11,8 +11,7 @@ import ContractWizardModal from "../Forms/ContratoWizardform";
 import { REACT_APP_API_URL } from '../../config';
 import { Modal } from 'bootstrap';
 import { PDFViewer, Page, Document, Text, View } from '@react-pdf/renderer';
-
-
+import useUser from '../../Stores/user-store';
 const token = localStorage.getItem("token");
 
 const Viviendas = () => {
@@ -22,7 +21,7 @@ const Viviendas = () => {
   const [showContractModal, setShowContractModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const loggedUserId = useUser((state) => state.loggedUser);
 
   const [filtroStatus, setFiltroStatus] = useState("todos");
   const [filtroBusqueda, setFiltroBusqueda] = useState("");
@@ -56,7 +55,7 @@ const Viviendas = () => {
     const fetchData = async () => {
       try {
         const res = await fetch(`${REACT_APP_API_URL}/apartments`, {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         if (!res.ok) throw new Error("Error loading data");
@@ -64,6 +63,7 @@ const Viviendas = () => {
         const data = await res.json();
         console.log(data)
         setPropiedades(data);
+
       } catch (err) {
         console.error(err);
         setError("Error loading viviendas");
@@ -212,12 +212,11 @@ const Viviendas = () => {
           />
         </div>
 
-        {/* Descomentar esta parte para ver el PDF del contrato o de los pagarés.
+        <p>Usuario logeado: {loggedUserId}</p>
 
         <PDFViewer width={500} height={800}>
           <DocumentoContrato />
         </PDFViewer>
-        */}
 
         {/* STATUS INDICATORS */}
         <div className="mb-3">
