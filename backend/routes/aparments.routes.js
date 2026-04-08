@@ -7,9 +7,11 @@ const router = Router();
 const UNDEFINED_COLUMN = '42703';
 
 // GET all apartments
+/*
 router.get("/apartments", authMiddleware, async (req, res) => {
   try {
     const ownerId = req.user.id;
+    // Pasar el ID guardado en Zustand aquí.
 
     const result = await pool.query(
       `
@@ -36,7 +38,7 @@ router.get("/apartments", authMiddleware, async (req, res) => {
           ORDER BY duedate DESC
           LIMIT 1
       ) i ON true
-      WHERE a.ownerid = $1;
+      WHERE a.ownerid = 8;
       `,
       [ownerId]
     );
@@ -46,7 +48,7 @@ router.get("/apartments", authMiddleware, async (req, res) => {
     console.error(err); // important for debugging
     res.status(500).json({ error: "Error fetching apartments" });
   }
-});
+});*/
 
 // GET apartment by ID (with tenant/contract summary)
 router.get('/apartments/:id', authMiddleware, async (req, res) => {
