@@ -214,11 +214,10 @@ const Viviendas = () => {
 
         <p>Usuario logeado: {loggedUserId}</p>
 
-        {/*
+
         <PDFViewer width={500} height={800}>
           <DocumentoContrato />
         </PDFViewer>
-        */}
 
         {/* STATUS INDICATORS */}
         <div className="mb-3">

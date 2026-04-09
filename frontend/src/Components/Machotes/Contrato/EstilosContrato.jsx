@@ -55,7 +55,53 @@ const estilos = StyleSheet.create({
         flexDirection: "row",
         gap: 2,
         lineHeight: "150%",
-    }
+        textAlign: "justify",
+    },
+    textoSangria: {
+        fontSize: 12,
+        textIndent: 20,
+        lineHeight: "150&",
+        textAlign: "justify",
+    },
+    textoSubrayado: {
+        fontSize: 12,
+        lineHeight: "150%",
+        textAlign: "justify",
+        textDecoration: "underline"
+    },
+    bloqueDomicilio: {
+        flexDirection: "column",
+        gap: 15,
+        maxWidth: "50%",
+    },
+    domicilios: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "flex-start"
+    },
+    dosFirmas: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "between",
+        alignItems: "center",
+        gap: 30,
+        marginTop: 20,
+    },
+    espacioFirma: {
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+        width: "100%",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    contenedorFirmaImg: {
+        padding: 5,
+        width: "100%",
+        borderBottomWidth: 1,
+        borderBottomStyle: "solid",
+        borderBottomColor: "black,"
+    },
 });
 
 export default estilos;

@@ -1,13 +1,15 @@
 import { Text, View } from '@react-pdf/renderer';
-import estilos from './EstilosContrato';
+import estilos from '../EstilosContrato';
 
-export function SeccionDeclaraciones() {
+export function DeclaracionesArrendador() {
     const infoDeclaraciones = {
         nombreVivienda: "HABITACIÓN NÚMERO 8",
         calle: "República de Uruguay",
         numero: "410",
         colonia: "Francisco Zarco",
     };
+
+    const nacionalidad = "colombiana";
 
     return (
         <View style={estilos.seccion}>
@@ -24,7 +26,7 @@ export function SeccionDeclaraciones() {
                     a).-
                 </Text>
 
-                Que es una persona física, de nacionalidad colombiana, de ocupación comerciante
+                Que es una persona física, de nacionalidad {nacionalidad}, de ocupación comerciante
                 y con capacidad legal suficiente para obligarse en términos del presente contrato.
             </Text>
 
@@ -52,7 +54,7 @@ export function SeccionDeclaraciones() {
                     d).-
                 </Text>
 
-                Que el inmueble objeto del presente contrato se encuentra en buen estado de uso y conservación para los fines a los cuales.
+                Que el inmueble objeto del presente contrato se encuentra en buen estado de uso y conservación para los fines a los cuales se destinará.
             </Text>
         </View>
     );

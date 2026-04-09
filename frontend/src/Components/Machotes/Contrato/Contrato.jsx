@@ -1,8 +1,17 @@
 import { Page, Document, Text, View, Image } from '@react-pdf/renderer';
-import { SeccionDeclaraciones } from './Declaraciones';
+import { DeclaracionesArrendador } from './ComponentesDeclaraciones/DeclaracionesArrendador';
+import { DeclaracionesArrendatario } from './ComponentesDeclaraciones/DeclaracionesArrendatario';
+import { DeclaracionesFiador } from './ComponentesDeclaraciones/DeclaracionesFiador';
 import estilos from './EstilosContrato';
 import { format, lastDayOfMonth } from "date-fns";
 import { es } from "date-fns/locale";
+import { PrimeraSegundaClausula } from './ComponentesCláusulas/PrimeraSegundaClausula';
+import { TerceraClausula } from './ComponentesCláusulas/TerceraClausula';
+import { CuartaClausula } from './ComponentesCláusulas/CuartaClausula';
+import { QuintaClausula } from './ComponentesCláusulas/QuintaClausula';
+import { SextaSeptimaClausula } from './ComponentesCláusulas/SextaSeptimaClausula';
+import { OctavaNovenaClausula } from './ComponentesCláusulas/OctavaNovena';
+import { DecimaClausula } from './ComponentesCláusulas/DecimaClausula';
 
 export function DocumentoContrato(informacion) {
     const infoContrato = {
@@ -43,7 +52,62 @@ export function DocumentoContrato(informacion) {
                     </Text>
                 </View>
 
-                <SeccionDeclaraciones/>
+                <DeclaracionesArrendador />
+
+                <DeclaracionesArrendatario />
+
+                <DeclaracionesFiador />
+
+                <View style={estilos.seccion}>
+                    <Text style={estilos.textoBold}>
+                        Declaran las partes contratantes:
+                    </Text>
+
+                    <Text style={estilos.viñetaLetra}>
+                        Que es su libre y espontánea voluntad olbigarse en términos de lo establecido en el presente contrato.
+                    </Text>
+
+                    <Text style={estilos.viñetaLetra}>
+                        <Text style={estilos.textoBold}>
+                            b).-
+                        </Text>
+
+                        Que se conocen recíprocamente la personalidad con que se ostentan para la celebración del contrato.
+                    </Text>
+
+                    <Text style={estilos.viñetaLetra}>
+                        <Text style={estilos.textoBold}>
+                            c).-
+                        </Text>
+
+                        Que conocen y aceptan el cumplimiento del reglamento vigente que regula al INMUEBLE aquí arrendado,
+                        mismo que se firma de igual manera para constancia de cumplimiento y obligación.
+                    </Text>
+
+                    <Text style={estilos.viñetaLetra}>
+                        <Text style={estilos.textoBold}>
+                            d).-
+                        </Text>
+
+                        Que es su intención obligarse en términos de las siguientes:
+                    </Text>
+                </View>
+
+                <PrimeraSegundaClausula />
+
+                <TerceraClausula />
+
+                <CuartaClausula />
+
+                <QuintaClausula />
+
+                <SextaSeptimaClausula />
+
+                <OctavaNovenaClausula />
+            </Page>
+
+            <Page style={estilos.hoja}>
+                <DecimaClausula />
             </Page>
         </Document>
     );
