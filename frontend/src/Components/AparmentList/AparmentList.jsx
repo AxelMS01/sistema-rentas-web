@@ -61,7 +61,7 @@ const Viviendas = () => {
         if (!res.ok) throw new Error("Error loading data");
 
         const data = await res.json();
-        console.log(data)
+        console.log("Viviendas recibidas:", data)
         setPropiedades(data);
 
       } catch (err) {
@@ -214,10 +214,11 @@ const Viviendas = () => {
 
         <p>Usuario logeado: {loggedUserId}</p>
 
-
+        {/*
         <PDFViewer width={500} height={800}>
           <DocumentoContrato />
         </PDFViewer>
+        */}
 
         {/* STATUS INDICATORS */}
         <div className="mb-3">
