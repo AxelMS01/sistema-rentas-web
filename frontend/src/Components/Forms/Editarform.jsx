@@ -1,9 +1,8 @@
-
-import { REACT_APP_API_URL } from '../../config'
-
+import { REACT_APP_API_URL } from '../../config';
 import React, { useEffect, useState } from "react";
 
 export default function EditApartmentModal({ apartment, onClose, onUpdated }) {
+
   const [formData, setFormData] = useState({
     name: "",
     postal_code: "",
@@ -173,7 +172,7 @@ export default function EditApartmentModal({ apartment, onClose, onUpdated }) {
                 </div>
 
                 <div className="d-flex justify-content-end">
-                  <button className="btn btn-dark">
+                  <button className="btn btn-dark" onClick={handleSubmit}>
                     Guardar cambios
                   </button>
                 </div>

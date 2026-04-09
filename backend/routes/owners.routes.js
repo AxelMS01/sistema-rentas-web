@@ -19,7 +19,6 @@ router.get('/owners', async (req, res) => {
   }
 });
 
-
 // GET owner by ID
 router.get('/owners/:id', async (req, res) => {
   const { id } = req.params;
@@ -35,11 +34,9 @@ router.get('/owners/:id', async (req, res) => {
   }
 });
 
-
 // CREATE owner
 router.post('/owners', async (req, res) => {
-  const { name, phone, email, governmentid, password} = req.body;
-  
+  const { name, phone, email, governmentid, password} = req.body;  
   const passwordhash = await hash(password, 10);
 
   try {

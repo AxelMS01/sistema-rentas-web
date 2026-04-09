@@ -4,7 +4,7 @@ import { FaUser, FaEnvelope } from "react-icons/fa6";
 import { FaLock } from "react-icons/fa6";
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../api';
-
+import useUser from '../../Stores/user-store';
 
 const LoginForm = () => {
 
@@ -12,6 +12,7 @@ const LoginForm = () => {
   const [faqOpenIndex, setFaqOpenIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+  const updateUserId = useUser((state) => state.updateLoggedUser);
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -40,6 +41,10 @@ const LoginForm = () => {
 
       const data = await response.json();
 
+      // Actualizar el estado global del ID del usuario (separación de su espacio).
+      const id = data.user.id;
+      updateUserId(id);
+
       if (!response.ok) {
         alert("Invalid credentials");
         return;
@@ -47,6 +52,7 @@ const LoginForm = () => {
 
       // Save auth context in localStorage
       localStorage.setItem("token", data.token);
+
       if (data?.user?.role) {
         localStorage.setItem("role", data.user.role);
       } else {

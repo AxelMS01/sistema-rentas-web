@@ -1,8 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
+import SignatureCanvas from "react-signature-canvas";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Settings, Bell, X } from "lucide-react";
 import "./Navbar.css";
 import casaLogo from "../Assets/casa.png";
+import { guardarNuevaFirma } from "../../Lib/funciones-firma";
+import LienzoFirma from "../LienzoFirma";
 
 const Navbar = () => {
   const location = useLocation();
@@ -12,10 +15,14 @@ const Navbar = () => {
   const isTenant = role === "tenant";
 
   const [showModal, setShowModal] = useState(false);
+  const firmaRef = useRef(null);
+  const [firma, setFirma] = useState();
+  const [firmaURL, setFirmaURL] = useState();
   const [activeTab, setActiveTab] = useState("pagos");
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef(null);
   const [isNavOpen, setIsNavOpen] = useState(false);
+  const [lienzoFirma, setLienzoFirma] = useState(false);
 
   const [paymentKeys, setPaymentKeys] = useState({
     stripe: "",
@@ -72,6 +79,15 @@ const Navbar = () => {
     localStorage.removeItem("role");
     setShowUserMenu(false);
     navigate("/");
+  };
+
+  function actualizarFirma() {
+    setLienzoFirma(false);
+    const url = firmaRef.current.getTrimmedCanvas().toDataURL("firma/png");
+    setFirmaURL(url);
+
+    // Lógica aquí para guardar la firma en la base de datos u otro medio
+    // como un repositorio privado, en caso de que queramos llamar las firmas por su URL.
   };
 
   return (
@@ -232,6 +248,17 @@ const Navbar = () => {
                       Cobros y Mora
                     </button>
                   </li>
+                  <li>
+                    <button
+                      className={`w-100 text-start px-4 py-3 border-0 ${activeTab === "firma"
+                        ? "bg-white fw-bold border-start border-primary border-4"
+                        : "bg-transparent text-muted"
+                        }`}
+                      onClick={() => setActiveTab("firma")}
+                    >
+                      Firma de Documentos
+                    </button>
+                  </li>
                 </ul>
               </div>
 
@@ -345,6 +372,67 @@ const Navbar = () => {
                     </p>
                   </div>
                 )}
+
+                {activeTab === "firma" && (
+                  <div>
+                    <h5 className="fw-bold mb-4" style={{ color: "#1B2559" }}>
+                      Firma de Documentos
+                    </h5>
+
+                    {!lienzoFirma && (
+                      <>
+                        <div className="col mb-6">
+                          <div className="col-md-6 mb-3">
+                            <label className="form-label">Firma actual</label>
+                            <div>
+                              <img src={firmaURL} />
+                            </div>
+                          </div>
+                        </div>
+
+                        <button
+                          className="btn btn-primary px-4"
+                          onClick={() => setLienzoFirma(true)}
+                          style={{ backgroundColor: "#4318FF", border: "none" }}
+                        >
+                          Editar firma
+                        </button>
+                      </>
+                    )}
+
+                    {lienzoFirma && (
+                      <>
+                        <div className="container" style={{ borderWidth: 1, borderColor: "grey", borderRadius: 10, borderStyle: "solid" }}>
+                          <SignatureCanvas
+                            ref={firmaRef}
+                          />
+                        </div>
+
+                        <div style={{ marginTop: 20 }} className="botones">
+                          <button
+                            className="btn btn-primary px-4"
+                            onClick={actualizarFirma}
+                            style={{ backgroundColor: "#4318FF", border: "none", marginRight: 5 }}
+                          >
+                            Actualizar firma
+                          </button>
+
+                          <button
+                            className="btn btn-secondary px-4"
+                            onClick={() => setLienzoFirma(false)}
+                            style={{ backgroundColor: "#dadada", border: "none", color: "black" }}
+                          >
+                            Cancelar edición
+                          </button>
+                        </div>
+                      </>
+                    )}
+
+                    <p className="text-muted small mt-2">
+                      Esta firma se colocará automáticamente en los contratos y pagarés relacionados con tus convenios.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -352,6 +440,7 @@ const Navbar = () => {
               <button className="btn btn-outline-secondary px-4" onClick={() => setShowModal(false)}>
                 Cancelar
               </button>
+
               <button
                 className="btn btn-primary px-4"
                 onClick={handleSave}

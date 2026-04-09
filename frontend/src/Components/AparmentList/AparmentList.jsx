@@ -3,24 +3,25 @@ import { Link } from "react-router-dom";
 import { TbContract } from "react-icons/tb";
 import { LuHouse } from "react-icons/lu";
 import "./AparmentList.css";
+import { DocumentoPagare } from "../Machotes/Pagares/Pagare";
+import { DocumentoContrato } from "../Machotes/Contrato/Contrato";
 import ViviendaForm from "../Forms/Viviendaform";
 import EditApartmentModal from "../Forms/Editarform";
 import ContractWizardModal from "../Forms/ContratoWizardform";
 import { REACT_APP_API_URL } from '../../config';
-
 import { Modal } from 'bootstrap';
-
-
-
+import { PDFViewer, Page, Document, Text, View } from '@react-pdf/renderer';
+import useUser from '../../Stores/user-store';
 const token = localStorage.getItem("token");
 
 const Viviendas = () => {
+  const [signUrl, setSignUrl] = useState();
   const [propiedades, setPropiedades] = useState([]);
   const [showPropiertiesModal, setShowPropiertiesModal] = useState(false);
   const [showContractModal, setShowContractModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const loggedUserId = useUser((state) => state.loggedUser);
 
   const [filtroStatus, setFiltroStatus] = useState("todos");
   const [filtroBusqueda, setFiltroBusqueda] = useState("");
@@ -54,14 +55,15 @@ const Viviendas = () => {
     const fetchData = async () => {
       try {
         const res = await fetch(`${REACT_APP_API_URL}/apartments`, {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         if (!res.ok) throw new Error("Error loading data");
 
         const data = await res.json();
-        console.log(data)
+        console.log("Viviendas recibidas:", data)
         setPropiedades(data);
+
       } catch (err) {
         console.error(err);
         setError("Error loading viviendas");
@@ -210,14 +212,20 @@ const Viviendas = () => {
           />
         </div>
 
+        <p>Usuario logeado: {loggedUserId}</p>
+
+        {/*
+        <PDFViewer width={500} height={800}>
+          <DocumentoContrato />
+        </PDFViewer>
+        */}
+
         {/* STATUS INDICATORS */}
         <div className="mb-3">
           <span className="status-dot status-disponible"></span>Disponible
           <span className="status-dot status-archivado ms-3"></span>Archivado
           <span className="status-dot status-ocupado ms-3"></span>Ocupado
         </div>
-
-
 
         {/* Filter buttons */}
         <div className="filter-btns mb-4">
