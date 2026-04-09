@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { LuHand, LuHouse, LuInfo, LuSettings } from "react-icons/lu";
+import toast, { Toaster } from 'react-hot-toast';
+import mensajeExito from "../../Utils/mensaje-exito";
 import EditarForm from "../Forms/Editarform";
 import { REACT_APP_API_URL } from "../../config";
 import "./ViviendaDetalle.css";
-
 
 const token = localStorage.getItem("token");
 
@@ -46,6 +47,7 @@ export default function ViviendaDetalle() {
   const [tenantForm, setTenantForm] = useState(emptyTenantForm);
   const [tenantSaving, setTenantSaving] = useState(false);
   const [tenantMsg, setTenantMsg] = useState("");
+  const [isOnEdit, setIsOnEdit] = useState(false);
 
   useEffect(() => {
     const fetchVivienda = async () => {
@@ -240,6 +242,12 @@ export default function ViviendaDetalle() {
     }
   };
 
+  function finishUpdate(updatedHousing) {
+    setIsOnEdit(false);
+    mensajeExito("¡Vivienda actualizada!");
+    setVivienda(updatedHousing);
+  };
+
   const mainImage =
     vivienda?.main_image ||
     vivienda?.image ||
@@ -268,6 +276,8 @@ export default function ViviendaDetalle() {
             Gestionar cuenta de arrendatario
           </button>
         </div>
+
+        <Toaster />
 
         <div className="vivienda-breadcrumb mb-4">
           <Link to="/viviendas" className="breadcrumb-link">
@@ -338,8 +348,8 @@ export default function ViviendaDetalle() {
                 <button
                   type="button"
                   className="small-action-btn"
-                  data-bs-toggle="modal"
                   data-bs-target="#editModal"
+                  onClick={() => setIsOnEdit(true)}
                 >
                   <i className="bi bi-pencil-square"></i>
                   Editar
@@ -391,10 +401,15 @@ export default function ViviendaDetalle() {
         <Link to="/viviendas" className="back-link">
           Volver a viviendas
         </Link>
-        <EditarForm
-          propiedad={vivienda}
-          actualizarPropiedad={setVivienda}
-        />
+
+        {isOnEdit && (
+          <EditarForm
+            apartment={vivienda}
+            onClose={() => setIsOnEdit(false)}
+            onUpdated={finishUpdate}
+          />
+        )}
+
         <div
           className="modal fade"
           id="tenantAccountModal"
