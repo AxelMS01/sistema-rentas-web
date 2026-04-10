@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 
-import { REACT_APP_API_URL } from '../../config'
-
 export default function ViviendaForm({ show, onClose, onCreated }) {
   const [formData, setFormData] = useState({
     name: "",
@@ -26,6 +24,7 @@ export default function ViviendaForm({ show, onClose, onCreated }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    /*
     try {
       const res = await fetch(`${REACT_APP_API_URL}/apartments`, {
         method: "POST",
@@ -58,7 +57,7 @@ export default function ViviendaForm({ show, onClose, onCreated }) {
     } catch (err) {
       console.error(err);
       alert("Error creating apartment");
-    }
+    };*/
   };
 
   return (

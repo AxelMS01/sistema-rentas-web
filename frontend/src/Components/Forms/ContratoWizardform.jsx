@@ -100,9 +100,11 @@ export default function ContractWizardModal({ show, onClose, selectedApartmentId
         status: "ACTIVE",
         file: formData.contract.file
       };
-
+      
+      /*
       const result = await createContract(payload);
       console.log("Contract created:", result);
+      */
 
       // Close modal
       onClose();

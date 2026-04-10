@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { REACT_APP_API_URL } from '../../config';
 
 export default function EditarContratoModal({ contractId, onClose, onUpdated }) {
   const [formData, setFormData] = useState(null);
@@ -8,6 +7,7 @@ export default function EditarContratoModal({ contractId, onClose, onUpdated }) 
   useEffect(() => {
     if (contractId) {
       setLoading(true);
+      /*
       fetch(`${REACT_APP_API_URL}/rentalcontracts/${contractId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
       })
@@ -30,7 +30,7 @@ export default function EditarContratoModal({ contractId, onClose, onUpdated }) 
       .catch(err => {
         console.error(err);
         setLoading(false);
-      });
+      });*/
     }
   }, [contractId]);
 
@@ -45,12 +45,13 @@ export default function EditarContratoModal({ contractId, onClose, onUpdated }) 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    /*
     try {
       const payload = {
-          ...formData,
-          depositamount: parseFloat(formData.depositamount)
+        ...formData,
+        depositamount: parseFloat(formData.depositamount)
       };
-
       const res = await fetch(
         `${REACT_APP_API_URL}/rentalcontracts/${contractId}`,
         {
@@ -70,7 +71,7 @@ export default function EditarContratoModal({ contractId, onClose, onUpdated }) 
     } catch (err) {
       console.error(err);
       alert("Error updating contract");
-    }
+    }*/
   };
 
   return (

@@ -3,7 +3,6 @@ import './LoginForm.css';
 import { FaUser, FaEnvelope } from "react-icons/fa6";
 import { FaLock } from "react-icons/fa6";
 import { useNavigate } from 'react-router-dom';
-import { api } from '../../api';
 import useUser from '../../Stores/user-store';
 
 const LoginForm = () => {
@@ -33,6 +32,7 @@ const LoginForm = () => {
     const password = e.target[1].value;
 
     try {
+      /*
       const response = await fetch(api("/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -52,7 +52,6 @@ const LoginForm = () => {
 
       // Save auth context in localStorage
       localStorage.setItem("token", data.token);
-
       if (data?.user?.role) {
         localStorage.setItem("role", data.user.role);
       } else {
@@ -63,7 +62,7 @@ const LoginForm = () => {
         navigate("/home");
       } else {
         navigate("/viviendas");
-      }
+      }*/
 
     } catch (error) {
       console.error(error);
