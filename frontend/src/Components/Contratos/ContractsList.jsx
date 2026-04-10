@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import "./ContractsList.css";
 //import ContratoForm from "../Forms/Contratoform";
 import EditarContratoModal from "../Forms/EditarContratoModal";
-import { REACT_APP_API_URL } from '../../config'
+import { supabase } from "../../Config/supabase-client";
 
 export const token = localStorage.getItem("token");
 
@@ -29,13 +29,7 @@ const Viviendas = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${REACT_APP_API_URL}/rentalcontracts`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      if (!res.ok) throw new Error("Error loading data");
-
-      const data = await res.json();
+      const { data } = await supabase.from("rentalcontracts").select();
       setContratos(data);
       console.log(data);
 

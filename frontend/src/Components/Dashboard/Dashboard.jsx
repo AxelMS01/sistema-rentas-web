@@ -7,19 +7,18 @@ import {
   TrendingUp, Home, FileText, CreditCard, Search, Calendar
 } from 'lucide-react';
 import './Dashboard.css';
-
-import { api } from '../../api';
+import { supabase } from "../../Config/supabase-client";
 
 // --- defaults will be initialized in state ---
 
 
 // --- 2. THEME COLORS ---
 const THEME = {
-  bgApp: '#FFFFFF',          
-  bgCard: '#F4F7FE',         
-  textDark: '#1B2559',       
-  textLight: '#A3AED0',      
-  purpleDark: '#4318FF',     
+  bgApp: '#FFFFFF',
+  bgCard: '#F4F7FE',
+  textDark: '#1B2559',
+  textLight: '#A3AED0',
+  purpleDark: '#4318FF',
   purpleLight: '#6AD2FF',
   linePink: '#FFB5E8'
 };
@@ -73,22 +72,10 @@ const Dashboard = () => {
       if (selectedMonth !== 'todos') {
         params.set('month', selectedMonth);
         params.set('year', String(new Date().getFullYear()));
-      }
-
-      const response = await fetch(api(`/dashboard/admin${params.toString() ? `?${params.toString()}` : ''}`), {
-        cache: "no-store",
-        headers: {
-          "Authorization": `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        throw new Error(data?.error || data?.message || 'No se pudo cargar el dashboard');
-      }
-
+      };
+      const { data } = await supabase.from("rentalcontracts").select();
       setDashboardData(data);
+
     } catch (err) {
       console.error("Error fetching dashboard data:", err);
       setError(err.message || 'No se pudo cargar el dashboard');
@@ -105,10 +92,10 @@ const Dashboard = () => {
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('moraSettings'));
     if (saved) setMoraSettings(saved);
-    
+
     const handleStorage = () => {
-       const updated = JSON.parse(localStorage.getItem('moraSettings'));
-       if(updated) setMoraSettings(updated);
+      const updated = JSON.parse(localStorage.getItem('moraSettings'));
+      if (updated) setMoraSettings(updated);
     };
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
@@ -132,8 +119,8 @@ const Dashboard = () => {
     // 2. Apply Search Filter
     if (searchQuery.trim() !== '') {
       const query = searchQuery.toLowerCase();
-      procesados = procesados.filter(item => 
-        item.inquilino.toLowerCase().includes(query) || 
+      procesados = procesados.filter(item =>
+        item.inquilino.toLowerCase().includes(query) ||
         item.departamento.toLowerCase().includes(query) ||
         item.estatus.toLowerCase().includes(query)
       );
@@ -158,7 +145,7 @@ const Dashboard = () => {
   return (
     <div className="min-vh-100 d-flex flex-column font-sans" style={{ backgroundColor: THEME.bgApp }}>
       <div className="container-fluid px-4 py-4">
-        
+
         {/* --- HEADER --- */}
         <div className="mb-4">
           <h1 className="fw-bold m-0" style={{ color: THEME.textDark, fontSize: '34px' }}>Dashboard</h1>
@@ -261,7 +248,7 @@ const Dashboard = () => {
           <div className="col-lg-8">
             <div className="p-4 rounded-4 h-100" style={{ backgroundColor: THEME.bgCard }}>
               <div className="mb-4">
-                 <h5 className="fw-bold m-0" style={{ color: THEME.textDark }}>Ingreso Mensual</h5>
+                <h5 className="fw-bold m-0" style={{ color: THEME.textDark }}>Ingreso Mensual</h5>
               </div>
               <div style={{ width: '100%', height: 280 }}>
                 <ResponsiveContainer>
@@ -281,30 +268,30 @@ const Dashboard = () => {
           <div className="col-lg-4">
             <div className="p-4 rounded-4 h-100 d-flex flex-column" style={{ backgroundColor: THEME.bgCard }}>
               <div className="mb-2">
-                 <h5 className="fw-bold m-0" style={{ color: THEME.textDark }}>Incidencias</h5>
+                <h5 className="fw-bold m-0" style={{ color: THEME.textDark }}>Incidencias</h5>
               </div>
               <div className="flex-grow-1 position-relative d-flex align-items-center justify-content-center">
-                  <div style={{ width: '100%', height: 220 }}>
-                    <ResponsiveContainer>
-                        <PieChart>
-                            <Pie data={incidenciasVisibles} innerRadius={65} outerRadius={85} dataKey="value" stroke="none">
-                                {incidenciasVisibles.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={entry.color} />
-                                ))}
-                                <Label value={incidenciasVisibles.reduce((acc, curr) => acc + curr.value, 0)} position="center" fill={THEME.textDark} style={{ fontSize: '32px', fontWeight: 'bold' }} />
-                            </Pie>
-                        </PieChart>
-                    </ResponsiveContainer>
-                 </div>
+                <div style={{ width: '100%', height: 220 }}>
+                  <ResponsiveContainer>
+                    <PieChart>
+                      <Pie data={incidenciasVisibles} innerRadius={65} outerRadius={85} dataKey="value" stroke="none">
+                        {incidenciasVisibles.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                        <Label value={incidenciasVisibles.reduce((acc, curr) => acc + curr.value, 0)} position="center" fill={THEME.textDark} style={{ fontSize: '32px', fontWeight: 'bold' }} />
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
               <div className="d-flex justify-content-around mt-2 text-center">
-                  {incidenciasVisibles.map((item, index) => (
-                      <div key={index} className="d-flex flex-column align-items-center">
-                          <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: item.color, marginBottom: 4 }}></div>
-                          <span className="fw-bold" style={{ color: THEME.textDark, fontSize: '14px' }}>{item.value}</span>
-                          <span className="text-muted" style={{ fontSize: '11px' }}>{item.name}</span>
-                      </div>
-                  ))}
+                {incidenciasVisibles.map((item, index) => (
+                  <div key={index} className="d-flex flex-column align-items-center">
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: item.color, marginBottom: 4 }}></div>
+                    <span className="fw-bold" style={{ color: THEME.textDark, fontSize: '14px' }}>{item.value}</span>
+                    <span className="text-muted" style={{ fontSize: '11px' }}>{item.name}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -312,79 +299,78 @@ const Dashboard = () => {
 
         {/* --- DATA TABLE SECTION --- */}
         <div className="card w-100 border-0 rounded-4 overflow-hidden" style={{ backgroundColor: THEME.bgCard }}>
-            <div className="card-header bg-transparent p-4 border-bottom-0 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                <div>
-                    <h5 className="fw-bold m-0" style={{ color: THEME.textDark }}>Detalle de Contratos</h5>
-                    <span style={{ color: THEME.textLight, fontSize: '14px' }}>Gestión y estado de pagos</span>
-                </div>
-                
-                <div className="d-flex flex-column flex-md-row align-items-stretch align-items-md-center gap-2">
-                    <div className="input-group w-auto bg-white rounded-pill px-3 py-2 shadow-sm border border-light">
-                        <Search size={18} style={{ color: THEME.textLight }} className="align-self-center"/>
-                        <input 
-                            type="text" 
-                            className="form-control border-0 shadow-none bg-transparent ms-2" 
-                            placeholder="Buscar inquilino o depto..." 
-                            style={{ width: '220px', fontSize: '14px', color: THEME.textDark }}
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    </div>
-                </div>
+          <div className="card-header bg-transparent p-4 border-bottom-0 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+              <h5 className="fw-bold m-0" style={{ color: THEME.textDark }}>Detalle de Contratos</h5>
+              <span style={{ color: THEME.textLight, fontSize: '14px' }}>Gestión y estado de pagos</span>
             </div>
-            
-            <div className="table-responsive px-2 pb-3">
-                <table className="table w-100 table-borderless align-middle mb-0">
-                    <thead style={{ borderBottom: '1px solid #E0E5F2' }}>
-                        <tr>
-                            <th className="ps-4 py-3 fw-medium text-uppercase" style={{ color: THEME.textLight, fontSize: '12px' }}>Depto</th>
-                            <th className="py-3 fw-medium text-uppercase" style={{ color: THEME.textLight, fontSize: '12px' }}>Inquilino</th>
-                            <th className="py-3 fw-medium text-uppercase" style={{ color: THEME.textLight, fontSize: '12px' }}>Monto Total</th>
-                            <th className="py-3 fw-medium text-uppercase text-center" style={{ color: THEME.textLight, fontSize: '12px' }}>Estatus</th>
-                            <th className="py-3 fw-medium text-uppercase" style={{ color: THEME.textLight, fontSize: '12px' }}>Contrato</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {datosProcesados.length > 0 ? datosProcesados.map((item) => (
-                            <tr key={item.id} style={{ borderBottom: '1px solid #E0E5F2' }}>
-                                <td className="ps-4 py-3 fw-bold" style={{ color: THEME.textDark }}>{item.departamento}</td>
-                                <td className="py-3 fw-medium" style={{ color: THEME.textDark }}>{item.inquilino}</td>
-                                <td className="py-3">
-                                    <span className="fw-bold" style={{ color: THEME.textDark }}>{formatCurrency(item.montoFinal)}</span>
-                                    {item.tieneMora && (
-                                        <span className="ms-2 badge bg-danger text-white rounded-pill shadow-sm" style={{ fontSize: '10px', padding: '4px 8px' }}>
-                                            + MORA
-                                        </span>
-                                    )}
-                                </td>
-                                <td className="py-3 text-center">
-                                    <span className={`badge rounded-pill px-3 py-2 fw-bold ${
-                                        item.estatus === 'Pagado' ? 'bg-success bg-opacity-10 text-success' :
-                                        item.estatus === 'Vencido' ? 'bg-danger bg-opacity-10 text-danger' :
-                                        'bg-warning bg-opacity-10 text-warning'
-                                    }`}>
-                                        {item.estatus}
-                                    </span>
-                                </td>
-                                <td className="py-3 text-muted small fw-medium">
-                                    <div className="d-flex align-items-center gap-2" style={{ color: THEME.textLight }}>
-                                        <Calendar size={14}/> {item.mesesRestantes} meses rest.
-                                    </div>
-                                </td>
-                            </tr>
-                        )) : (
-                            <tr>
-                                <td colSpan="5" className="text-center py-5" style={{ color: THEME.textLight }}>
-                                    No se encontraron resultados para "{searchQuery}"
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+
+            <div className="d-flex flex-column flex-md-row align-items-stretch align-items-md-center gap-2">
+              <div className="input-group w-auto bg-white rounded-pill px-3 py-2 shadow-sm border border-light">
+                <Search size={18} style={{ color: THEME.textLight }} className="align-self-center" />
+                <input
+                  type="text"
+                  className="form-control border-0 shadow-none bg-transparent ms-2"
+                  placeholder="Buscar inquilino o depto..."
+                  style={{ width: '220px', fontSize: '14px', color: THEME.textDark }}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
             </div>
+          </div>
+
+          <div className="table-responsive px-2 pb-3">
+            <table className="table w-100 table-borderless align-middle mb-0">
+              <thead style={{ borderBottom: '1px solid #E0E5F2' }}>
+                <tr>
+                  <th className="ps-4 py-3 fw-medium text-uppercase" style={{ color: THEME.textLight, fontSize: '12px' }}>Depto</th>
+                  <th className="py-3 fw-medium text-uppercase" style={{ color: THEME.textLight, fontSize: '12px' }}>Inquilino</th>
+                  <th className="py-3 fw-medium text-uppercase" style={{ color: THEME.textLight, fontSize: '12px' }}>Monto Total</th>
+                  <th className="py-3 fw-medium text-uppercase text-center" style={{ color: THEME.textLight, fontSize: '12px' }}>Estatus</th>
+                  <th className="py-3 fw-medium text-uppercase" style={{ color: THEME.textLight, fontSize: '12px' }}>Contrato</th>
+                </tr>
+              </thead>
+              <tbody>
+                {datosProcesados.length > 0 ? datosProcesados.map((item) => (
+                  <tr key={item.id} style={{ borderBottom: '1px solid #E0E5F2' }}>
+                    <td className="ps-4 py-3 fw-bold" style={{ color: THEME.textDark }}>{item.departamento}</td>
+                    <td className="py-3 fw-medium" style={{ color: THEME.textDark }}>{item.inquilino}</td>
+                    <td className="py-3">
+                      <span className="fw-bold" style={{ color: THEME.textDark }}>{formatCurrency(item.montoFinal)}</span>
+                      {item.tieneMora && (
+                        <span className="ms-2 badge bg-danger text-white rounded-pill shadow-sm" style={{ fontSize: '10px', padding: '4px 8px' }}>
+                          + MORA
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-3 text-center">
+                      <span className={`badge rounded-pill px-3 py-2 fw-bold ${item.estatus === 'Pagado' ? 'bg-success bg-opacity-10 text-success' :
+                          item.estatus === 'Vencido' ? 'bg-danger bg-opacity-10 text-danger' :
+                            'bg-warning bg-opacity-10 text-warning'
+                        }`}>
+                        {item.estatus}
+                      </span>
+                    </td>
+                    <td className="py-3 text-muted small fw-medium">
+                      <div className="d-flex align-items-center gap-2" style={{ color: THEME.textLight }}>
+                        <Calendar size={14} /> {item.mesesRestantes} meses rest.
+                      </div>
+                    </td>
+                  </tr>
+                )) : (
+                  <tr>
+                    <td colSpan="5" className="text-center py-5" style={{ color: THEME.textLight }}>
+                      No se encontraron resultados para "{searchQuery}"
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
 
-      {/* 👉 ¡Aquí están los divs que se habían borrado! */}
+        {/* 👉 ¡Aquí están los divs que se habían borrado! */}
       </div>
     </div>
   );

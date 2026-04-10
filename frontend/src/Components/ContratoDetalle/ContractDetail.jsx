@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { REACT_APP_API_URL } from "../../config";
 import { Modal, Button, Form, Spinner } from "react-bootstrap";
 
 import EditarContratoModal from "../Forms/EditarContratoModal";
+import { supabase } from "../../Config/supabase-client";
 
 export const token = localStorage.getItem("token");
 
@@ -65,30 +65,7 @@ export default function ContractDetails() {
         setPaymentLoading(true);
         setPaymentError('');
         try {
-            const response = await fetch(`${REACT_APP_API_URL}/payments`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    invoiceid: selectedInvoice.id,
-                    paymentdate: paymentDate,
-                    amount: parseFloat(paymentAmount),
-                    method: paymentMethod
-                })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Error registrando el pago');
-            }
-
-            // Refresh invoices
-            const invoicesRes = await fetch(`${REACT_APP_API_URL}/invoices?contract_id=${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            const invoicesData = await invoicesRes.json();
+            const { invoicesData } = await supabase.from("rentalcontracts").select();
             setInvoices(invoicesData);
             setShowPaymentModal(false);
         } catch (err) {
@@ -106,12 +83,14 @@ export default function ContractDetails() {
             month: 'long',
             year: 'numeric'
         }).format(date);
-    }
+    };
+
     const fetchData = async () => {
         try {
             setLoading(true);
 
-            const [contractRes, invoicesRes] = await Promise.all([
+            {/*
+                            const [contractRes, invoicesRes] = await Promise.all([
                 fetch(`${REACT_APP_API_URL}/rentalcontracts/${id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 }),
@@ -126,6 +105,10 @@ export default function ContractDetails() {
 
             const contractData = await contractRes.json();
             const invoicesData = await invoicesRes.json();
+                */}
+
+            const { contractData } = await supabase.from("rentalcontracts").select();
+            const { invoicesData } = await supabase.from("invoices").select();
 
             setContrato(contractData);
             setInvoices(invoicesData);
@@ -136,7 +119,8 @@ export default function ContractDetails() {
         } finally {
             setLoading(false);
         }
-    }
+    };
+
     // ⬇ Fetch data from backend on page load
     useEffect(() => {
         fetchData();

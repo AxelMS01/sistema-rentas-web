@@ -2,9 +2,6 @@ import React, { useState } from "react";
 import ArrendatarioForm from "./ArrendatarioForm";
 import AvalForm from "./AvalForm";
 import ContratoForm from "./Contratoform";
-
-import { REACT_APP_API_URL } from '../../config'
-
 import "./ContratoWizardForm.css"
 
 async function readResponse(response) {
@@ -17,6 +14,7 @@ async function readResponse(response) {
   }
 }
 
+/*
 async function createContract(data) {
   try {
     const formData = new FormData();
@@ -58,7 +56,7 @@ async function createContract(data) {
 
     throw error;
   }
-}
+}*/
 
 
 
