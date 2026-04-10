@@ -12,7 +12,6 @@ import { Modal } from 'bootstrap';
 import { PDFViewer, Page, Document, Text, View } from '@react-pdf/renderer';
 import useUser from '../../Stores/user-store';
 import { supabase } from "../../Config/supabase-client";
-const token = localStorage.getItem("token");
 
 const Viviendas = () => {
   const [signUrl, setSignUrl] = useState();
@@ -54,7 +53,7 @@ const Viviendas = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data } = await supabase.from("apartments").select();
+        const { data } = await supabase.from("apartments").select().eq("ownerid", 1);
         console.log("Viviendas recibidas:", data);
         setPropiedades(data);
       } catch (err) {

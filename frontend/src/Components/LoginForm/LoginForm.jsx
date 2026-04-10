@@ -7,6 +7,8 @@ import useUser from '../../Stores/user-store';
 
 const LoginForm = () => {
 
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
   const [action, setAction] = useState('');
   const [faqOpenIndex, setFaqOpenIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,10 +29,6 @@ const LoginForm = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
-    const name = e.target[0].value;
-    const password = e.target[1].value;
-
     try {
       /*
       const response = await fetch(api("/login"), {
@@ -77,11 +75,11 @@ const LoginForm = () => {
           <form onSubmit={handleLogin}>
             <h1>Administración de Rentas</h1>
             <div className="input-box">
-              <input type="text" placeholder='Username' required /> <FaUser className='icon' />
+              <input type="text" placeholder='Username' onChange={(e) => setName(e.target.value)} required /> <FaUser className='icon' />
             </div>
 
             <div className="input-box">
-              <input type="password" placeholder='Password' required /> <FaLock className='icon' />
+              <input type="password" placeholder='Password' onChange={(e) => setPassword(e.target.value)} required /> <FaLock className='icon' />
             </div>
             <div className="remember-forgot">
               <label><input type='checkbox' />Recuerdame</label>
