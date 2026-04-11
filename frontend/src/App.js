@@ -16,7 +16,6 @@ import Home from "./Components/Home/Home";
 import ViviendaDetalle from "./Components/ViviendaDetalle/ViviendaDetalle";
 import Reportes from "./Components/Reportes/Reportes";
 import HomeIncidencias from "./IncidenciasHome/HomeIncidencias";
-import RegisterPage from "./Components/Register/Register";
 // REMOVED: import Configuracion from "./Components/Forms/Configuracion";
 
 function App() {
@@ -25,7 +24,6 @@ function App() {
       <Routes>
         {/* Login: Sin Navbar */}
         <Route path="/" element={<LoginForm />} />
-        <Route path="/signup" element={<RegisterPage />} />
 
         {/* Rutas Privadas: Con Navbar */}
         <Route path="/*" element={
@@ -42,9 +40,9 @@ function App() {
                   <Route path="home" element={<Home />} />
                   <Route path="home/incidencias" element={<HomeIncidencias />} />
                   <Route path="reportes" element={<Reportes />} />
-                  <Route path="contratos/:id" element={<ContratoDetalle />} />
+                  <Route path="contratos/:id" element={<ContratoDetalle/>} />
                   <Route path="viviendas/:id/detalles" element={<ViviendaDetalle />} />
-
+                  
                   {/* REMOVED: <Route path="configuracion/*" element={<Configuracion />} /> */}
 
                   {/* Redirección por defecto si no encuentra la ruta (SIEMPRE AL FINAL) */}
