@@ -1,6 +1,10 @@
 import React, { useState } from "react";
+import { supabase } from "../../../config/supabase-client";
+import useUser from "../../../stores/user-store";
 
 export default function ViviendaForm({ show, onClose, onCreated }) {
+  const loggedUserId = useUser((state) => state.loggedUser);
+
   const [formData, setFormData] = useState({
     name: "",
     postal_code: "",
@@ -24,20 +28,34 @@ export default function ViviendaForm({ show, onClose, onCreated }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    /*
     try {
-      const res = await fetch(`${REACT_APP_API_URL}/apartments`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        },
-        body: JSON.stringify(formData)
-      });
+      const { error } = await supabase
+        .from("apartments")
+        .insert({
+          ownerid: loggedUserId,
+          name: formData.name,
+          city: formData.city,
+          state: formData.state,
+          street: formData.street,
+          postal_code: formData.postal_code,
+          division: formData.division,
+          int_num: formData.int_num,
+          ext_num: formData.ext_num,
+        });
 
-      if (!res.ok) throw new Error("Error");
+      if (error) throw error;
 
-      const newApartment = await res.json();
+      const newApartment = {
+        ownerId: loggedUserId,
+        name: formData.name,
+        city: formData.city,
+        state: formData.state,
+        street: formData.street,
+        postal_code: formData.postal_code,
+        division: formData.division,
+        int_num: formData.int_num,
+        ext_num: formData.ext_num,
+      };
 
       // Send created apartment to parent
       onCreated(newApartment);
@@ -57,7 +75,7 @@ export default function ViviendaForm({ show, onClose, onCreated }) {
     } catch (err) {
       console.error(err);
       alert("Error creating apartment");
-    };*/
+    };
   };
 
   return (

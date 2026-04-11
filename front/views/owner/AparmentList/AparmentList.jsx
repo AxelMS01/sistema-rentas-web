@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { TbContract } from "react-icons/tb";
 import { LuHouse } from "react-icons/lu";
+import { Toaster } from "react-hot-toast";
 import "./AparmentList.css";
 import { DocumentoPagare } from "../../../components/pdf-documents/Machotes/Pagares/Pagare";
 import { DocumentoContrato } from "../../../components/pdf-documents/Machotes/Contrato/Contrato";
@@ -11,6 +12,9 @@ import ContractWizardModal from "../Forms/ContratoWizardform";
 import { Modal } from 'bootstrap';
 import { PDFViewer, Page, Document, Text, View } from '@react-pdf/renderer';
 import useUser from "../../../stores/user-store";
+import mensajeExito from "../../../utils/mensaje-exito";
+import { Search, UserCircle, Archive, ArchiveRestore, SquarePen, CircleDot, CircleCheck } from 'lucide-react';
+
 import { supabase } from "../../../config/supabase-client";
 
 const Viviendas = () => {
@@ -53,8 +57,11 @@ const Viviendas = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data } = await supabase.from("apartments").select().eq("ownerid", 1);
-        console.log("Viviendas recibidas:", data);
+        const { data } = await supabase.
+          from("apartments").
+          select().
+          eq("ownerid", loggedUserId);
+
         setPropiedades(data);
       } catch (err) {
         console.error(err);
@@ -114,6 +121,7 @@ const Viviendas = () => {
     setPropiedades(prev => [...prev, nueva]);
   };
   const handleApartmentCreated = (newApartment) => {
+    mensajeExito("¡Vivienda creada correctamente!");
     agregarPropiedad(newApartment);
     setShowPropiertiesModal(false);
   };
@@ -157,12 +165,12 @@ const Viviendas = () => {
 
   return (
     <div className="bg-light min-vh-100">
-      <div className="container py-4">
+      <div className="container py-4 ">
 
         {/* Search + Add */}
         <div className="apartments-toolbar d-flex justify-content-between align-items-center mb-3">
           <div className="search-pill d-flex align-items-center">
-            <i className="bi bi-search search-icon"></i>
+            <Search size={16} className="mr-2" />
             <input
               type="text"
               className="search-input"
@@ -171,6 +179,14 @@ const Viviendas = () => {
               onChange={(e) => setFiltroBusqueda(e.target.value)}
             />
           </div>
+
+          <Toaster toastOptions={{
+            style: {
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center"
+            }
+          }} />
 
           <button
             className="btn btn-dark new-home-btn"
@@ -193,6 +209,7 @@ const Viviendas = () => {
                   prev.map(a => a.id === updated.id ? updated : a)
                 );
                 setSelectedApartment(null);
+                mensajeExito("¡Vivienda actualizada!");
               }}
             />
           )}
@@ -263,15 +280,15 @@ const Viviendas = () => {
                 alt="Departamento"
               />
               <div>
-                <p className="mb-1 fw-semibold">{`${prop.street || ''} ${prop.int_num || ''}, ${prop.division || ''}`.trim()}</p>
+                <p className="mb-1 fw-semibold">{`${prop.street || ''} ${prop.ext_num || ''}, ${prop.division || ''}`.trim()}</p>
                 <small>{prop.depositamount ? prop.depositamount.toLocaleString('en-US') : ''}$</small>
               </div>
             </div>
 
             <div className="col-12 col-lg-2 d-flex align-items-center justify-content-lg-center flex-row flex-lg-column gap-2 gap-lg-0 border-end-lg py-2 py-lg-0">
               <span className="d-lg-none fw-bold mobile-label">Arrendatario:</span>
-              <i className="bi bi-person-circle fs-3 text-secondary d-none d-lg-block"></i>
-              <span>{prop.tenant_name || 'Sin asignar'}</span>
+              <UserCircle className="mb-2" />
+              <span>{prop.tenant_name ? prop.tenant_name : "Sin asignar"}</span>
             </div>
 
             <div className="col-12 col-lg-2 d-flex align-items-center border-end-lg py-2 py-lg-0 gap-2">
@@ -286,30 +303,30 @@ const Viviendas = () => {
                   className="box-action-btn"
                   onClick={() => handleSelect(prop)}
                 >
-                  <i className="bi bi-pencil-square"></i>
+                  <SquarePen size={16} />
                   Editar
                 </button>
 
                 {prop.status === "ARCHIVED" ? (
                   <button className="box-action-btn" onClick={() => archivarVivienda(prop.id)}>
-                    <i className="bi bi-eye"></i>
+                    <Archive size={16} />
                     Archivado
                   </button>
                 ) : (
                   <button className="box-action-btn" onClick={() => archivarVivienda(prop.id)}>
-                    <i className="bi bi-eye-slash"></i>
+                    <ArchiveRestore size={16} />
                     Desarchivar
                   </button>
                 )}
 
                 {prop.status === "OCCUPIED" ? (
                   <button className="box-action-btn" onClick={() => cambiarEstado(prop.id)}>
-                    <i className="bi bi-x-circle"></i>
+                    <CircleDot size={16} />
                     Ocupado
                   </button>
                 ) : (
                   <button className="box-action-btn" onClick={() => cambiarEstado(prop.id)}>
-                    <i className="bi bi-check-circle"></i>
+                    <CircleCheck size={16} />
                     Disponible
                   </button>
                 )}

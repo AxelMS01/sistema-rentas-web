@@ -8,6 +8,7 @@ import { supabase } from '../../../config/supabase-client';
 
 const LoginForm = () => {
 
+  const [role, setRole] = useState("owner");
   const [userEmail, setUserEmail] = useState("");
   const [userPassowrd, setUserPassword] = useState("");
   const [action, setAction] = useState('');
@@ -32,55 +33,46 @@ const LoginForm = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: userEmail,
-      password: userPassowrd
-    });
-
-    if (error) throw error;
-
-    // Actualizando el estado global del usuario para separar su propio espacio.
-    updateUserId(data.user.id);
-
-    // Guardando temporalmente el token de sesión en el local storage.
-    // Nota: en futuras ediciones, modificar esto para guardarlo en las cookies.
-    localStorage.setItem("token", data.session.access_token);
-
-    // Finalmente, redirigimos al usuario a la página principal del sistema (viviendas).
-    navigate("/viviendas");
-
     try {
-      /*
-      const response = await fetch(api("/login"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, password })
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: userEmail,
+        password: userPassowrd
       });
 
-      const data = await response.json();
+      if (error) throw error;
 
-      // Actualizar el estado global del ID del usuario (separación de su espacio).
-      const id = data.user.id;
-      updateUserId(id);
+      const userAuthId = data.user.id;      
+      let userNormalId;
 
-      if (!response.ok) {
-        alert("Invalid credentials");
-        return;
-      }
+      if (role === "owner") {
+        const { data, error } = await supabase
+          .from("owners")
+          .select("id")
+          .eq("authid", userAuthId);
 
-      // Save auth context in localStorage
-      localStorage.setItem("token", data.token);
-      if (data?.user?.role) {
-        localStorage.setItem("role", data.user.role);
+        if (error) throw error;
+
+        userNormalId = data[0].id;        
       } else {
-        localStorage.removeItem("role");
-      }
+        const { data, error } = await supabase
+          .from("tenants")
+          .select("id")
+          .eq("authid", userAuthId);
 
-      if (data?.user?.role === "tenant") {
-        navigate("/home");
-      } else {
-        navigate("/viviendas");
-      }*/
+        if (error) throw error;
+
+        userNormalId = data[0].id;
+      };
+
+      // Actualizando el estado global del usuario para separar su propio espacio.
+      updateUserId(userNormalId);
+
+      // Guardando temporalmente el token de sesión en el local storage.
+      // Nota: en futuras ediciones, modificar esto para guardarlo en las cookies.
+      localStorage.setItem("token", data.session.access_token);
+
+      // Finalmente, redirigimos al usuario a la página principal del sistema (viviendas).
+      navigate("/viviendas");
 
     } catch (error) {
       console.error(error);

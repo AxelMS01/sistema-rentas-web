@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { supabase } from "../../../config/supabase-client";
+import useUser from "../../../stores/user-store";
 
 export default function EditApartmentModal({ apartment, onClose, onUpdated }) {
+  const loggedUserId = useUser((state) => state.loggedUser);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -40,29 +43,41 @@ export default function EditApartmentModal({ apartment, onClose, onUpdated }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    /*
     try {
-      const res = await fetch(
-        `${REACT_APP_API_URL}/apartments/${apartment.id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`
-          },
-          body: JSON.stringify(formData)
-        }
-      );
+      const { error } = await supabase
+        .from("apartments")
+        .update({
+          name: formData.name,
+          city: formData.city,
+          state: formData.state,
+          street: formData.street,
+          postal_code: formData.postal_code,
+          division: formData.division,
+          int_num: formData.int_num,
+          ext_num: formData.ext_num,
+        })
+        .eq("id", apartment.id);
 
-      if (!res.ok) throw new Error("Update failed");
+      if (error) throw error;
 
-      const updated = await res.json();
-      onUpdated(updated);
+      const newApartment = {
+        name: formData.name,
+        city: formData.city,
+        state: formData.state,
+        street: formData.street,
+        postal_code: formData.postal_code,
+        division: formData.division,
+        int_num: formData.int_num,
+        ext_num: formData.ext_num,
+      };
+
+      // Send back the newly created apartment.
+      onUpdated(newApartment);
 
     } catch (err) {
       console.error(err);
       alert("Error updating apartment");
-    }*/
+    }
   };
 
   return (
