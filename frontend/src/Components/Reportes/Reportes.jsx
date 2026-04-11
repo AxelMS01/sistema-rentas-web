@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { api } from "../../api";
 import "./Reportes.css";
 
 const formatCurrency = (value) => {
@@ -12,12 +11,13 @@ const formatCurrency = (value) => {
 };
 
 const fetchJson = async (path) => {
+  /*
   const response = await fetch(api(path));
   if (!response.ok) {
     const message = await response.text();
     throw new Error(message || "Error de red");
   }
-  return response.json();
+  return response.json();*/
 };
 
 const Reportes = () => {

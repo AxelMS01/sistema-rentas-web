@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { api } from "../../api";
 import "./Incidencias.css";
 
 const leerRespuesta = async (response) => {
@@ -59,14 +58,17 @@ const Incidencias = () => {
 
   const construirMediaUrl = (id) => {
     const token = obtenerToken();
-    return api(`/maintenancerequests/media/${id}?token=${encodeURIComponent(token)}`);
+    
+    // return api(`/maintenancerequests/media/${id}?token=${encodeURIComponent(token)}`);
   };
+
   const obtenerUrlMedia = (media) => {
     if (media?.storage_path && /^https?:\/\//i.test(media.storage_path)) {
       return media.storage_path;
     }
     return media?.id ? construirMediaUrl(media.id) : "";
   };
+  
   const abrirEvidencia = (url) => {
     if (!url) {
       return;
@@ -82,6 +84,7 @@ const Incidencias = () => {
         setLoading(true);
         setError("");
 
+        /*
         const response = await fetch(api("/maintenancerequests"), {
           signal: controller.signal,
           headers: {
@@ -101,7 +104,7 @@ const Incidencias = () => {
         }
 
         const base = Array.isArray(data) ? data.map(normalizarIncidencia) : [];
-        setIncidenciasData(base);
+        setIncidenciasData(base);*/
       } catch (err) {
         if (err.name === "AbortError") {
           return;

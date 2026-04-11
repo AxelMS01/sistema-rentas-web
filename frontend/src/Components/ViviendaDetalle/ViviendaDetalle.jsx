@@ -4,7 +4,6 @@ import { LuHand, LuHouse, LuInfo, LuSettings } from "react-icons/lu";
 import toast, { Toaster } from 'react-hot-toast';
 import mensajeExito from "../../Utils/mensaje-exito";
 import EditarForm from "../Forms/Editarform";
-import { REACT_APP_API_URL } from "../../config";
 import "./ViviendaDetalle.css";
 
 const token = localStorage.getItem("token");
@@ -54,7 +53,7 @@ export default function ViviendaDetalle() {
       try {
         setLoading(true);
         setError(null);
-
+        /*
         const res = await fetch(`${REACT_APP_API_URL}/apartments/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -62,7 +61,7 @@ export default function ViviendaDetalle() {
         if (!res.ok) throw new Error("No se pudo cargar la vivienda");
 
         const data = await res.json();
-        setVivienda(data);
+        setVivienda(data);*/
       } catch (err) {
         console.error(err);
         setError("No fue posible cargar los detalles de la vivienda.");
@@ -97,6 +96,7 @@ export default function ViviendaDetalle() {
     setSaving(true);
     setSaveMsg("");
 
+    /*
     try {
       const res = await fetch(`${REACT_APP_API_URL}/apartments/${vivienda.id}/status`, {
         method: "PATCH",
@@ -120,7 +120,7 @@ export default function ViviendaDetalle() {
       setSaveMsg(err.message || "Error al guardar el estatus.");
     } finally {
       setSaving(false);
-    }
+    };*/
   };
 
   const abrirGestionArrendatario = async () => {
@@ -137,6 +137,7 @@ export default function ViviendaDetalle() {
     if (!vivienda.tenant_id) return;
 
     try {
+      /*
       const res = await fetch(`${REACT_APP_API_URL}/tenants/${vivienda.tenant_id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -150,7 +151,7 @@ export default function ViviendaDetalle() {
         phone: data?.phone || prev.phone,
         email: data?.email || prev.email,
         governmentid: data?.governmentid || ""
-      }));
+      }));*/
     } catch (err) {
       console.error(err);
     }
@@ -186,6 +187,7 @@ export default function ViviendaDetalle() {
         payload.password = tenantForm.password.trim();
       }
 
+      /*
       const tenantRes = await fetch(
         isEditingTenant
           ? `${REACT_APP_API_URL}/tenants/${vivienda.tenant_id}`
@@ -233,7 +235,7 @@ export default function ViviendaDetalle() {
       }));
 
       setTenantForm((prev) => ({ ...prev, password: "" }));
-      setTenantMsg("Cuenta de arrendatario guardada y vinculada correctamente.");
+      setTenantMsg("Cuenta de arrendatario guardada y vinculada correctamente.");*/
     } catch (err) {
       console.error(err);
       setTenantMsg(err.message || "Error al gestionar la cuenta.");

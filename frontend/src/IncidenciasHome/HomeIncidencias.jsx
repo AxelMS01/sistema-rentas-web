@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
-import { api } from "../api";
 import "./HomeIncidencias.css";
 
 const LIMITE_DESCRIPCION = 220;
@@ -75,8 +74,9 @@ const HomeIncidencias = () => {
 
   const construirMediaUrl = (id) => {
     const token = obtenerToken();
-    return api(`/maintenancerequests/media/${id}?token=${encodeURIComponent(token)}`);
+    //return api(`/maintenancerequests/media/${id}?token=${encodeURIComponent(token)}`);
   };
+
   const obtenerUrlMedia = (media) => {
     if (media?.storage_path && /^https?:\/\//i.test(media.storage_path)) {
       return media.storage_path;
@@ -94,6 +94,7 @@ const HomeIncidencias = () => {
     const controller = new AbortController();
 
     const cargarIncidencias = async () => {
+      /*
       try {
         setLoading(true);
         setError("");
@@ -128,7 +129,7 @@ const HomeIncidencias = () => {
         if (!controller.signal.aborted) {
           setLoading(false);
         }
-      }
+      }*/
     };
 
     cargarIncidencias();
@@ -147,7 +148,7 @@ const HomeIncidencias = () => {
   const actualizarEstado = async (id, status) => {
     try {
       setError("");
-
+      /*
       const response = await fetch(api(`/maintenancerequests/${id}/status`), {
         method: "PATCH",
         headers: {
@@ -166,7 +167,7 @@ const HomeIncidencias = () => {
             (data?.raw?.startsWith("<!DOCTYPE") ? "La ruta para actualizar estado no existe en la API desplegada." : null) ||
             "No se pudo actualizar la incidencia"
         );
-      }
+      };
 
       setIncidenciasData((prev) =>
         prev.map((incidencia) =>
@@ -177,7 +178,7 @@ const HomeIncidencias = () => {
               }
             : incidencia
         )
-      );
+      );*/
     } catch (err) {
       console.error(err);
       setError(err.message || "No se pudo actualizar la incidencia");
@@ -259,6 +260,7 @@ const HomeIncidencias = () => {
       setEnviando(true);
       setError("");
 
+      /*
       const response = await fetch(api("/maintenancerequests"), {
         method: "POST",
         headers: {
@@ -282,9 +284,9 @@ const HomeIncidencias = () => {
             (data?.raw?.startsWith("<!DOCTYPE") ? "La API devolvio HTML y no JSON. Revisa la ruta desplegada." : null) ||
             "No se pudo crear la incidencia"
         );
-      }
+      };
 
-      let incidenciaCreada = normalizarIncidencia(data);
+      let incidenciaCreada = normalizarIncidencia(data);*/
 
       if (archivos.length) {
         try {
@@ -293,8 +295,9 @@ const HomeIncidencias = () => {
             formData.append("media", archivo.file);
           });
 
+          /*
           const mediaResponse = await fetch(
-            api(`/maintenancerequests/${incidenciaCreada.id}/media`),
+            // api(`/maintenancerequests/${incidenciaCreada.id}/media`),
             {
               method: "POST",
               headers: {
@@ -315,14 +318,14 @@ const HomeIncidencias = () => {
           incidenciaCreada = {
             ...incidenciaCreada,
             media: Array.isArray(mediaData) ? mediaData : [],
-          };
+          };*/
         } catch (uploadErr) {
           console.error(uploadErr);
           setError(uploadErr.message || "No se pudieron subir los archivos");
         }
       }
 
-      setIncidenciasData((prev) => [incidenciaCreada, ...prev]);
+      //setIncidenciasData((prev) => [incidenciaCreada, ...prev]);
       setFiltroEstado("todas");
       setOrden("recientes");
       cerrarModal();

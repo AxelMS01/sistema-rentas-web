@@ -3,14 +3,17 @@ import './LoginForm.css';
 import { FaUser, FaEnvelope } from "react-icons/fa6";
 import { FaLock } from "react-icons/fa6";
 import { useNavigate } from 'react-router-dom';
-import { api } from '../../api';
 import useUser from '../../Stores/user-store';
+import { supabase } from '../../Config/supabase-client';
 
 const LoginForm = () => {
 
+  const [userEmail, setUserEmail] = useState("");
+  const [userPassowrd, setUserPassword] = useState("");
   const [action, setAction] = useState('');
   const [faqOpenIndex, setFaqOpenIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const navigate = useNavigate();
   const updateUserId = useUser((state) => state.updateLoggedUser);
 
@@ -29,10 +32,25 @@ const LoginForm = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    const name = e.target[0].value;
-    const password = e.target[1].value;
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: userEmail,
+      password: userPassowrd
+    });
+
+    if (error) throw error;
+
+    // Actualizando el estado global del usuario para separar su propio espacio.
+    updateUserId(data.user.id);
+
+    // Guardando temporalmente el token de sesión en el local storage.
+    // Nota: en futuras ediciones, modificar esto para guardarlo en las cookies.
+    localStorage.setItem("token", data.session.access_token);
+
+    // Finalmente, redirigimos al usuario a la página principal del sistema (viviendas).
+    navigate("/viviendas");
 
     try {
+      /*
       const response = await fetch(api("/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -52,7 +70,6 @@ const LoginForm = () => {
 
       // Save auth context in localStorage
       localStorage.setItem("token", data.token);
-
       if (data?.user?.role) {
         localStorage.setItem("role", data.user.role);
       } else {
@@ -63,7 +80,7 @@ const LoginForm = () => {
         navigate("/home");
       } else {
         navigate("/viviendas");
-      }
+      }*/
 
     } catch (error) {
       console.error(error);
@@ -78,18 +95,18 @@ const LoginForm = () => {
           <form onSubmit={handleLogin}>
             <h1>Administración de Rentas</h1>
             <div className="input-box">
-              <input type="text" placeholder='Username' required /> <FaUser className='icon' />
+              <input type="text" placeholder='Correo electrónico' onChange={(e) => setUserEmail(e.target.value)} required /> <FaUser className='icon' />
             </div>
 
             <div className="input-box">
-              <input type="password" placeholder='Password' required /> <FaLock className='icon' />
+              <input type="password" placeholder='Contraseña' onChange={(e) => setUserPassword(e.target.value)} required /> <FaLock className='icon' />
             </div>
             <div className="remember-forgot">
-              <label><input type='checkbox' />Recuerdame</label>
+              <label><input type='checkbox' />Recuérdame</label>
               <a href='#'> </a>
             </div>
 
-            <button type="submit" className="btn btn-dark w-100">Login</button>
+            <button type="submit" className="btn btn-dark w-100">Iniciar sesión</button>
 
             <div className="register-link">
               <p> <a href='#' onClick={registerLink}> </a>

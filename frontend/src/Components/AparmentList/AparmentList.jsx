@@ -8,11 +8,10 @@ import { DocumentoContrato } from "../Machotes/Contrato/Contrato";
 import ViviendaForm from "../Forms/Viviendaform";
 import EditApartmentModal from "../Forms/Editarform";
 import ContractWizardModal from "../Forms/ContratoWizardform";
-import { REACT_APP_API_URL } from '../../config';
 import { Modal } from 'bootstrap';
 import { PDFViewer, Page, Document, Text, View } from '@react-pdf/renderer';
 import useUser from '../../Stores/user-store';
-const token = localStorage.getItem("token");
+import { supabase } from "../../Config/supabase-client";
 
 const Viviendas = () => {
   const [signUrl, setSignUrl] = useState();
@@ -54,16 +53,9 @@ const Viviendas = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`${REACT_APP_API_URL}/apartments`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!res.ok) throw new Error("Error loading data");
-
-        const data = await res.json();
-        console.log("Viviendas recibidas:", data)
+        const { data } = await supabase.from("apartments").select().eq("ownerid", 1);
+        console.log("Viviendas recibidas:", data);
         setPropiedades(data);
-
       } catch (err) {
         console.error(err);
         setError("Error loading viviendas");

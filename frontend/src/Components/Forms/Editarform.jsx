@@ -1,4 +1,3 @@
-import { REACT_APP_API_URL } from '../../config';
 import React, { useEffect, useState } from "react";
 
 export default function EditApartmentModal({ apartment, onClose, onUpdated }) {
@@ -41,6 +40,7 @@ export default function EditApartmentModal({ apartment, onClose, onUpdated }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    /*
     try {
       const res = await fetch(
         `${REACT_APP_API_URL}/apartments/${apartment.id}`,
@@ -62,7 +62,7 @@ export default function EditApartmentModal({ apartment, onClose, onUpdated }) {
     } catch (err) {
       console.error(err);
       alert("Error updating apartment");
-    }
+    }*/
   };
 
   return (

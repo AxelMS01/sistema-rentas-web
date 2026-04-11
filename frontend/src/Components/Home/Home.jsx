@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import "./Home.css";
 import { FileText, CreditCard, AlertCircle, FileDown, Loader } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { REACT_APP_API_URL } from "../../config";
 
 const token = localStorage.getItem("token");
 
@@ -22,6 +21,7 @@ const Home = () => {
   // 1. Cargar datos desde la base de datos al abrir la pagina
   useEffect(() => {
     const fetchDatos = async () => {
+      /*
       try {
         const response = await fetch(`${REACT_APP_API_URL}/dashboard-cliente`, {
           headers: { Authorization: `Bearer ${token}` }
@@ -36,7 +36,7 @@ const Home = () => {
         console.error("Error cargando dashboard:", error);
       } finally {
         setLoading(false);
-      }
+      };*/
     };
 
     fetchDatos();
@@ -47,6 +47,7 @@ const Home = () => {
     if (isProcessing || !datos?.datosVivienda) return;
     setIsProcessing(true);
 
+    /*
     try {
       const response = await fetch(`${REACT_APP_API_URL}/pagos/openpay`, {
         method: "POST",
@@ -79,7 +80,7 @@ const Home = () => {
       alert("No se pudo conectar con el servidor. El backend esta encendido o la URL de Vercel es correcta?");
     } finally {
       setIsProcessing(false);
-    }
+    };*/
   };
 
   if (loading) {
