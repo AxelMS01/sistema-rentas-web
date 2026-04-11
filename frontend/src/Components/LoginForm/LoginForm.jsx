@@ -13,7 +13,7 @@ const LoginForm = () => {
   const [action, setAction] = useState('');
   const [faqOpenIndex, setFaqOpenIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+
   const navigate = useNavigate();
   const updateUserId = useUser((state) => state.updateLoggedUser);
 
@@ -36,6 +36,18 @@ const LoginForm = () => {
       email: userEmail,
       password: userPassowrd
     });
+
+    if (error) throw error;
+
+    // Actualizando el estado global del usuario para separar su propio espacio.
+    updateUserId(data.user.id);
+
+    // Guardando temporalmente el token de sesión en el local storage.
+    // Nota: en futuras ediciones, modificar esto para guardarlo en las cookies.
+    localStorage.setItem("token", data.session.access_token);
+
+    // Finalmente, redirigimos al usuario a la página principal del sistema (viviendas).
+    navigate("/viviendas");
 
     try {
       /*

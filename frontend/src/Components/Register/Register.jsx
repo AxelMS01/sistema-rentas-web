@@ -40,7 +40,11 @@ export default function RegisterPage() {
         // Actualizando el estado global del usuario para separar su propio espacio.
         updateUserId(data.user.id);
 
+        // Guardando temporalmente el token de sesión en el local storage.
+        // Nota: en futuras ediciones, modificar esto para guardarlo en las cookies.
         localStorage.setItem("token", data.session.access_token);
+
+        // Finalmente, redirigimos al usuario a la página principal del sistema (viviendas).
         navigate("/viviendas");
     };
 
