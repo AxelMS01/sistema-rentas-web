@@ -59,6 +59,7 @@ const Viviendas = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log(loggedUserId);
         const { data } = await supabase.
           from("apartments")
           .select()

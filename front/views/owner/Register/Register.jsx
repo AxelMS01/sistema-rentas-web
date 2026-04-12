@@ -23,26 +23,47 @@ export default function RegisterPage() {
     async function handleOwnerRegistration(e) {
         e.preventDefault();
 
-        const { data, error } = await supabase.auth.signUp({
-            email: email,
-            password: password,
-            options: {
-                data: {
-                    name: name,
-                    mother_surname: motherSurname,
-                    father_surname: fatherSurname,
-                    phone: phoneNumber,
-                    governmentid: govId,
-                },
-            },
-        });
+        let newSessionId;
+        let accessSessionToken;
 
-        // Actualizando el estado global del usuario para separar su propio espacio.
-        updateUserId(data.user.id);
+        // Crear un nuevo usuario en la tabla 'auth.users' de la base de datos.
+        try {
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    data: {
+                        user_type: "owner", // Diferenciar la creación de un usuario arrendador, de un arrendatario.
+                        name: name,
+                        mother_surname: motherSurname,
+                        father_surname: fatherSurname,
+                        email: email,
+                        phone: phoneNumber,
+                        governmentid: govId,
+                    },
+                },
+            });
+
+            newSessionId = data.user.id;
+            accessSessionToken = data.session.access_token;
+        } catch (error) {
+            console.log(error);
+        };
+
+        // Después, obtenemos el ID del usuario que creamos, de la tabla public.owners.
+        const { data, error } = await supabase
+            .from("owners")
+            .select("id")
+            .eq("authid", newSessionId);
+        
+        if (error) throw error;
+
+        // Con el ID obtenido, actualizamos el estado global del usuario para separar su propio espacio.
+        updateUserId(data[0].id);
 
         // Guardando temporalmente el token de sesión en el local storage.
         // Nota: en futuras ediciones, modificar esto para guardarlo en las cookies.
-        localStorage.setItem("token", data.session.access_token);
+        localStorage.setItem("token", accessSessionToken);
 
         // Finalmente, redirigimos al usuario a la página principal del sistema (viviendas).
         navigate("/viviendas");

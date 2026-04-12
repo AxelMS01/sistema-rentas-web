@@ -120,6 +120,8 @@ export default function ViviendaDetalle() {
   const abrirGestionArrendatario = async () => {
     if (!vivienda) return;
 
+    // Manejar la edición de las credenciales de un arrendatario (cuando ya se ha creado).
+    /*
     setTenantMsg("");
     setTenantForm({
       ...emptyTenantForm,
@@ -131,7 +133,7 @@ export default function ViviendaDetalle() {
     if (!vivienda.tenant_id) return;
 
     try {
-      /*
+      
       const res = await fetch(`${REACT_APP_API_URL}/tenants/${vivienda.tenant_id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -145,10 +147,10 @@ export default function ViviendaDetalle() {
         phone: data?.phone || prev.phone,
         email: data?.email || prev.email,
         governmentid: data?.governmentid || ""
-      }));*/
+      }));
     } catch (err) {
       console.error(err);
-    }
+    }*/
   };
 
   const guardarArrendatario = async (e) => {
@@ -178,6 +180,7 @@ export default function ViviendaDetalle() {
       };
 
       const creationPayload = {
+        user_type: "tenant",
         name: tenantForm.name.trim(),
         phone: tenantForm.phone.trim(),
         email: tenantForm.email.trim(),
@@ -187,46 +190,30 @@ export default function ViviendaDetalle() {
         apartment_id: id,
       }
 
-      if (isEditingTenant) {
-        try {
-          const { error } = await supabase
-            .from("tenants")
-            .update(editPayload)
-            .eq("id", vivienda.tenant_id);
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email: tenantForm.email.trim(),
+          password: tenantForm.password.trim(),
+          options: {
+            data: {
+              user_type: "tenant",
+              name: tenantForm.name,
+              phone: tenantForm.phone,
+              email: tenantForm.email,
+              governmentid: tenantForm.governmentid,
+              role: "tenant",
+              owner_id: ownerId,
+              apartment_id: id,
+            }
+          },
+        });
 
-          if (error) throw error;
-        } catch (error) {
-          console.log(error);
-        } finally {
-          mensajeExito("Cuenta actualizada para el arrendatario.");
-        }
-      } else {
-        try {
-          const { data, error } = await supabase.auth.signUp({
-            email: tenantForm.email.trim(),
-            password: tenantForm.password.trim(),
-            options: {
-              data: {
-                name: tenantForm.name.trim(),
-                phone: tenantForm.phone.trim(),
-                email: tenantForm.email.trim(),
-                governmentid: tenantForm.governmentid.trim(),
-                role: "tenant",
-                owner_id: ownerId,
-                apartment_id: id,
-              },
-            },
-          });
-
-          if (error) console.log(error);
-        } catch (error) {
-          console.log(error);
-        } finally {
-          mensajeExito("Cuenta creada para el arrendatario.");
-        }
-      };
-
-
+        if (error) console.log(error);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        mensajeExito("Cuenta creada para el arrendatario.");
+      }
 
       /*
       const tenantRes = await fetch(
