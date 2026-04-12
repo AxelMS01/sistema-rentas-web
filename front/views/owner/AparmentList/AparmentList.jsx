@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { TbContract } from "react-icons/tb";
-import { LuHouse } from "react-icons/lu";
+import { LuHouse, LuPlus } from "react-icons/lu";
 import { Toaster } from "react-hot-toast";
 import "./AparmentList.css";
 import { DocumentoPagare } from "../../../components/pdf-documents/Machotes/Pagares/Pagare";
@@ -12,9 +12,10 @@ import ContractWizardModal from "../Forms/ContratoWizardform";
 import { Modal } from 'bootstrap';
 import { PDFViewer, Page, Document, Text, View } from '@react-pdf/renderer';
 import useUser from "../../../stores/user-store";
+import Button from "../../../components/Button";
 import mensajeExito from "../../../utils/mensaje-exito";
+import StatusButton from "../../../components/apartments/ApartmentStatusBtn";
 import { Search, UserCircle, Archive, ArchiveRestore, SquarePen, CircleDot, CircleCheck } from 'lucide-react';
-
 import { supabase } from "../../../config/supabase-client";
 
 const Viviendas = () => {
@@ -24,6 +25,7 @@ const Viviendas = () => {
   const [showContractModal, setShowContractModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [actionCompleted, setActionCompleted] = useState(0);
   const loggedUserId = useUser((state) => state.loggedUser);
 
   const [filtroStatus, setFiltroStatus] = useState("todos");
@@ -58,9 +60,9 @@ const Viviendas = () => {
     const fetchData = async () => {
       try {
         const { data } = await supabase.
-          from("apartments").
-          select().
-          eq("ownerid", loggedUserId);
+          from("apartments")
+          .select()
+          .eq("ownerid", loggedUserId);
 
         setPropiedades(data);
       } catch (err) {
@@ -72,9 +74,7 @@ const Viviendas = () => {
     };
 
     fetchData();
-  }, []);
-
-
+  }, [actionCompleted]);
 
   const formatDate = (date) => {
     if (!date) return ""; // ← If null, return nothing
@@ -84,24 +84,30 @@ const Viviendas = () => {
   //  Helpers to modify UI locally
   // ------------------------------
 
-  const cambiarEstado = (id) => {
-    setPropiedades(prev =>
-      prev.map((p) =>
-        p.id === id
-          ? { ...p, status: p.status === "OCCUPIED" ? "AVAILABLE" : "OCCUPIED" }
-          : p
-      )
-    );
-  };
+  async function cambiarEstado(id, nuevoEstado) {
+    try {
+      const { error } = await supabase
+        .from("apartments")
+        .update({
+          status: nuevoEstado
+        })
+        .eq("id", id);
 
-  const archivarVivienda = (id) => {
-    setPropiedades(prev =>
-      prev.map((p) =>
-        p.id === id
-          ? { ...p, status: p.status === "ARCHIVED" ? "AVAILABLE" : "ARCHIVED" }
-          : p
-      )
-    );
+      if (error) throw error;
+
+    } catch (error) {
+      console.log("An error ocurred:", error)
+    } finally {
+      setPropiedades(prev =>
+        prev.map((p) =>
+          p.id === id
+            ? { ...p, status: nuevoEstado }
+            : p
+        )
+      );
+
+      mensajeExito("Estatus actualizado.")
+    }
   };
 
   const getStatusDot = (status) => {
@@ -124,6 +130,9 @@ const Viviendas = () => {
     mensajeExito("¡Vivienda creada correctamente!");
     agregarPropiedad(newApartment);
     setShowPropiertiesModal(false);
+
+    // Update this state variable to refetch the data in the main useEffect.
+    setActionCompleted(actionCompleted + 1);
   };
 
   const actualizarPropiedad = (propActualizada) => {
@@ -164,113 +173,91 @@ const Viviendas = () => {
   // ------------------------------
 
   return (
-    <div className="bg-light min-vh-100">
-      <div className="container py-4 ">
+    <div className="w-full h-full flex flex-col gap-4! lg:px-20! pt-10">
+      <div className="flex flex-col items-start">
+        <h1 className="text-start font-light fw-semibold tracking-tight">Viviendas</h1>
+        <p className="text-base font-medium text-slate-500">Visualiza las viviendas registradas en el sistema fácil y rápidamente.</p>
+      </div>
 
-        {/* Search + Add */}
-        <div className="apartments-toolbar d-flex justify-content-between align-items-center mb-3">
-          <div className="search-pill d-flex align-items-center">
-            <Search size={16} className="mr-2" />
-            <input
-              type="text"
-              className="search-input"
-              placeholder="Buscar..."
-              value={filtroBusqueda}
-              onChange={(e) => setFiltroBusqueda(e.target.value)}
-            />
-          </div>
-
-          <Toaster toastOptions={{
-            style: {
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center"
-            }
-          }} />
-
-          <button
-            className="btn btn-dark new-home-btn"
-            onClick={() => setShowPropiertiesModal(true)}
-          >
-            + Nueva vivienda
-          </button>
-
-          <ViviendaForm
-            show={showPropiertiesModal}
-            onClose={() => setShowPropiertiesModal(false)}
-            onCreated={handleApartmentCreated}
-          />
-          {selectedApartment && (
-            <EditApartmentModal
-              apartment={selectedApartment}
-              onClose={() => setSelectedApartment(null)}
-              onUpdated={(updated) => {
-                setPropiedades(prev =>
-                  prev.map(a => a.id === updated.id ? updated : a)
-                );
-                setSelectedApartment(null);
-                mensajeExito("¡Vivienda actualizada!");
-              }}
-            />
-          )}
-          <ContractWizardModal
-            show={showContractModal}
-            onClose={() => setShowContractModal(false)}
-            selectedApartmentId={contractApartmentId}
-
+      {/* Search + Add */}
+      <div className="apartments-toolbar d-flex justify-content-between align-items-center mb-3">
+        <div className="search-pill d-flex align-items-center">
+          <Search size={16} className="mr-2" />
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Buscar..."
+            value={filtroBusqueda}
+            onChange={(e) => setFiltroBusqueda(e.target.value)}
           />
         </div>
 
-        <p>Usuario logeado: {loggedUserId}</p>
+        <Toaster toastOptions={{
+          style: {
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
+          }
+        }} />
 
-        {/*
+        <Button
+          text="Nueva vivienda"
+          icon={<LuPlus size={18} />}
+          onClick={() => setShowPropiertiesModal(true)}
+        />
+
+        <ViviendaForm
+          show={showPropiertiesModal}
+          onClose={() => setShowPropiertiesModal(false)}
+          onCreated={handleApartmentCreated}
+        />
+        {selectedApartment && (
+          <EditApartmentModal
+            apartment={selectedApartment}
+            onClose={() => setSelectedApartment(null)}
+            onUpdated={(updated) => {
+              setPropiedades(prev =>
+                prev.map(a => a.id === updated.id ? updated : a)
+              );
+              setSelectedApartment(null);
+              mensajeExito("¡Vivienda actualizada!");
+            }}
+          />
+        )}
+        <ContractWizardModal
+          show={showContractModal}
+          onClose={() => setShowContractModal(false)}
+          selectedApartmentId={contractApartmentId}
+
+        />
+      </div>
+
+      {/*
         <PDFViewer width={500} height={800}>
           <DocumentoContrato />
         </PDFViewer>
         */}
 
-        {/* STATUS INDICATORS */}
-        <div className="mb-3">
-          <span className="status-dot status-disponible"></span>Disponible
-          <span className="status-dot status-archivado ms-3"></span>Archivado
-          <span className="status-dot status-ocupado ms-3"></span>Ocupado
-        </div>
+      {/* Filter buttons */}
+      <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-2 items-center justify-start w-auto self-start">
+        <StatusButton onClick={() => setFiltroStatus("todos")} isActive={filtroStatus === "todos"} status={"all"} />
+        <StatusButton onClick={() => setFiltroStatus("AVAILABLE")} isActive={filtroStatus === "AVAILABLE"} status={"AVAILABLE"} />
+        <StatusButton onClick={() => setFiltroStatus("OCCUPIED")} isActive={filtroStatus === "OCCUPIED"} status={"OCCUPIED"} />
+        <StatusButton onClick={() => setFiltroStatus("ARCHIVED")} isActive={filtroStatus === "ARCHIVED"} status={"ARCHIVED"} />
+      </div>
 
-        {/* Filter buttons */}
-        <div className="filter-btns mb-4">
-          <button
-            className={'btn btn-outline-dark ${filtroStatus === "todos" ? " active" : ""}'}
-            onClick={() => setFiltroStatus("todos")}>
-            Total de Viviendas
-          </button>
+      {/* Table header */}
+      <div className="row table-header mb-2 d-none d-lg-flex fw-bold text-muted px-3">
+        <div className="col-lg-3">Ubicación</div>
+        <div className="col-lg-2 text-center">Arrendatario</div>
+        <div className="col-lg-2">Fecha de Pago</div>
+        <div className="col-lg-5 text-end">Acciones</div>
+      </div>
 
-          <button
-            className={'btn btn-outline-dark ${filtroStatus === "OCCUPIED" ? " active" : ""}'}
-            onClick={() => setFiltroStatus("OCCUPIED")}>
-            Viviendas Ocupadas
-          </button>
+      {/* Property list */}
+      {propiedadesPaginadas.map((prop) => {
 
-          <button className={'btn btn-outline-dark ${filtroStatus === "AVAILABLE" ? " active" : ""}'}
-            onClick={() => setFiltroStatus("AVAILABLE")}>
-            Disponibles
-          </button>
-
-          <button className={'btn btn-outline-dark ${filtroStatus === "ARCHIVED" ? " active" : ""}'}
-            onClick={() => setFiltroStatus("ARCHIVED")}>
-            Archivadas
-          </button>
-        </div>
-
-        {/* Table header */}
-        <div className="row table-header mb-2 d-none d-lg-flex fw-bold text-muted px-3">
-          <div className="col-lg-3">Ubicación</div>
-          <div className="col-lg-2 text-center">Arrendatario</div>
-          <div className="col-lg-2">Fecha de Pago</div>
-          <div className="col-lg-5 text-end">Acciones</div>
-        </div>
-
-        {/* Property list */}
-        {propiedadesPaginadas.map((prop) => (
+        return (
           <div className="row property-card responsive-card mx-0 mb-3 mb-lg-0" key={prop.id}>
             <div className="col-12 col-lg-3 d-flex align-items-center border-end-lg pb-3 pb-lg-0">
               <span className={getStatusDot(prop.status)}></span>
@@ -296,7 +283,7 @@ const Viviendas = () => {
               <span>{prop.latest_due_date ? formatDate(prop.latest_due_date) : '-'}</span>
             </div>
 
-            {/* Butons */}
+            {/* Buttons */}
             <div className="col-12 col-lg-5 d-flex flex-column flex-sm-row justify-content-lg-end align-items-stretch align-items-sm-center gap-3 pt-3 pt-lg-0">
               <div className="actions-stack-box w-100 flex-sm-grow-1 flex-lg-grow-0">
                 <button
@@ -308,24 +295,24 @@ const Viviendas = () => {
                 </button>
 
                 {prop.status === "ARCHIVED" ? (
-                  <button className="box-action-btn" onClick={() => archivarVivienda(prop.id)}>
+                  <button className="box-action-btn" onClick={() => cambiarEstado(prop.id, "AVAILABLE")}>
                     <Archive size={16} />
-                    Archivado
+                    Desarchivar
                   </button>
                 ) : (
-                  <button className="box-action-btn" onClick={() => archivarVivienda(prop.id)}>
+                  <button className="box-action-btn" onClick={() => cambiarEstado(prop.id, "ARCHIVED")}>
                     <ArchiveRestore size={16} />
-                    Desarchivar
+                    Archivar
                   </button>
                 )}
 
                 {prop.status === "OCCUPIED" ? (
-                  <button className="box-action-btn" onClick={() => cambiarEstado(prop.id)}>
+                  <button className="box-action-btn" onClick={() => cambiarEstado(prop.id, "AVAILABLE")}>
                     <CircleDot size={16} />
                     Ocupado
                   </button>
                 ) : (
-                  <button className="box-action-btn" onClick={() => cambiarEstado(prop.id)}>
+                  <button className="box-action-btn" onClick={() => cambiarEstado(prop.id, "OCCUPIED")}>
                     <CircleCheck size={16} />
                     Disponible
                   </button>
@@ -360,27 +347,27 @@ const Viviendas = () => {
               </div>
             </div>
           </div>
-        ))}
+        )
+      })}
 
-        {/* Pagination */}
-        <nav className="mt-4">
-          <ul className="pagination justify-content-center custom-pagination">
-            {Array.from(
-              { length: Math.ceil(propiedadesFiltradas.length / itemsPorPagina) },
-              (_, idx) => (
-                <li
-                  key={idx + 1}
-                  className={`page-item ${paginaActual === idx + 1 ? "active" : ""}`}>
-                  <button
-                    className="page-link"
-                    onClick={() => setPaginaActual(idx + 1)}>
-                    {idx + 1}
-                  </button>
-                </li>
-              ))}
-          </ul>
-        </nav>
-      </div>
+      {/* Pagination */}
+      <nav className="mt-4">
+        <ul className="pagination justify-content-center custom-pagination">
+          {Array.from(
+            { length: Math.ceil(propiedadesFiltradas.length / itemsPorPagina) },
+            (_, idx) => (
+              <li
+                key={idx + 1}
+                className={`page-item ${paginaActual === idx + 1 ? "active" : ""}`}>
+                <button
+                  className="page-link"
+                  onClick={() => setPaginaActual(idx + 1)}>
+                  {idx + 1}
+                </button>
+              </li>
+            ))}
+        </ul>
+      </nav>
     </div>
   );
 };

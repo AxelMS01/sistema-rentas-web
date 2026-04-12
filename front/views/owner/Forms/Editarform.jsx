@@ -3,8 +3,6 @@ import { supabase } from "../../../config/supabase-client";
 import useUser from "../../../stores/user-store";
 
 export default function EditApartmentModal({ apartment, onClose, onUpdated }) {
-  const loggedUserId = useUser((state) => state.loggedUser);
-
   const [formData, setFormData] = useState({
     name: "",
     postal_code: "",

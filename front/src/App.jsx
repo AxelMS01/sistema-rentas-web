@@ -29,29 +29,25 @@ function App() {
         {/* Rutas Privadas: Con Navbar */}
         <Route path="/*" element={
           <ProtectedRoute>
-            <div className="min-vh-100 bg-light">
-              <Navbar />
+            <Navbar />
 
-              <div className="container-fluid py-4">
-                <Routes>
-                  <Route path="dashboard" element={<Dashboard />} />
-                  <Route path="viviendas" element={<Viviendas />} />
-                  <Route path="incidencias" element={<Incidencias />} />
-                  <Route path="contratos" element={<Contratos />} />
-                  <Route path="home" element={<Home />} />
-                  <Route path="reportes" element={<Reportes />} />
-                  <Route path="contratos/:id" element={<ContratoDetalle />} />
-                  <Route path="viviendas/:id/detalles" element={<ViviendaDetalle />} />
+            <Routes>
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="viviendas" element={<Viviendas />} />
+              <Route path="incidencias" element={<Incidencias />} />
+              <Route path="contratos" element={<Contratos />} />
+              <Route path="home" element={<Home />} />
+              <Route path="reportes" element={<Reportes />} />
+              <Route path="contratos/:id" element={<ContratoDetalle />} />
+              <Route path="viviendas/:id/detalles" element={<ViviendaDetalle />} />
 
-                  {/* Redirección por defecto si no encuentra la ruta (SIEMPRE AL FINAL) */}
-                  <Route path="*" element={<Navigate to="/viviendas" />} />
-                </Routes>
-              </div>
-            </div>
+              {/* Redirección por defecto si no encuentra la ruta (SIEMPRE AL FINAL) */}
+              <Route path="*" element={<Navigate to="/viviendas" />} />
+            </Routes>
           </ProtectedRoute>
         } />
-      </Routes>
-    </Router>
+      </Routes >
+    </Router >
   );
 }
 

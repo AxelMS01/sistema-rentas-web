@@ -17,6 +17,7 @@ const LoginForm = () => {
 
   const navigate = useNavigate();
   const updateUserId = useUser((state) => state.updateLoggedUser);
+  const updateUserRole = useUser((state) => state.updateUserRole);
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -70,6 +71,7 @@ const LoginForm = () => {
       // Guardando temporalmente el token de sesión en el local storage.
       // Nota: en futuras ediciones, modificar esto para guardarlo en las cookies.
       localStorage.setItem("token", data.session.access_token);
+      updateUserRole(role);
 
       // Finalmente, redirigimos al usuario a la página principal del sistema (viviendas).
       navigate("/viviendas");

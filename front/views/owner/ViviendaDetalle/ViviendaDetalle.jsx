@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { LuHand, LuHouse, LuInfo, LuSettings } from "react-icons/lu";
+import { LuHand, LuHouse, LuInfo, LuSettings, LuArrowLeft, LuSquarePen, LuArchive, LuArchiveRestore, LuCircleCheck, LuCircleDot } from "react-icons/lu";
 import { Toaster } from 'react-hot-toast';
 import mensajeExito from "../../../utils/mensaje-exito";
 import EditarForm from "../Forms/Editarform";
+import Button from "../../../components/Button";
 import "./ViviendaDetalle.css";
+import { supabase } from "../../../config/supabase-client";
+import useUser from "../../../stores/user-store";
 
 const token = localStorage.getItem("token");
 
@@ -28,6 +31,7 @@ const statusClass = (status) => {
 };
 
 export default function ViviendaDetalle() {
+  const ownerId = useUser((state) => state.loggedUser);
   const emptyTenantForm = {
     name: "",
     phone: "",
@@ -53,15 +57,15 @@ export default function ViviendaDetalle() {
       try {
         setLoading(true);
         setError(null);
-        /*
-        const res = await fetch(`${REACT_APP_API_URL}/apartments/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
 
-        if (!res.ok) throw new Error("No se pudo cargar la vivienda");
+        const { data, error } = await supabase
+          .from("apartments")
+          .select()
+          .eq("id", id);
 
-        const data = await res.json();
-        setVivienda(data);*/
+        if (error) throw error;
+
+        setVivienda(data[0]);
       } catch (err) {
         console.error(err);
         setError("No fue posible cargar los detalles de la vivienda.");
@@ -96,31 +100,21 @@ export default function ViviendaDetalle() {
     setSaving(true);
     setSaveMsg("");
 
-    /*
     try {
-      const res = await fetch(`${REACT_APP_API_URL}/apartments/${vivienda.id}/status`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ status: vivienda.status })
-      });
+      const { error } = await supabase
+        .from("apartments")
+        .update({
+          status: vivienda.status
+        })
+        .eq("id", id);
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data?.error || data?.message || "No se pudo guardar");
-      }
-
-      const updated = await res.json();
-      setVivienda((prev) => ({ ...prev, ...updated }));
-      setSaveMsg("Estatus guardado correctamente.");
-    } catch (err) {
-      console.error(err);
-      setSaveMsg(err.message || "Error al guardar el estatus.");
+      if (error) throw error;
+    } catch (error) {
+      console.log("An error ocurred:", error);
     } finally {
+      mensajeExito("¡Estatus actualizado!");
       setSaving(false);
-    };*/
+    };
   };
 
   const abrirGestionArrendatario = async () => {
@@ -176,16 +170,63 @@ export default function ViviendaDetalle() {
     setTenantMsg("");
 
     try {
-      const payload = {
+      const editPayload = {
         name: tenantForm.name.trim(),
         phone: tenantForm.phone.trim(),
         email: tenantForm.email.trim(),
         governmentid: tenantForm.governmentid.trim()
       };
 
-      if (tenantForm.password.trim()) {
-        payload.password = tenantForm.password.trim();
+      const creationPayload = {
+        name: tenantForm.name.trim(),
+        phone: tenantForm.phone.trim(),
+        email: tenantForm.email.trim(),
+        governmentid: tenantForm.governmentid.trim(),
+        role: "tenant",
+        owner_id: ownerId,
+        apartment_id: id,
       }
+
+      if (isEditingTenant) {
+        try {
+          const { error } = await supabase
+            .from("tenants")
+            .update(editPayload)
+            .eq("id", vivienda.tenant_id);
+
+          if (error) throw error;
+        } catch (error) {
+          console.log(error);
+        } finally {
+          mensajeExito("Cuenta actualizada para el arrendatario.");
+        }
+      } else {
+        try {
+          const { data, error } = await supabase.auth.signUp({
+            email: tenantForm.email.trim(),
+            password: tenantForm.password.trim(),
+            options: {
+              data: {
+                name: tenantForm.name.trim(),
+                phone: tenantForm.phone.trim(),
+                email: tenantForm.email.trim(),
+                governmentid: tenantForm.governmentid.trim(),
+                role: "tenant",
+                owner_id: ownerId,
+                apartment_id: id,
+              },
+            },
+          });
+
+          if (error) console.log(error);
+        } catch (error) {
+          console.log(error);
+        } finally {
+          mensajeExito("Cuenta creada para el arrendatario.");
+        }
+      };
+
+
 
       /*
       const tenantRes = await fetch(
@@ -258,247 +299,266 @@ export default function ViviendaDetalle() {
   const isOccupied = vivienda?.status === "OCCUPIED";
 
   return (
-    <div className="vivienda-detail-page">
-      <div className="container py-4">
-        <div className="vivienda-detail-head mb-4">
-          <div>
-            <h2 className="vivienda-title">Viviendas</h2>
-            <p className="vivienda-subtitle">
-              Visualiza las viviendas registradas en el sistema fácil y rápidamente.
-            </p>
-          </div>
-          <button
-            type="button"
-            className="manage-landlord-btn"
-            data-bs-toggle="modal"
-            data-bs-target="#tenantAccountModal"
-            onClick={abrirGestionArrendatario}
-          >
-            <LuSettings size={15} />
-            Gestionar cuenta de arrendatario
-          </button>
+    <div className="w-full h-full flex flex-col gap-6! lg:px-20! py-10">
+      <Link to="/viviendas" style={{ textDecoration: "none" }} className="flex flex-row gap-2 items-center justify-center w-auto self-start m-0 bg-white border border-slate-200 px-3 py-2 rounded-md">
+        <LuArrowLeft className="text-sky-600" size={18} />
+
+        <p className="text-start font-semibold text-sky-600 m-0! text-sm">
+          Regresar a todas las viviendas
+        </p>
+      </Link>
+
+      <div className="flex lg:flex-row flex-col justify-between items-center">
+        <div className="flex flex-col items-start">
+          <h1 className="text-start font-light fw-semibold tracking-tight">Viviendas</h1>
+          <p className="text-base font-medium text-slate-500">Visualiza las viviendas registradas en el sistema fácil y rápidamente.</p>
         </div>
 
-        <Toaster />
+        <button
+          type="button"
+          className="bg-sky-600 flex flex-row gap-2 px-3 py-2 rounded-md! items-center justify-center text-white font-medium"
+          data-bs-toggle="modal"
+          data-bs-target="#tenantAccountModal"
+          onClick={abrirGestionArrendatario}
+        >
+          <LuSettings size={18} />
+          Gestionar cuenta de arrendatario
+        </button>
+      </div>
 
-        <div className="vivienda-breadcrumb mb-4">
-          <Link to="/viviendas" className="breadcrumb-link">
-            Todas las Viviendas
-          </Link>
-          <span className="breadcrumb-separator">{">"}</span>
-          <span className="breadcrumb-active">Detalles de la Vivienda</span>
-        </div>
+      <Toaster />
 
-        <div className="row g-4">
-          <div className="col-xl-8">
-            <section className="detail-card">
-              <h4 className="detail-card-title">
-                <LuHouse size={20} />
-                Datos Generales
-              </h4>
+      <div className="w-full grid grid-cols-3 gap-4">
+        <div className="general-detail col-span-2 w-full bg-white border border-slate-200 p-4 rounded-xl flex flex-col gap-4 justify-start">
+          <div className="card-header flex flex-row gap-2 items-center justify-start w-full">
+            <LuHouse size={21} strokeWidth={2.5} />
 
-              <p className="detail-label">Dirección:</p>
-              <p className="detail-value">{vivienda ? `${vivienda.street || ''} ${vivienda.int_num || ''}, ${vivienda.division || ''} C.P. ${vivienda.postal_code || ''}`.trim() : "-"}</p>
-
-              <p className="detail-label mt-4">Imagen principal:</p>
-              <div className="main-image-wrap">
-                <img src={mainImage} alt="Vivienda" className="main-image" />
-              </div>
-            </section>
+            <h1 className="text-2xl! m-0! font-semibold!">
+              Datos Generales
+            </h1>
           </div>
 
-          <div className="col-xl-4">
-            <section className="detail-card mb-4">
-              <h4 className="detail-card-title">
-                <LuInfo size={20} />
-                Información de la Vivienda
-              </h4>
+          <div className="flex flex-col gap-2 w-full justify-start">
+            <p className="text-base font-medium! w-auto text-start text-slate-500">Dirección:</p>
+            <p className="text-base font-medium! w-auto text-start text-slate-950">{vivienda ? `${vivienda.street || ''} ${vivienda.int_num || ''}, ${vivienda.division || ''} C.P. ${vivienda.postal_code || ''}`.trim() : "-"}</p>
+          </div>
 
-              <div className="info-row">
-                <span className="info-key">Precio de renta</span>
-                <span className="info-value text-success fw-bold">
-                  {vivienda?.depositamount ? `$${vivienda.depositamount.toLocaleString("en-US")}` : "-"}
-                </span>
-              </div>
+          <div className="flex flex-col gap-4 w-full justify-start">
+            <p className="text-base font-medium! w-auto text-start text-slate-500">Imagen principal:</p>
+            <div className="main-image-wrap">
+              <img src={mainImage} alt="Vivienda" className="main-image" />
+            </div>
+          </div>
+        </div>
 
-              <div className="info-row">
-                <span className="info-key">Arrendatario</span>
-                <span className="info-value">{vivienda?.tenant_name || "-"}</span>
-              </div>
+        <div className="w-full flex flex-col gap-4">
+          <div className="general-detail w-full bg-white border border-slate-200 p-4 rounded-xl flex flex-col gap-4 justify-start">
+            <div className="card-header flex flex-row gap-2 items-center justify-start w-full">
+              <LuInfo size={21} strokeWidth={2.5} />
 
-              <div className="info-row">
-                <span className="info-key">Fecha de pago</span>
-                <span className="info-value">{formatDate(vivienda?.latest_due_date)}</span>
-              </div>
+              <h1 className="text-2xl! m-0! font-semibold!">
+                Información
+              </h1>
+            </div>
 
-              <div className="info-row">
-                <span className="info-key">Estado</span>
-                <span className={`status-pill ${statusClass(vivienda?.status)}`}>
-                  <span className="status-solid-dot"></span>
-                  {statusLabel(vivienda?.status)}
-                </span>
-              </div>
-            </section>
+            <div className="flex md:flex-row gap-4 items-center w-full justify-between">
+              <span className="info-key">Precio de renta</span>
+              <span className="info-value text-success fw-bold">
+                {vivienda?.depositamount ? `$${vivienda.depositamount.toLocaleString("en-US")}` : "-"}
+              </span>
+            </div>
 
-            <section className="detail-card">
-              <h4 className="detail-card-title">
-                <LuHand size={20} />
+            <div className="flex md:flex-row gap-4 items-center w-full justify-between">
+              <span className="info-key">Arrendatario</span>
+              <span className="info-value">{vivienda?.tenant_name || "-"}</span>
+            </div>
+
+            <div className="flex md:flex-row gap-4 items-center w-full justify-between">
+              <span className="info-key">Fecha de pago</span>
+              <span className="info-value">{formatDate(vivienda?.latest_due_date)}</span>
+            </div>
+
+            <div className="flex md:flex-row gap-4 items-center w-full justify-between">
+              <span className="info-key">Estado</span>
+              <span className={`status-pill ${statusClass(vivienda?.status)}`}>
+                <span className="status-solid-dot"></span>
+                {statusLabel(vivienda?.status)}
+              </span>
+            </div>
+          </div>
+
+          <div className="general-detail w-full bg-white border border-slate-200 p-4 rounded-xl flex flex-col gap-4 justify-start">
+            <div className="card-header flex flex-row gap-2 items-center justify-start w-full">
+              <LuHand size={20} strokeWidth={2.5} />
+
+              <h1 className="text-2xl! m-0! font-semibold!">
                 Acciones
-              </h4>
+              </h1>
+            </div>
 
-              <div className="actions-row">
-                <button
-                  type="button"
-                  className="small-action-btn"
-                  data-bs-target="#editModal"
-                  onClick={() => setIsOnEdit(true)}
-                >
-                  <i className="bi bi-pencil-square"></i>
-                  Editar
-                </button>
-                <button
-                  type="button"
-                  className={`small-action-btn status-action-btn ${vivienda?.status === "ARCHIVED" ? "is-active archived" : ""}`}
-                  onClick={archivarVivienda}
-                >
-                  <i className={`bi ${vivienda?.status === "ARCHIVED" ? "bi-eye" : "bi-eye-slash"}`}></i>
-                  {vivienda?.status === "ARCHIVED" ? "Desarchivar" : "Archivar"}
-                </button>
-                <button
-                  type="button"
-                  className={`small-action-btn status-action-btn ${isArchived ? "is-active archived" : isOccupied ? "is-active occupied" : "is-active available"
-                    }`}
-                  onClick={() => {
-                    if (isArchived) return;
-                    cambiarEstado();
-                  }}
-                  disabled={isArchived}
-                >
-                  <i
-                    className={`bi ${isArchived ? "bi-eye-slash" : isOccupied ? "bi-x-circle" : "bi-check-circle"
+            <div className="actions-row">
+              <button
+                type="button"
+                className="small-action-btn"
+                data-bs-target="#editModal"
+                onClick={() => setIsOnEdit(true)}
+              >
+                <LuSquarePen size={18} />
+                Editar
+              </button>
+
+              <button
+                type="button"
+                className={`small-action-btn status-action-btn ${vivienda?.status === "ARCHIVED" ? "is-active archived" : ""}`}
+                onClick={archivarVivienda}
+              >
+                {vivienda?.status === "ARCHIVED" ? (
+                  <>
+                    <LuArchiveRestore size={18} />
+                    <p>Desarchivar</p>
+                  </>
+                ) : (
+                  <>
+                    <LuArchive size={18} />
+                    <p>Archivar</p>
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                className={`small-action-btn status-action-btn ${isArchived ? "is-active archived" : isOccupied ? "is-active occupied" : "is-active available"
+                  }`}
+                onClick={() => {
+                  if (isArchived) return;
+                  cambiarEstado();
+                }}
+                disabled={isArchived}
+              >
+                {isArchived && (
+                  <>
+                    <LuArchive size={18} />
+                    <p>Archivada</p>
+                  </>
+                )}
+
+                {isOccupied && (
+                  <>
+                    <LuCircleDot size={18} />
+                    <p>Ocupada</p>
+                  </>
+                )}
+
+                {!isArchived && !isOccupied && (
+                  <>
+                    <LuCircleCheck size={18} />
+                    <p>Disponible</p>
+                  </>
+                )}
+              </button>
+            </div>
+
+            <div>
+              <Button text="Guardar estatus" onClick={guardarStatus} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {isOnEdit && (
+        <EditarForm
+          apartment={vivienda}
+          onClose={() => setIsOnEdit(false)}
+          onUpdated={finishUpdate}
+        />
+      )}
+
+      <div
+        className="modal fade"
+        id="tenantAccountModal"
+        tabIndex="-1"
+        aria-labelledby="tenantAccountModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="tenantAccountModalLabel">
+                {vivienda?.tenant_id ? "Editar arrendatario" : "Crear arrendatario"}
+              </h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form onSubmit={guardarArrendatario}>
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label className="form-label">Nombre completo</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={tenantForm.name}
+                    onChange={(e) => setTenantForm((prev) => ({ ...prev, name: e.target.value }))}
+                    required
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Teléfono</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={tenantForm.phone}
+                    onChange={(e) => setTenantForm((prev) => ({ ...prev, phone: e.target.value }))}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Correo</label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    value={tenantForm.email}
+                    onChange={(e) => setTenantForm((prev) => ({ ...prev, email: e.target.value }))}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Identificación oficial</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={tenantForm.governmentid}
+                    onChange={(e) => setTenantForm((prev) => ({ ...prev, governmentid: e.target.value }))}
+                    required
+                  />
+                </div>
+                <div className="mb-0">
+                  <label className="form-label">
+                    {vivienda?.tenant_id ? "Nueva contraseña (opcional)" : "Contraseña"}
+                  </label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    value={tenantForm.password}
+                    onChange={(e) => setTenantForm((prev) => ({ ...prev, password: e.target.value }))}
+                    required={!vivienda?.tenant_id}
+                  />
+                </div>
+                {tenantMsg && (
+                  <small
+                    className={`d-block mt-2 ${tenantMsg.includes("correctamente") ? "text-success" : "text-danger"
                       }`}
-                  ></i>
-                  {isArchived ? "Archivada" : isOccupied ? "Ocupada" : "Disponible"}
-                </button>
-              </div>
-              <div className="mt-3 d-flex align-items-center gap-2">
-                <button
-                  type="button"
-                  className="btn btn-dark btn-sm"
-                  onClick={guardarStatus}
-                  disabled={saving}
-                >
-                  {saving ? "Guardando..." : "Guardar"}
-                </button>
-                {saveMsg && (
-                  <small className={saveMsg.includes("correctamente") ? "text-success" : "text-danger"}>
-                    {saveMsg}
+                  >
+                    {tenantMsg}
                   </small>
                 )}
               </div>
-            </section>
-          </div>
-        </div>
-
-        <Link to="/viviendas" className="back-link">
-          Volver a viviendas
-        </Link>
-
-        {isOnEdit && (
-          <EditarForm
-            apartment={vivienda}
-            onClose={() => setIsOnEdit(false)}
-            onUpdated={finishUpdate}
-          />
-        )}
-
-        <div
-          className="modal fade"
-          id="tenantAccountModal"
-          tabIndex="-1"
-          aria-labelledby="tenantAccountModalLabel"
-          aria-hidden="true"
-        >
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title" id="tenantAccountModalLabel">
-                  {vivienda?.tenant_id ? "Editar arrendatario" : "Crear arrendatario"}
-                </h5>
-                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-outline-secondary" data-bs-dismiss="modal">
+                  Cerrar
+                </button>
+                <button type="submit" className="btn btn-dark" disabled={tenantSaving}>
+                  {tenantSaving ? "Guardando..." : "Guardar arrendatario"}
+                </button>
               </div>
-
-              <form onSubmit={guardarArrendatario}>
-                <div className="modal-body">
-                  <div className="mb-3">
-                    <label className="form-label">Nombre completo</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={tenantForm.name}
-                      onChange={(e) => setTenantForm((prev) => ({ ...prev, name: e.target.value }))}
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Teléfono</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={tenantForm.phone}
-                      onChange={(e) => setTenantForm((prev) => ({ ...prev, phone: e.target.value }))}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Correo</label>
-                    <input
-                      type="email"
-                      className="form-control"
-                      value={tenantForm.email}
-                      onChange={(e) => setTenantForm((prev) => ({ ...prev, email: e.target.value }))}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Identificación oficial</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={tenantForm.governmentid}
-                      onChange={(e) => setTenantForm((prev) => ({ ...prev, governmentid: e.target.value }))}
-                      required
-                    />
-                  </div>
-                  <div className="mb-0">
-                    <label className="form-label">
-                      {vivienda?.tenant_id ? "Nueva contraseña (opcional)" : "Contraseña"}
-                    </label>
-                    <input
-                      type="password"
-                      className="form-control"
-                      value={tenantForm.password}
-                      onChange={(e) => setTenantForm((prev) => ({ ...prev, password: e.target.value }))}
-                      required={!vivienda?.tenant_id}
-                    />
-                  </div>
-                  {tenantMsg && (
-                    <small
-                      className={`d-block mt-2 ${tenantMsg.includes("correctamente") ? "text-success" : "text-danger"
-                        }`}
-                    >
-                      {tenantMsg}
-                    </small>
-                  )}
-                </div>
-                <div className="modal-footer">
-                  <button type="button" className="btn btn-outline-secondary" data-bs-dismiss="modal">
-                    Cerrar
-                  </button>
-                  <button type="submit" className="btn btn-dark" disabled={tenantSaving}>
-                    {tenantSaving ? "Guardando..." : "Guardar arrendatario"}
-                  </button>
-                </div>
-              </form>
-            </div>
+            </form>
           </div>
         </div>
       </div>

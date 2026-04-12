@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Settings, Bell, X } from "lucide-react";
+import useUser from "../../stores/user-store";
 import "./Navbar.css";
 import casaLogo from "../../src/assets/casa.png";
 
@@ -9,7 +10,7 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const isActive = (path) => (location.pathname === path ? "text-dark fw-bold" : "text-muted");
-  const role = localStorage.getItem("role");
+  const role = useUser((state) => state.role);
   const isTenant = role === "tenant";
 
   const [showModal, setShowModal] = useState(false);
@@ -110,8 +111,8 @@ const Navbar = () => {
 
           {/* Links Collapse */}
           {!isTenant && (
-            <div className={`collapse navbar-collapse justify-content-center order-3 order-lg-2 w-lg-auto ${isNavOpen ? 'show mt-4 pb-3' : ''}`}>
-              <div className="d-flex flex-column flex-lg-row align-items-center gap-3 gap-lg-4 mx-auto bg-light px-4 py-3 py-lg-2 rounded-4" style={{ borderRadius: isNavOpen ? '1rem' : '50rem' }}>
+            <div className={`justify-content-center order-3 order-lg-2 w-lg-auto ${isNavOpen ? 'show mt-4 pb-3' : ''}`}>
+              <div className="flex! flex-row! align-items-center gap-3 gap-lg-4 mx-auto bg-light px-4 py-3 py-lg-2 rounded-4" style={{ borderRadius: isNavOpen ? '1rem' : '50rem' }}>
                 <Link to="/viviendas" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small fw-medium ${isActive("/viviendas")}`}>
                   Viviendas
                 </Link>

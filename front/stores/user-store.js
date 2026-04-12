@@ -9,7 +9,9 @@ import { persist } from "zustand/middleware";
 
 const useUser = create(persist((set) => ({
     loggedUser: 0,
-    updateLoggedUser: (newId) => set({ loggedUser: newId })
+    role: "",
+    updateLoggedUser: (newId) => set({ loggedUser: newId }),
+    updateUserRole: (newRole) => set({ role: newRole })
 })));
 
 export default useUser;
