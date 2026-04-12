@@ -34,6 +34,8 @@ export default function ViviendaDetalle() {
   const ownerId = useUser((state) => state.loggedUser);
   const emptyTenantForm = {
     name: "",
+    father_surname: "",
+    mother_surname: "",
     phone: "",
     email: "",
     governmentid: "",
@@ -179,96 +181,33 @@ export default function ViviendaDetalle() {
         governmentid: tenantForm.governmentid.trim()
       };
 
-      const creationPayload = {
-        user_type: "tenant",
-        name: tenantForm.name.trim(),
-        phone: tenantForm.phone.trim(),
+      const { data, error } = await supabase.auth.signUp({
         email: tenantForm.email.trim(),
-        governmentid: tenantForm.governmentid.trim(),
-        role: "tenant",
-        owner_id: ownerId,
-        apartment_id: id,
-      }
-
-      try {
-        const { data, error } = await supabase.auth.signUp({
-          email: tenantForm.email.trim(),
-          password: tenantForm.password.trim(),
-          options: {
-            data: {
-              user_type: "tenant",
-              name: tenantForm.name,
-              phone: tenantForm.phone,
-              email: tenantForm.email,
-              governmentid: tenantForm.governmentid,
-              role: "tenant",
-              owner_id: ownerId,
-              apartment_id: id,
-            }
-          },
-        });
-
-        if (error) console.log(error);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        mensajeExito("Cuenta creada para el arrendatario.");
-      }
-
-      /*
-      const tenantRes = await fetch(
-        isEditingTenant
-          ? `${REACT_APP_API_URL}/tenants/${vivienda.tenant_id}`
-          : `${REACT_APP_API_URL}/tenants`,
-        {
-          method: isEditingTenant ? "PUT" : "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify(payload)
-        }
-      );
-
-      const tenantData = await tenantRes.json().catch(() => ({}));
-      if (!tenantRes.ok) {
-        throw new Error(tenantData?.error || tenantData?.message || "No se pudo guardar el arrendatario");
-      }
-
-      const tenantId = tenantData?.id || tenantData?.tenantid;
-      if (!tenantId) {
-        throw new Error("No se encontró ID del arrendatario para asignar a la vivienda");
-      }
-
-      const assignRes = await fetch(`${REACT_APP_API_URL}/apartments/${vivienda.id}/tenant`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+        password: tenantForm.password.trim(),
+        options: {
+          data: {
+            user_type: "tenant",
+            name: tenantForm.name,
+            father_surname: tenantForm.father_surname,
+            mother_surname: tenantForm.mother_surname,
+            phone: tenantForm.phone,
+            email: tenantForm.email,
+            governmentid: tenantForm.governmentid,
+            role: "tenant",
+            owner_id: ownerId,
+            apartment_id: id,
+          }
         },
-        body: JSON.stringify({ tenantid: tenantId })
       });
 
-      const assignData = await assignRes.json().catch(() => ({}));
-      if (!assignRes.ok) {
-        throw new Error(assignData?.error || assignData?.message || "No se pudo asignar a la vivienda");
-      }
-
-      setVivienda((prev) => ({
-        ...prev,
-        tenant_id: assignData?.tenantid || tenantId,
-        tenant_name: assignData?.tenant_name || payload.name,
-        tenant_phone: assignData?.tenant_phone || payload.phone,
-        tenant_email: assignData?.tenant_email || payload.email
-      }));
-
-      setTenantForm((prev) => ({ ...prev, password: "" }));
-      setTenantMsg("Cuenta de arrendatario guardada y vinculada correctamente.");*/
+      if (error) console.log(error);
     } catch (err) {
       console.error(err);
       setTenantMsg(err.message || "Error al gestionar la cuenta.");
     } finally {
       setTenantSaving(false);
+      mensajeExito("Cuenta creada para el arrendatario.");
+
     }
   };
 
@@ -303,7 +242,7 @@ export default function ViviendaDetalle() {
 
         <button
           type="button"
-          className="bg-sky-600 flex flex-row gap-2 px-3 py-2 rounded-md! items-center justify-center text-white font-medium"
+          className="bg-sky-600 flex flex-row gap-2 px-3 py-2 rounded-md! items-center justify-center text-sm! text-white font-medium"
           data-bs-toggle="modal"
           data-bs-target="#tenantAccountModal"
           onClick={abrirGestionArrendatario}
@@ -479,12 +418,32 @@ export default function ViviendaDetalle() {
             <form onSubmit={guardarArrendatario}>
               <div className="modal-body">
                 <div className="mb-3">
-                  <label className="form-label">Nombre completo</label>
+                  <label className="form-label">Nombre(s)</label>
                   <input
                     type="text"
                     className="form-control"
                     value={tenantForm.name}
                     onChange={(e) => setTenantForm((prev) => ({ ...prev, name: e.target.value }))}
+                    required
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Apellido paterno</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={tenantForm.father_surname}
+                    onChange={(e) => setTenantForm((prev) => ({ ...prev, father_surname: e.target.value }))}
+                    required
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Apellido materno</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={tenantForm.mother_surname}
+                    onChange={(e) => setTenantForm((prev) => ({ ...prev, mother_surname: e.target.value }))}
                     required
                   />
                 </div>
