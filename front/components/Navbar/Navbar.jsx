@@ -111,7 +111,7 @@ const Navbar = () => {
 
           {/* Links Collapse */}
           {!isTenant && (
-            <div className={`justify-content-center order-3 order-lg-2 w-lg-auto ${isNavOpen ? 'show mt-4 pb-3' : ''}`}>
+            <div className={`lg:flex hidden justify-content-center order-3 order-lg-2 w-lg-auto ${isNavOpen ? 'lg:hidden flex mt-4 pb-3' : ''}`}>
               <div className="flex! flex-row! align-items-center gap-3 gap-lg-4 mx-auto bg-light px-4 py-3 py-lg-2 rounded-4" style={{ borderRadius: isNavOpen ? '1rem' : '50rem' }}>
                 <Link to="/viviendas" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small fw-medium ${isActive("/viviendas")}`}>
                   Viviendas

@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { TbContract } from "react-icons/tb";
 import { LuHouse, LuPlus } from "react-icons/lu";
 import { Toaster } from "react-hot-toast";
+import SearchBar from "../../../components/SearchBar";
+import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from "flowbite-react";
 import "./AparmentList.css";
 import { DocumentoPagare } from "../../../components/pdf-documents/Machotes/Pagares/Pagare";
 import { DocumentoContrato } from "../../../components/pdf-documents/Machotes/Contrato/Contrato";
@@ -16,6 +18,7 @@ import Button from "../../../components/Button";
 import mensajeExito from "../../../utils/mensaje-exito";
 import StatusButton from "../../../components/apartments/ApartmentStatusBtn";
 import { Search, UserCircle, Archive, ArchiveRestore, SquarePen, CircleDot, CircleCheck } from 'lucide-react';
+import ApartmentTable from "../../../components/apartments/DataTable";
 import { supabase } from "../../../config/supabase-client";
 
 const Viviendas = () => {
@@ -173,9 +176,15 @@ const Viviendas = () => {
   //  NORMAL RENDER
   // ------------------------------
 
+  function onAddContract(apartmentId) {
+    setContractApartmentId(apartmentId);
+    setShowContractModal(true);
+    
+  };
+
   return (
     <div className="w-full h-screen flex flex-col gap-4! lg:px-20! sm:px-16! px-8! py-10">
-      <div className="flex w-full md:flex-row flex-col justify-between items-center gap-6">
+      <div className="flex w-full md:flex-row flex-col justify-between md:items-center items-start gap-6">
         <div className="header flex flex-col gap-2">
           <h1 className="text-start font-light fw-semibold tracking-tight">Viviendas</h1>
           <p className="text-base font-medium text-slate-500 text-start">Visualiza las viviendas registradas en el sistema fácil y rápidamente.</p>
@@ -219,24 +228,14 @@ const Viviendas = () => {
         show={showContractModal}
         onClose={() => setShowContractModal(false)}
         selectedApartmentId={contractApartmentId}
-
       />
 
       {/* Search + Filters */}
-      <div className="apartments-toolbar d-flex justify-content-between align-items-center mb-3">
-        <div className="search-pill d-flex align-items-center">
-          <Search size={16} className="mr-2" />
-          <input
-            type="text"
-            className="search-input"
-            placeholder="Buscar..."
-            value={filtroBusqueda}
-            onChange={(e) => setFiltroBusqueda(e.target.value)}
-          />
-        </div>
+      <div className="flex md:flex-row flex-col gap-4 justify-between md:items-center items-start">
+        <SearchBar value={filtroBusqueda} onChange={(e) => setFiltroBusqueda(e.target.value)} />
 
         {/* Filter buttons */}
-        <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-2 items-center justify-start w-auto self-start bg-white p-2 border border-slate-200 rounded-lg">
+        <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-2 items-center justify-start sm:w-auto w-full self-start bg-white p-2 border border-slate-200 rounded-lg">
           <StatusButton onClick={() => setFiltroStatus("todos")} isActive={filtroStatus === "todos"} status={"all"} />
           <StatusButton onClick={() => setFiltroStatus("AVAILABLE")} isActive={filtroStatus === "AVAILABLE"} status={"AVAILABLE"} />
           <StatusButton onClick={() => setFiltroStatus("OCCUPIED")} isActive={filtroStatus === "OCCUPIED"} status={"OCCUPIED"} />
@@ -250,111 +249,15 @@ const Viviendas = () => {
         </PDFViewer>
         */}
 
-      {/* Table header */}
-      <div className="row table-header mb-2 d-none d-lg-flex fw-bold text-muted px-3">
-        <div className="col-lg-3">Ubicación</div>
-        <div className="col-lg-2 text-center">Arrendatario</div>
-        <div className="col-lg-2">Fecha de Pago</div>
-        <div className="col-lg-5 text-end">Acciones</div>
-      </div>
-
-      {/* Property list */}
-      {
-        propiedadesPaginadas.map((prop) => {
-
-          return (
-            <div className="row property-card responsive-card mx-0 mb-3 mb-lg-0" key={prop.id}>
-              <div className="col-12 col-lg-3 d-flex align-items-center border-end-lg pb-3 pb-lg-0">
-                <span className={getStatusDot(prop.status)}></span>
-                <img
-                  src="https://th.bing.com/th/id/OIP.6XIv3DVREt05mi0sSNtUDgHaE8?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3"
-                  className="property-img me-2"
-                  alt="Departamento"
-                />
-                <div>
-                  <p className="mb-1 fw-semibold">{`${prop.street || ''} ${prop.ext_num || ''}, ${prop.division || ''}`.trim()}</p>
-                  <small>{prop.depositamount ? prop.depositamount.toLocaleString('en-US') : ''}$</small>
-                </div>
-              </div>
-
-              <div className="col-12 col-lg-2 d-flex align-items-center justify-content-lg-center flex-row flex-lg-column gap-2 gap-lg-0 border-end-lg py-2 py-lg-0">
-                <span className="d-lg-none fw-bold mobile-label">Arrendatario:</span>
-                <UserCircle className="mb-2" />
-                <span>{prop.tenant_name ? prop.tenant_name : "Sin asignar"}</span>
-              </div>
-
-              <div className="col-12 col-lg-2 d-flex align-items-center border-end-lg py-2 py-lg-0 gap-2">
-                <span className="d-lg-none fw-bold mobile-label">Fecha de Pago:</span>
-                <span>{prop.latest_due_date ? formatDate(prop.latest_due_date) : '-'}</span>
-              </div>
-
-              {/* Buttons */}
-              <div className="col-12 col-lg-5 d-flex flex-column flex-sm-row justify-content-lg-end align-items-stretch align-items-sm-center gap-3 pt-3 pt-lg-0">
-                <div className="actions-stack-box w-100 flex-sm-grow-1 flex-lg-grow-0">
-                  <button
-                    className="box-action-btn"
-                    onClick={() => handleSelect(prop)}
-                  >
-                    <SquarePen size={16} />
-                    Editar
-                  </button>
-
-                  {prop.status === "ARCHIVED" ? (
-                    <button className="box-action-btn" onClick={() => cambiarEstado(prop.id, "AVAILABLE")}>
-                      <Archive size={16} />
-                      Desarchivar
-                    </button>
-                  ) : (
-                    <button className="box-action-btn" onClick={() => cambiarEstado(prop.id, "ARCHIVED")}>
-                      <ArchiveRestore size={16} />
-                      Archivar
-                    </button>
-                  )}
-
-                  {prop.status === "OCCUPIED" ? (
-                    <button className="box-action-btn" onClick={() => cambiarEstado(prop.id, "AVAILABLE")}>
-                      <CircleDot size={16} />
-                      Ocupado
-                    </button>
-                  ) : (
-                    <button className="box-action-btn" onClick={() => cambiarEstado(prop.id, "OCCUPIED")}>
-                      <CircleCheck size={16} />
-                      Disponible
-                    </button>
-                  )}
-                </div>
-
-                <div className="contract-links-stack w-100 flex-sm-grow-1 flex-lg-grow-0">
-                  {prop.tenant_name ?
-                    <Link to={"/contratos/" + prop.rc_id} className="contract-link-text-btn ">
-                      <TbContract size={16} />
-                      Datos del contrato
-                    </Link>
-                    :
-                    <button
-                      type="button"
-                      className="contract-link-text-btn"
-                      onClick={() => { setContractApartmentId(prop.id); setShowContractModal(true); }}
-                    >
-                      <TbContract size={16} />
-                      Agregar Contrato
-                    </button>}
-
-
-                  <Link
-                    to={`/viviendas/${prop.id}/detalles`}
-                    state={{ propiedad: prop }}
-                    className="contract-link-text"
-                  >
-                    <LuHouse size={16} />
-                    Datos de la vivienda
-                  </Link>
-                </div>
-              </div>
-            </div>
-          )
-        })
-      }
+      <ApartmentTable
+        apartments={propiedadesPaginadas}
+        onEditClick={handleSelect}
+        onRestoreClick={cambiarEstado}
+        onArchiveClick={cambiarEstado}
+        onOccupiedClick={cambiarEstado}
+        onAvailableClick={cambiarEstado}
+        onAddContractClick={onAddContract}
+      />
 
       {/* Pagination */}
       <nav className="mt-4">
