@@ -18,7 +18,7 @@ import Button from "../../../components/Button";
 import mensajeExito from "../../../utils/mensaje-exito";
 import StatusButton from "../../../components/apartments/ApartmentStatusBtn";
 import { Search, UserCircle, Archive, ArchiveRestore, SquarePen, CircleDot, CircleCheck } from 'lucide-react';
-import ApartmentTable from "../../../components/apartments/DataTable";
+import ApartmentTable from "../../../components/apartments/ApartmentsTable";
 import { supabase } from "../../../config/supabase-client";
 
 const Viviendas = () => {
@@ -187,7 +187,7 @@ const Viviendas = () => {
       <div className="flex w-full md:flex-row flex-col justify-between md:items-center items-start gap-6">
         <div className="header flex flex-col gap-2">
           <h1 className="text-start font-light fw-semibold tracking-tight">Viviendas</h1>
-          <p className="text-base font-medium text-slate-500 text-start">Visualiza las viviendas registradas en el sistema fácil y rápidamente.</p>
+          <p className="text-base font-normal text-slate-500 text-start">Visualiza las viviendas registradas en el sistema fácil y rápidamente.</p>
         </div>
 
         <Button
@@ -232,7 +232,7 @@ const Viviendas = () => {
 
       {/* Search + Filters */}
       <div className="flex md:flex-row flex-col gap-4 justify-between md:items-center items-start">
-        <SearchBar value={filtroBusqueda} onChange={(e) => setFiltroBusqueda(e.target.value)} />
+        <SearchBar value={filtroBusqueda} onChange={(e) => setFiltroBusqueda(e.target.value)} placeholder="Buscar por ubicación" />
 
         {/* Filter buttons */}
         <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-2 items-center justify-start sm:w-auto w-full self-start bg-white p-2 border border-slate-200 rounded-lg">
