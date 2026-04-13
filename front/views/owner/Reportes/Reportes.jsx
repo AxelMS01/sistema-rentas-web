@@ -108,7 +108,7 @@ const Reportes = () => {
                 <p className="m-0 reportes-kicker text-start">Ocupacion general</p>
                 <h3 className="m-0 reportes-metric text-start">{porcentajeOcupacion}</h3>
               </div>
-              <span className="badge reportes-badge">Unidades</span>
+              <span className="bg-sky-100 text-sky-600 text-xs font-semibold rounded-lg px-2 py-1">Unidades</span>
             </div>
             <div className="reportes-progress">
               <div
