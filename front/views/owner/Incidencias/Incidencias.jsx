@@ -207,7 +207,7 @@ const Incidencias = () => {
             className={`flex flex-row gap-2 px-4 py-2 items-center justify-center rounded-lg! text-sm! ${orden === "antiguas" ? "bg-sky-600 text-white font-medium" : "bg-slate-100 border border-slate-200 text-slate-900"}`}
           >
             <CalendarArrowDown size={18} strokeWidth={2}/>
-            Más recientes primero
+            Más antiguas primero
           </button>
         </div>
       </div>
