@@ -93,7 +93,7 @@ const Navbar = () => {
     <>
       <nav
         className="navbar navbar-expand-lg bg-white border-bottom py-2 px-3 px-md-4 sticky-top shadow-sm flex-wrap"
-        style={{ zIndex: 1000, minHeight: "80px" }}
+        style={{ zIndex: 9, minHeight: "80px" }}
       >
         <div className="container-fluid p-0 d-flex flex-wrap align-items-center">
           {/* Logo */}

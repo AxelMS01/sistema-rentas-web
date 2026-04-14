@@ -130,9 +130,11 @@ const Viviendas = () => {
   const agregarPropiedad = (nueva) => {
     setPropiedades(prev => [...prev, nueva]);
   };
+
   const handleApartmentCreated = (newApartment) => {
     mensajeExito("¡Vivienda creada correctamente!");
     agregarPropiedad(newApartment);
+    console.log(newApartment);
     setShowPropiertiesModal(false);
 
     // Update this state variable to refetch the data in the main useEffect.
@@ -179,14 +181,14 @@ const Viviendas = () => {
   function onAddContract(apartmentId) {
     setContractApartmentId(apartmentId);
     setShowContractModal(true);
-    
+
   };
 
   return (
     <div className="w-full h-screen flex flex-col gap-4! lg:px-20! sm:px-16! px-8! py-10">
       <div className="flex w-full md:flex-row flex-col justify-between md:items-center items-start gap-6">
         <div className="header flex flex-col gap-2">
-          <h1 className="text-start font-light fw-semibold tracking-tight">Viviendas</h1>
+          <h1 className="text-start font-medium! tracking-tight">Viviendas</h1>
           <p className="text-base font-normal text-slate-500 text-start">Visualiza las viviendas registradas en el sistema fácil y rápidamente.</p>
         </div>
 
@@ -211,6 +213,7 @@ const Viviendas = () => {
         onClose={() => setShowPropiertiesModal(false)}
         onCreated={handleApartmentCreated}
       />
+
       {selectedApartment && (
         <EditApartmentModal
           apartment={selectedApartment}
@@ -220,6 +223,7 @@ const Viviendas = () => {
               prev.map(a => a.id === updated.id ? updated : a)
             );
             setSelectedApartment(null);
+            setActionCompleted(actionCompleted + 1);
             mensajeExito("¡Vivienda actualizada!");
           }}
         />

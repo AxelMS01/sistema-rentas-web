@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import "./Home.css";
 import { FileText, CreditCard, AlertCircle, FileDown, Loader } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import useUser from "../../../stores/user-store";
+import { supabase } from "../../../config/supabase-client";
 
 const token = localStorage.getItem("token");
 
@@ -17,26 +19,24 @@ const Home = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [datos, setDatos] = useState(null);
   const [loading, setLoading] = useState(true);
+  const loggedUserId = useUser((state) => state.loggedUser);
 
   // 1. Cargar datos desde la base de datos al abrir la pagina
   useEffect(() => {
     const fetchDatos = async () => {
-      /*
       try {
-        const response = await fetch(`${REACT_APP_API_URL}/dashboard-cliente`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const { data, error } = await supabase
+          .from("tenants")
+          .select()
+          .eq("id", loggedUserId);
+        
+          if (error) throw error;
 
-        if (!response.ok) throw new Error("Error en la respuesta del servidor");
-
-        const data = await response.json();
-        setDatos(data);
-        console.log(data);
       } catch (error) {
-        console.error("Error cargando dashboard:", error);
+        console.log("Error details:", error)
       } finally {
         setLoading(false);
-      };*/
+      }
     };
 
     fetchDatos();

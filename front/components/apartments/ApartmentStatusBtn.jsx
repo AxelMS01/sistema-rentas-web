@@ -24,7 +24,7 @@ export default function StatusButton({ status, isActive, onClick }) {
                 <div className={`w-2 h-2 rounded-full ${stylesPerStatus[status].bgColor}`}></div>
             )}
 
-            <p className={`${isActive ? "text-white" : "text-slate-900"} font-medium mb-0! text-sm! `}>{stylesPerStatus[status].text}</p>
+            <p className={`${isActive ? "text-white" : "text-slate-900"} font-medium m-0! text-sm! `}>{stylesPerStatus[status].text}</p>
         </div>
     )
 }

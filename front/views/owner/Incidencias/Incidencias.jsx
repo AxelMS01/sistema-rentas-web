@@ -182,7 +182,6 @@ const Incidencias = () => {
         />
 
         <div className="flex flex-row gap-2 p-2.5 bg-white border border-slate-200 rounded-lg!">
-
           <button
             onClick={() => setOrden("recientes")}
             className={`flex flex-row gap-2 px-4 py-2 items-center justify-center rounded-lg! text-sm! ${orden === "recientes" ? "bg-sky-600 text-white font-medium" : "bg-slate-100 border border-slate-200 text-slate-900"}`}

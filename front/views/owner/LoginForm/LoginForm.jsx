@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
-import './LoginForm.css';
+import { UserRound } from 'lucide-react';
+import "./LoginForm.css";
 import { FaUser, FaEnvelope } from "react-icons/fa6";
 import { FaLock } from "react-icons/fa6";
+import { TextInput, Label } from 'flowbite-react';
 import { useNavigate } from 'react-router-dom';
 import useUser from '../../../stores/user-store';
 import { supabase } from '../../../config/supabase-client';
+import { ShieldUser, UserRoundKey } from 'lucide-react';
+import Button from '../../../components/Button';
 
 const LoginForm = () => {
 
@@ -23,14 +27,6 @@ const LoginForm = () => {
     setIsModalOpen(!isModalOpen);
   };
 
-  const registerLink = () => {
-    setAction(' active');
-  };
-
-  const loginLink = () => {
-    setAction('');
-  };
-
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -42,7 +38,7 @@ const LoginForm = () => {
 
       if (error) throw error;
 
-      const userAuthId = data.user.id;      
+      const userAuthId = data.user.id;
       let userNormalId;
 
       if (role === "owner") {
@@ -53,7 +49,7 @@ const LoginForm = () => {
 
         if (error) throw error;
 
-        userNormalId = data[0].id;        
+        userNormalId = data[0].id;
       } else {
         const { data, error } = await supabase
           .from("tenants")
@@ -71,10 +67,11 @@ const LoginForm = () => {
       // Guardando temporalmente el token de sesión en el local storage.
       // Nota: en futuras ediciones, modificar esto para guardarlo en las cookies.
       localStorage.setItem("token", data.session.access_token);
+      localStorage.setItem("role", role)
       updateUserRole(role);
 
       // Finalmente, redirigimos al usuario a la página principal del sistema (viviendas).
-      navigate("/viviendas");
+      navigate(role === "owner" ? "/viviendas" : "/home");
 
     } catch (error) {
       console.error(error);
@@ -84,34 +81,77 @@ const LoginForm = () => {
 
   return (
     <div className='login-page'>
-      <div className={`wrapper${action}`}>
-        <div className='form-box login'>
-          <form onSubmit={handleLogin}>
-            <h1>Administración de Rentas</h1>
-            <div className="input-box">
-              <input type="text" placeholder='Correo electrónico' onChange={(e) => setUserEmail(e.target.value)} required /> <FaUser className='icon' />
+      <div className={`flex flex-col gap-2 bg-white max-w-md px-8 py-8 rounded-2xl`}>
+        <form onSubmit={handleLogin} className='w-auto! flex flex-col gap-4'>
+          <p className="text-2xl! font-semibold!">Administración de Rentas</p>
+
+          <div className="flex flex-row w-full justify-center items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setRole("owner")}
+              className={`flex flex-row gap-2 px-4 py-2 items-center text-nowrap justify-center rounded-lg! text-sm! ${role === "owner" ? "bg-sky-600 text-white font-medium" : "bg-slate-100 border border-slate-200 text-slate-900"}`}
+            >
+              <ShieldUser size={18} strokeWidth={2} />
+              Soy un propietario
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setRole("tenant")}
+              className={`flex flex-row gap-2 px-4 py-2 items-center text-nowrap justify-center rounded-lg! text-sm! ${role === "tenant" ? "bg-sky-600 text-white font-medium" : "bg-slate-100 border border-slate-200 text-slate-900"}`}
+            >
+              <UserRoundKey size={18} strokeWidth={2} />
+              Soy un inquilino
+            </button>
+          </div>
+
+          <div className='flex flex-col gap-2 items-start w-full'>
+            <p className='text-slate-900 text-sm font-semibold!'>Correo electrónico</p>
+            <TextInput
+              type="text"
+              className="text-sm! w-full"
+              placeholder="Correo electrónico"
+              onChange={(e) => setUserEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className='flex flex-col gap-2 items-start w-full'>
+            <p className='text-slate-900 text-sm! font-semibold!'>Contraseña</p>
+            <TextInput
+              type="password"
+              className="text-sm! w-full"
+              placeholder="Contraseña"
+              onChange={(e) => setUserPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className='flex flex-col gap-2'>
+            <div className="w-full flex flex-col">
+              <Button onClick={handleLogin} type="submit" text="Iniciar sesión" />
             </div>
 
-            <div className="input-box">
-              <input type="password" placeholder='Contraseña' onChange={(e) => setUserPassword(e.target.value)} required /> <FaLock className='icon' />
-            </div>
-            <div className="remember-forgot">
-              <label><input type='checkbox' />Recuérdame</label>
-              <a href='#'> </a>
-            </div>
+            {role === "owner" && (
+              <>
+                <div className="flex flex-row items-center gap-2 w-full">
+                  <div className="w-full h-px bg-slate-300"></div>
+                  <p className="text-slate-400 text-base font-medium">ó</p>
+                  <div className="w-full h-px bg-slate-300"></div>
+                </div>
 
-            <button type="submit" className="btn btn-dark w-100">Iniciar sesión</button>
+                <p onClick={() => navigate("/signup")} className='w-full text-center text-sm font-medium! text-slate-900 hover:text-sky-600! cursor-pointer'>
+                  Registrarme como propietario
+                </p>
+              </>
+            )}
+          </div>
 
-            <div className="register-link">
-              <p> <a href='#' onClick={registerLink}> </a>
-              </p>
-            </div>
-            <div className="input-fuaq">
-              <p>Al continuar, usted acepta los Términos de Sistema de Administración de Rentas y reconoce haber leído nuestra <span className="privacy-link" onClick={toggleModal}>Política de Privacidad</span>. Aviso de recopilación de información.
-              </p>
-            </div>
-          </form>
-        </div>
+          <div className="w-full wrap-normal">
+            <p className='text-slate-600 text-sm!'>Al continuar, usted acepta los Términos de Sistema de Administración de Rentas y reconoce haber leído nuestra <span className="privacy-link" onClick={toggleModal}>Política de Privacidad</span>. Aviso de recopilación de información.
+            </p>
+          </div>
+        </form>
       </div>
 
       {isModalOpen && (

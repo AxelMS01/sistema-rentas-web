@@ -39,13 +39,14 @@ export default function ApartmentTable({
                 </TableHead>
                 <TableBody className="divide-y! border-b-gray-200!">
                     {apartments.map((apartment, id) => {
-                        const location = apartment.street + " " + apartment.ext_num + ", " + apartment.division
+                        const location = apartment.street + " " + apartment.ext_num + ", " + apartment.division;
+
                         return (
                             <TableRow key={id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
                                 <TableCell>img</TableCell>
                                 <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                                     <div className="flex flex-row items-start">
-                                        <StatusTag status={apartment.status} />
+                                        <StatusTag status={!apartment.status ? "AVAILABLE" : apartment.status} />
                                     </div>
                                 </TableCell>
                                 <TableCell>{location}</TableCell>

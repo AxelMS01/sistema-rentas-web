@@ -5,6 +5,9 @@ import EditarContratoModal from "../Forms/EditarContratoModal";
 import { supabase } from "../../../config/supabase-client";
 import SearchBar from "../../../components/SearchBar";
 import useUser from "../../../stores/user-store";
+import Button from "../../../components/Button";
+import NewContractModal from "../../../components/contracts/NewContractModal";
+import { LuPlus } from "react-icons/lu";
 
 export const token = localStorage.getItem("token");
 
@@ -14,6 +17,7 @@ const Viviendas = () => {
   const [contratos, setContratos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showCreationModal, setShowCreationModal] = useState(false);
 
   const [filtroStatus, setFiltroStatus] = useState("todos");
   const [filtroBusqueda, setFiltroBusqueda] = useState("");
@@ -73,11 +77,21 @@ const Viviendas = () => {
 
   return (
     <div className="w-full h-screen flex flex-col gap-4! lg:px-20! sm:px-16! px-8! py-10">
+      {showCreationModal && (
+        <NewContractModal isModalOpen={showCreationModal} onCloseModal={() => setShowCreationModal(false)} />
+      )}
+
       <div className="flex w-full md:flex-row flex-col justify-between md:items-center items-start gap-6">
         <div className="header flex flex-col gap-2">
           <h1 className="text-start font-light fw-semibold tracking-tight">Contratos</h1>
           <p className="text-base font-normal text-slate-500 text-start">Consulta los contratos que han sido generados en el sistema.</p>
         </div>
+
+        <Button
+          text="Agregar contrato"
+          icon={<LuPlus size={18} />}
+          onClick={() => setShowCreationModal(true)}
+        />
       </div>
 
       <div className="flex flex-row w-full items-start">

@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import './App.css';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
@@ -15,6 +14,7 @@ import Reportes from "../views/owner/Reportes/Reportes";
 import ProtectedRoute from "../utils/ProtectedRoute";
 import Navbar from "../components/Navbar/Navbar";
 import Home from "../views/tenant/Home/Home";
+import WelcomeForm from "../views/tenant/WelcomeForm";
 
 // REMOVED: import Configuracion from "./Components/Forms/Configuracion";
 
@@ -30,13 +30,13 @@ function App() {
         <Route path="/*" element={
           <ProtectedRoute>
             <Navbar />
-
             <Routes>
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="viviendas" element={<Viviendas />} />
               <Route path="incidencias" element={<Incidencias />} />
               <Route path="contratos" element={<Contratos />} />
               <Route path="home" element={<Home />} />
+              <Route path="welcome-form" element={<WelcomeForm />} />
               <Route path="reportes" element={<Reportes />} />
               <Route path="contratos/:id" element={<ContratoDetalle />} />
               <Route path="viviendas/:id/detalles" element={<ViviendaDetalle />} />
