@@ -1,10 +1,7 @@
 import { Text, View } from '@react-pdf/renderer';
 import estilos from '../EstilosContrato';
 
-export function DeclaracionesFiador() {
-    
-
-    const nacionalidad = "mexicana";
+export function DeclaracionesFiador({ nacionalidad }) {
 
     return (
         <View style={estilos.seccion}>

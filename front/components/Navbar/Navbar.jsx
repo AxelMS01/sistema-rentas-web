@@ -1,22 +1,28 @@
 import React, { useEffect, useRef, useState } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Settings, Bell, X } from "lucide-react";
+import { Settings, Bell, X, Eraser } from "lucide-react";
+import { supabase } from "../../config/supabase-client";
 import useUser from "../../stores/user-store";
+import toast, { Toaster } from "react-hot-toast";
 import "./Navbar.css";
 import casaLogo from "../../src/assets/casa.png";
+import { Button } from "flowbite-react";
 
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const isActive = (path) => (location.pathname === path ? "text-dark fw-bold" : "text-muted");
   const role = useUser((state) => state.role);
+  const loggedUserId = useUser((state) => state.loggedUser);
   const isTenant = role === "tenant";
 
   const [showModal, setShowModal] = useState(false);
   const firmaRef = useRef(null);
   const [firma, setFirma] = useState();
-  const [firmaURL, setFirmaURL] = useState();
+  const [firmaURL, setFirmaURL] = useState("");
+  const [minimumMonths, setMinimumMonths] = useState("");
+
   const [activeTab, setActiveTab] = useState("pagos");
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef(null);
@@ -31,14 +37,7 @@ const Navbar = () => {
     openpayKey: ""
   });
 
-  const [moraSettings, setMoraSettings] = useState({ tipo: "PORCENTAJE", valor: 10 });
-
-  useEffect(() => {
-    const savedKeys = JSON.parse(localStorage.getItem("paymentKeys"));
-    const savedMora = JSON.parse(localStorage.getItem("moraSettings"));
-    if (savedKeys) setPaymentKeys(savedKeys);
-    if (savedMora) setMoraSettings(savedMora);
-  }, [showModal]);
+  const [moraSettings, setMoraSettings] = useState({ tipo: "percentage", valor: 10 });
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -59,18 +58,22 @@ const Navbar = () => {
     setMoraSettings({ ...moraSettings, [e.target.name]: e.target.value });
   };
 
-  const handleSave = () => {
-    localStorage.setItem("paymentKeys", JSON.stringify(paymentKeys));
-    localStorage.setItem(
-      "moraSettings",
-      JSON.stringify({
-        tipo: moraSettings.tipo,
-        valor: parseFloat(moraSettings.valor) || 0
-      })
-    );
+  const handleSave = async () => {
+    const feeString = moraSettings.tipo + "-" + moraSettings.valor;
 
-    window.dispatchEvent(new Event("storage"));
+    const { error } = await supabase
+      .from("owners")
+      .update({
+        signature_url: firmaURL,
+        charge_fee: feeString,
+        minimum_duration: minimumMonths
+      })
+      .eq("id", loggedUserId);
+
+    if (error) throw error;
+
     setShowModal(false);
+    toast.success("¡Configuraciones guardadas!");
   };
 
   const handleLogout = () => {
@@ -83,14 +86,13 @@ const Navbar = () => {
   function actualizarFirma() {
     setLienzoFirma(false);
     const url = firmaRef.current.getTrimmedCanvas().toDataURL("firma/png");
+    console.log(url);
     setFirmaURL(url);
-
-    // Lógica aquí para guardar la firma en la base de datos u otro medio
-    // como un repositorio privado, en caso de que queramos llamar las firmas por su URL.
   };
 
   return (
     <>
+      <Toaster />
       <nav
         className="navbar navbar-expand-lg bg-white border-bottom py-2 px-3 px-md-4 sticky-top shadow-sm flex-wrap"
         style={{ zIndex: 9, minHeight: "80px" }}
@@ -180,7 +182,15 @@ const Navbar = () => {
                 >
                   <button
                     type="button"
-                    className="btn btn-link text-decoration-none text-dark w-100 text-start px-3 py-2"
+                    className="btn btn-link hover:bg-slate-100! text-decoration-none text-dark w-100 text-start px-3 py-2"
+                    onClick={() => navigate("/perfil-arrendador")}
+                  >
+                    Perfil y datos
+                  </button>
+
+                  <button
+                    type="button"
+                    className="btn btn-link hover:bg-slate-100! text-decoration-none text-dark w-100 text-start px-3 py-2"
                     onClick={handleLogout}
                   >
                     Cerrar sesion
@@ -215,7 +225,7 @@ const Navbar = () => {
           >
             <div className="d-flex justify-content-between align-items-center p-4 border-bottom">
               <h4 className="fw-bold m-0" style={{ color: "#1B2559" }}>
-                Configuración
+                Configuraciones Globales
               </h4>
               <button onClick={() => setShowModal(false)} className="btn btn-sm btn-light rounded-circle p-2">
                 <X size={20} />
@@ -255,7 +265,19 @@ const Navbar = () => {
                         }`}
                       onClick={() => setActiveTab("firma")}
                     >
-                      Firma de Documentos
+                      Firma para Documentos
+                    </button>
+                  </li>
+
+                  <li>
+                    <button
+                      className={`w-100 text-start! px-4 py-3 border-0 ${activeTab === "minimal-duration"
+                        ? "bg-white fw-bold border-start border-primary border-4"
+                        : "bg-transparent text-muted"
+                        }`}
+                      onClick={() => setActiveTab("minimal-duration")}
+                    >
+                      Duración Mínima de Contratos
                     </button>
                   </li>
                 </ul>
@@ -351,8 +373,8 @@ const Navbar = () => {
                       <div className="col-md-6 mb-3">
                         <label className="form-label">Tipo de recargo</label>
                         <select name="tipo" className="form-select" value={moraSettings.tipo} onChange={handleMoraChange}>
-                          <option value="PORCENTAJE">Porcentaje (%)</option>
-                          <option value="FIJO">Monto Fijo ($)</option>
+                          <option value="percentage">Porcentaje (%)</option>
+                          <option value="fixed">Monto Fijo ($)</option>
                         </select>
                       </div>
                       <div className="col-md-6 mb-3">
@@ -379,31 +401,40 @@ const Navbar = () => {
                     </h5>
 
                     {!lienzoFirma && (
-                      <>
-                        <div className="col mb-6">
-                          <div className="col-md-6 mb-3">
-                            <label className="form-label">Firma actual</label>
-                            <div>
-                              <img src={firmaURL} />
-                            </div>
+                      <div className="flex flex-col gap-4">
+                        <div className="w-full flex flex-col gap-4">
+                          <label className="w-full text-center!">Firma actual</label>
+                          <div className="w-full h-40 border border-slate-200 rounded-md">
+                            <img src={firmaURL} />
                           </div>
                         </div>
 
                         <button
-                          className="btn btn-primary px-4"
+                          className="btn btn-primary px-4 sm:self-start"
                           onClick={() => setLienzoFirma(true)}
                           style={{ backgroundColor: "#4318FF", border: "none" }}
                         >
                           Editar firma
                         </button>
-                      </>
+                      </div>
                     )}
 
                     {lienzoFirma && (
                       <>
-                        <div className="container" style={{ borderWidth: 1, borderColor: "grey", borderRadius: 10, borderStyle: "solid" }}>
+                        <SignatureCanvas
+                          ref={firmaRef}
+                          canvasProps={{ className: "canvas" }}
+                        />
+
+                        <div className="border border-slate-200 border-lg w-full bg-slate-50! relative">
+                          <Button onClick={() => firmaRef.current.clear()} color="alternative" size='xs' className='absolute top-3 right-3 text-xs! font-semibold! px-2 py-0.5! rounded-lg! flex flex-row gap-2 items-center'>
+                            <Eraser size={16} />
+                            Restablecer
+                          </Button>
+
                           <SignatureCanvas
                             ref={firmaRef}
+                            canvasProps={{ className: "canvas" }}
                           />
                         </div>
 
@@ -427,8 +458,32 @@ const Navbar = () => {
                       </>
                     )}
 
-                    <p className="text-muted small mt-2">
+                    <p className="text-start! text-muted small mt-2">
                       Esta firma se colocará automáticamente en los contratos y pagarés relacionados con tus convenios.
+                    </p>
+                  </div>
+                )}
+
+                {activeTab === "minimal-duration" && (
+                  <div>
+                    <h5 className="fw-bold mb-4 text-start" style={{ color: "#1B2559" }}>
+                      Duración mínima de los contratos
+                    </h5>
+
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label text-start!">Número de meses</label>
+                      <input
+                        type="number"
+                        name="valor"
+                        className="form-control"
+                        value={minimumMonths}
+                        onChange={(e) => setMinimumMonths(e.target.value)}
+                      />
+                    </div>
+
+
+                    <p className="text-start! text-muted small mt-2">
+                      Esta valor se aplicará en cada uno de los contratos que se generen para tus viviendas.
                     </p>
                   </div>
                 )}

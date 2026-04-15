@@ -1,7 +1,7 @@
 import { Text, View } from '@react-pdf/renderer';
 import estilos from '../EstilosContrato';
 
-export function DeclaracionesArrendatario() {
+export function DeclaracionesArrendatario(curp, nombreArrendador, nombrePatArrendador, apellidoMatArrendador) {
     const infoDeclaraciones = {
         curp: "PUAJ010302HNENLNA7",
         nombreArrendador: "Betzái",

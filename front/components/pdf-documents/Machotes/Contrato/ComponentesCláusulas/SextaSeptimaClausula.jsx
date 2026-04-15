@@ -1,7 +1,7 @@
 import { Text, View } from '@react-pdf/renderer';
 import estilos from '../EstilosContrato';
 
-export function SextaSeptimaClausula() {
+export function SextaSeptimaClausula({calleArrendador, numExtArrendador, fraccionamientoArrendador, cpArrendador, ciudadArrendador}) {
     const info = {
         calleArrendador: "Mimosa",
         numExtArrendador: "132",

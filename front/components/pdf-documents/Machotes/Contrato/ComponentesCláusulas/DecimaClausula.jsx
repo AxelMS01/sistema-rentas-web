@@ -1,7 +1,16 @@
 import { Text, View, Image } from '@react-pdf/renderer';
 import estilos from '../EstilosContrato';
 
-export function DecimaClausula() {
+export function DecimaClausula({
+    nombreArrendador,
+    apellidoPatArrendador,
+    apellidoMatArrendador,
+    nombreArrendatario,
+    apellidoMatArrendatario,
+    nombreTestigo1,
+    apellidoPatTestigo1,
+    apellidoMatTestigo1
+}) {
     const info = {
         nombreArrendador: "Betzai",
         apellidoPatArrendador: "Cháidez",

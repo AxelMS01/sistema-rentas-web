@@ -3,7 +3,7 @@ import estilos from '../EstilosContrato';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
-export function PrimeraSegundaClausula() {
+export function PrimeraSegundaClausula({ nombreVivienda, calle, numExt, colonia, inicioContrato, finContrato }) {
     const info = {
         nombreVivienda: "HABITACIÓN NÚMERO 8",
         calle: "República de Uruguay",

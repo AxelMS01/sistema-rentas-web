@@ -188,7 +188,7 @@ const Viviendas = () => {
     <div className="w-full h-screen flex flex-col gap-4! lg:px-20! sm:px-16! px-8! py-10">
       <div className="flex w-full md:flex-row flex-col justify-between md:items-center items-start gap-6">
         <div className="header flex flex-col gap-2">
-          <h1 className="text-start font-medium! tracking-tight">Viviendas</h1>
+          <h1 className="text-start font-semibold! tracking-tight">Viviendas</h1>
           <p className="text-base font-normal text-slate-500 text-start">Visualiza las viviendas registradas en el sistema fácil y rápidamente.</p>
         </div>
 

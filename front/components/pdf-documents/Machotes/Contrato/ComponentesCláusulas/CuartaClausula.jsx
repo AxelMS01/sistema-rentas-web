@@ -1,7 +1,7 @@
 import { Text, View } from '@react-pdf/renderer';
 import estilos from '../EstilosContrato';
 
-export function CuartaClausula() {
+export function CuartaClausula({ tasaInteres }) {
     const info = {
         tasaInteres: 8,
     };

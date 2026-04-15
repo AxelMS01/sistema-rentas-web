@@ -1,15 +1,7 @@
 import { Text, View } from '@react-pdf/renderer';
 import estilos from '../EstilosContrato';
 
-export function DeclaracionesArrendador() {
-    const infoDeclaraciones = {
-        nombreVivienda: "HABITACIÓN NÚMERO 8",
-        calle: "República de Uruguay",
-        numero: "410",
-        colonia: "Francisco Zarco",
-    };
-
-    const nacionalidad = "colombiana";
+export function DeclaracionesArrendador({nombreVivienda, calle, numero, colonia, nacionalidad}) {
 
     return (
         <View style={estilos.seccion}>

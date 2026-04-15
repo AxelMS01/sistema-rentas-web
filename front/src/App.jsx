@@ -15,6 +15,7 @@ import ProtectedRoute from "../utils/ProtectedRoute";
 import Navbar from "../components/Navbar/Navbar";
 import Home from "../views/tenant/Home/Home";
 import WelcomeForm from "../views/tenant/WelcomeForm";
+import OwnerProfile from "../views/owner/Profile/OwnerProfile";
 
 // REMOVED: import Configuracion from "./Components/Forms/Configuracion";
 
@@ -36,10 +37,11 @@ function App() {
               <Route path="incidencias" element={<Incidencias />} />
               <Route path="contratos" element={<Contratos />} />
               <Route path="home" element={<Home />} />
-              <Route path="welcome-form" element={<WelcomeForm />} />
+              <Route path="bienvenida" element={<WelcomeForm />} />
               <Route path="reportes" element={<Reportes />} />
               <Route path="contratos/:id" element={<ContratoDetalle />} />
               <Route path="viviendas/:id/detalles" element={<ViviendaDetalle />} />
+              <Route path="perfil-arrendador" element={<OwnerProfile />} />
 
               {/* Redirección por defecto si no encuentra la ruta (SIEMPRE AL FINAL) */}
               <Route path="*" element={<Navigate to="/viviendas" />} />

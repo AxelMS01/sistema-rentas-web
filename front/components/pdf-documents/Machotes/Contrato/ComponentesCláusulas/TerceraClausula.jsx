@@ -4,7 +4,7 @@ import { numeroEscrito } from '../../../../../utils/numero-escrito';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
-export function TerceraClausula() {
+export function TerceraClausula({precioRenta}) {
     const info = {
         precioRenta: 4000,
     };

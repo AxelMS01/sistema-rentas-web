@@ -1,28 +1,47 @@
 import { TextInput, Label } from 'flowbite-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
+import "./SignatureCanvas.css";
 import FormStep from '../../components/welcome-form/FormStep';
-import { CircleUser, Grid2X2Check } from 'lucide-react';
+import { CircleUser, Eraser, Grid2X2Check } from 'lucide-react';
 import { Button } from 'flowbite-react';
-import CustomButton from '../../components/Button';
+import SignatureCanvas from 'react-signature-canvas';
+import { useNavigate } from 'react-router-dom';
 
 export default function WelcomeForm({ firstName }) {
     const [curp, setCurp] = useState("");
+    // Inicializar los siguientes tres estados con la información cargada de la base de datos.
     const [name, setName] = useState("");
     const [motherSurname, setMotherSurname] = useState("");
     const [fatherSurname, setFatherSurname] = useState("");
     const [alternateAddress, setAlternateAddress] = useState("");
     const [currentStep, setCurrentStep] = useState(1);
+    const signatureRef = useRef(null);
+
+    const navigate = useNavigate();
 
     const contractDuration = "Del 31/04/2026 al 31/12/2026";
     const payment = 4000;
 
-    function onSubmitData() {
+    function onSubmitData(e) {
+        e.preventDefault;
 
-    }
+        if (!name || !motherSurname || !fatherSurname || !alternateAddress | !signatureRef) {
+            toast.error("¡Ningún campo del formulario puede quedarse vacío!");
+            return;
+        };
+
+        console.log("Success");
+        navigate("/home");
+
+    };
+
+    console.log(currentStep);
 
     return (
-        <div className="w-full min-h-screen h-auto flex flex-col items-center justify-center gap-4! lg:px-20! sm:px-16! px-8! py-10 bg-linear-to-bl from-sky-500 to-sky-600">
+        <div className="w-full min-h-screen h-auto flex flex-col items-center justify-center gap-4! lg:px-20! sm:px-16! px-8! py-10 bg-sky-600">
+            <Toaster />
+
             <div className="form-content flex flex-col max-w-xl w-auto px-8 py-12 bg-white rounded-xl gap-4">
                 <div className="welcome-message flex flex-col gap-1 items-start">
                     <h1 className="text-2xl! font-semibold!">¡Bienvenido, {firstName}</h1>
@@ -68,7 +87,7 @@ export default function WelcomeForm({ firstName }) {
                             <div className='flex flex-col gap-2 items-start text-start'>
                                 <p className='text-sm font-medium!'>Ingresa tu CURP</p>
                                 <TextInput
-                                    className='w-full'
+                                    className='w-full text-sm'
                                     placeholder='CURP'
                                     value={curp}
                                     onChange={(e) => setCurp(e.target.value)}
@@ -79,7 +98,7 @@ export default function WelcomeForm({ firstName }) {
                             <div className='flex flex-col gap-2 items-start'>
                                 <p className='text-sm font-medium! text-start'>Dirección de vivienda alternativa</p>
                                 <TextInput
-                                    className='w-full'
+                                    className='w-full text-sm'
                                     placeholder='Calle, número exterior y colonia'
                                     value={alternateAddress}
                                     onChange={(e) => setAlternateAddress(e.target.value)}
@@ -96,7 +115,7 @@ export default function WelcomeForm({ firstName }) {
                             <div className='flex flex-col gap-2 items-start text-start'>
                                 <p className='text-sm font-medium!'>Tu(s) nombre(s)</p>
                                 <TextInput
-                                    className='w-full'
+                                    className='w-full text-sm'
                                     placeholder='Nombre'
                                     value={name}
                                     onChange={(e) => setCurp(e.target.value)}
@@ -107,10 +126,10 @@ export default function WelcomeForm({ firstName }) {
                             <div className='flex flex-col gap-2 items-start text-start'>
                                 <p className='text-sm font-medium!'>Apellido materno</p>
                                 <TextInput
-                                    className='w-full'
-                                    placeholder='Nombre'
-                                    value={name}
-                                    onChange={(e) => setCurp(e.target.value)}
+                                    className='w-full text-sm'
+                                    placeholder='Apellido materno'
+                                    value={motherSurname}
+                                    onChange={(e) => setMotherSurname(e.target.value)}
                                     minLength={18}
                                 />
                             </div>
@@ -118,10 +137,10 @@ export default function WelcomeForm({ firstName }) {
                             <div className='flex flex-col gap-2 items-start text-start'>
                                 <p className='text-sm font-medium!'>Apellido paterno</p>
                                 <TextInput
-                                    className='w-full'
-                                    placeholder='Nombre'
-                                    value={name}
-                                    onChange={(e) => setCurp(e.target.value)}
+                                    className='w-full text-sm'
+                                    placeholder='Apellido paterno'
+                                    value={fatherSurname}
+                                    onChange={(e) => setFatherSurname(e.target.value)}
                                     minLength={18}
                                 />
                             </div>
@@ -129,7 +148,7 @@ export default function WelcomeForm({ firstName }) {
                             <div className='flex flex-col gap-2 items-start text-start'>
                                 <p className='text-sm font-medium!'>Duración del contrato</p>
                                 <TextInput
-                                    className='w-full'
+                                    className='w-full text-sm'
                                     disabled
                                     placeholder='Nombre'
                                     value={contractDuration}
@@ -141,7 +160,7 @@ export default function WelcomeForm({ firstName }) {
                             <div className='flex flex-col gap-2 items-start text-start'>
                                 <p className='text-sm font-medium!'>Monto del arrendamiento</p>
                                 <TextInput
-                                    className='w-full'
+                                    className='w-full text-sm'
                                     disabled
                                     placeholder='Nombre'
                                     value={"$" + payment + " pesos mensuales"}
@@ -153,11 +172,23 @@ export default function WelcomeForm({ firstName }) {
                     )}
 
                     {currentStep === 3 && (
-                        /* Lienzo para firma aquí */
+                        <div className='flex flex-col gap-4 items-start justify-start'>
+                            <p className='text-start text-sm! text-slate-600'>Por favor, dibuja tu firma en el siguiente lienzo, la cual será utilizada para firmar el contrato final.</p>
 
-                        <>
+                            <div className='relative signature-container w-full h-48 border border-slate-200 rounded-xl bg-slate-50'>
+                                <Button onClick={() => signatureRef.current.clear()} color="alternative" size='xs' className='absolute top-3 right-3 text-xs! font-semibold! px-2 py-0.5! rounded-lg! flex flex-row gap-2 items-center'>
+                                    <Eraser size={16} />
+                                    Restablecer
+                                </Button>
 
-                        </>
+                                <SignatureCanvas
+                                    canvasProps={{ className: "canvas" }}
+                                    ref={signatureRef}
+                                />
+                            </div>
+
+                            <p className='text-start text-sm! text-slate-600'>Si estás conforme con tu firma y estás seguro de que la información previa es correcta, ¡puedes terminar el formulario y entrar a tu sistema!</p>
+                        </div>
                     )}
 
                     <div className='flex sm:flex-row flex-col w-full items-center gap-2'>
@@ -167,7 +198,7 @@ export default function WelcomeForm({ firstName }) {
                             </Button>
                         )}
 
-                        <Button type={currentStep > 3 ? "submit" : "button"} onClick={currentStep != 3 ? () => setCurrentStep(currentStep + 1) : () => ""} className='text-sm! w-full text-nowrap rounded-md! py-0! bg-sky-600 hover:bg-sky-700!' color="default">
+                        <Button type="button" onClick={currentStep === 3 ? (e) => onSubmitData(e) : () => setCurrentStep(currentStep + 1)} className='text-sm! w-full text-nowrap rounded-md! py-0! bg-sky-600 hover:bg-sky-700!' color="default">
                             {currentStep === 3 ? "Terminar" : "Avanzar al siguiente paso"}
                         </Button>
                     </div>

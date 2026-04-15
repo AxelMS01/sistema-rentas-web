@@ -67,6 +67,8 @@ export default function ContractWizardModal({ show, onClose, selectedApartmentId
   const [formData, setFormData] = useState({
     tenant: {
       name: "",
+      motherSurname: "",
+      fatherSurname: "",
       phone: "",
       email: "",
       address: ""
@@ -183,7 +185,7 @@ export default function ContractWizardModal({ show, onClose, selectedApartmentId
           <div className="modal-content border-0 shadow rounded-4">
 
             <div className="modal-header">
-              <h5 className="fw-bold">Datos del Contrato</h5>
+              <h5 className="font-semibold!">Añadir contrato</h5>
               <button className="btn-close" onClick={onClose}></button>
             </div>
 
