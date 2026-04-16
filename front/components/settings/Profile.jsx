@@ -1,5 +1,8 @@
-import { SquarePen } from "lucide-react";
+import { Edit, SquarePen } from "lucide-react";
+import { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import { Button, Label } from "flowbite-react";
+import EditPersonalDetails from "./EditPersonalDetailsModal";
 
 export default function Profile({
     name,
@@ -11,10 +14,26 @@ export default function Profile({
     extNum,
     division,
     city,
-    state
+    state,
+    onEditSuccess
 }) {
+    const [profDetailsModal, setProfDetailsModal] = useState(false);
+
+    function handleSuccess({successMsg}) {
+        toast.success(successMsg);
+        setProfDetailsModal(false);
+        onEditSuccess();
+    };
+
     return (
         <div className="flex flex-col gap-4 w-full">
+            {/*Modals*/}
+            <EditPersonalDetails 
+                isModalOpen={profDetailsModal}
+                onCloseModal={() => setProfDetailsModal(false)}
+                onEditSuccess={() => handleSuccess("¡Datos guardados correctamente!")}
+            />
+
             <div className="flex w-full md:flex-row flex-col justify-between md:items-center items-start gap-6">
                 <div className="header flex flex-col gap-2">
                     <h1 className="text-start font-semibold! text-2xl! tracking-tight">Mi Perfil</h1>
@@ -46,7 +65,7 @@ export default function Profile({
             <div className="relative w-full flex items-start gap-8 justify-start flex-col bg-white sm:p-8 p-6 border border-slate-200 rounded-xl!">
                 <div className="w-full flex flex-row items-center justify-between">
                     <h1 className="text-xl! font-semibold! tracking-tight text-slate-900">Detalles Personales</h1>
-                    <Button onClick={() => ""} color="alternative" size='sm' className='sm:flex hidden absolute top-8 right-8 text-sm! font-semibold! px-2 py-0.5! rounded-lg! flex-row gap-2 items-center'>
+                    <Button onClick={() => setProfDetailsModal(true)} color="alternative" size='sm' className='sm:flex hidden absolute top-8 right-8 text-sm! font-semibold! px-2 py-0.5! rounded-lg! flex-row gap-2 items-center'>
                         <SquarePen size={16} />
                         Editar
                     </Button>

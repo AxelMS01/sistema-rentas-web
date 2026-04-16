@@ -1,13 +1,47 @@
-import { Label, TextInput, Select, Button } from "flowbite-react"
+import { Label, TextInput, Select, Button } from "flowbite-react";
+import toaster, { Toaster } from "react-hot-toast";
 import { useState } from "react";
+import { supabase } from "../../config/supabase-client";
+import useUser from "../../stores/user-store";
 
-export default function Globals() {
-    const [chargeType, setChargeType] = useState("");
-    const [chargeVal, setChargeVal] = useState("");
-    const [minimumMonths, setMinimumMonths] = useState("");
+export default function Globals({
+    chargeFee,
+    minMonths
+}) {
+    // Divide the charge-fee in the 'type-value' format.
+    const initialChargeFee = chargeFee.split("-");
+
+    const [chargeType, setChargeType] = useState(initialChargeFee[0]);
+    const [chargeVal, setChargeVal] = useState(initialChargeFee[1]);
+    const [minimumMonths, setMinimumMonths] = useState(minMonths);
+
+    const loggedUserId = useUser((state) => state.loggedUser);
+
+    function restablishValues() {
+        // Set the stateful variables to the values passed as parameters.
+        setChargeType(initialChargeFee[0]);
+        setChargeVal(initialChargeFee[1]);
+        setMinimumMonths(minMonths);
+    };
+
+    async function onSaveChanges() {
+        const newChargeFee = chargeType + "-" + chargeVal;
+        const { error } = await supabase
+            .from("owners")
+            .update({
+                charge_fee: newChargeFee,
+                minimum_duration: minimumMonths
+            })
+            .eq("id", loggedUserId);
+
+        if (error) throw error;
+
+        toaster.success("¡Datos actualizados correctamente!")
+    }
 
     return (
         <div className="flex flex-col gap-4 w-full">
+            <Toaster />
             <div className="flex w-full md:flex-row flex-col justify-between md:items-center items-start gap-6">
                 <div className="header flex flex-col gap-2">
                     <h1 className="text-start font-semibold! text-2xl! tracking-tight">Ajustes globales</h1>
@@ -70,11 +104,11 @@ export default function Globals() {
 
 
             <div className='flex sm:flex-row flex-col items-start self-start gap-2'>
-                <Button onClick={() => ""} size="sm" className='text-sm! w-full rounded-md! py-0! text-nowrap' color="alternative">
+                <Button onClick={restablishValues} size="sm" className='text-sm! w-full rounded-md! py-0! text-nowrap' color="alternative">
                     Restablecer valores
                 </Button>
 
-                <Button type="button" onClick={() => ""} size="sm" className='text-sm! w-full text-nowrap rounded-md! py-0! bg-sky-600 hover:bg-sky-700!' color="default">
+                <Button type="button" onClick={onSaveChanges} size="sm" className='text-sm! w-full text-nowrap rounded-md! py-0! bg-sky-600 hover:bg-sky-700!' color="default">
                     Guardar cambios
                 </Button>
             </div>

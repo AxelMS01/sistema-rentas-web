@@ -62,7 +62,6 @@ const Viviendas = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log(loggedUserId);
         const { data } = await supabase.
           from("apartments")
           .select()
@@ -134,7 +133,6 @@ const Viviendas = () => {
   const handleApartmentCreated = (newApartment) => {
     mensajeExito("¡Vivienda creada correctamente!");
     agregarPropiedad(newApartment);
-    console.log(newApartment);
     setShowPropiertiesModal(false);
 
     // Update this state variable to refetch the data in the main useEffect.

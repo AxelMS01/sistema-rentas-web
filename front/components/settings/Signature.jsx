@@ -1,8 +1,8 @@
 import { Button } from "flowbite-react";
-import SignatureCanvas from "react-signature-canvas";
+import SignaturePad from "react-signature-canvas";
 import "./Signature.css";
 import { useState, useRef } from "react";
-import { CircleCheck, CircleX, Eraser, SquarePen } from "lucide-react";
+import { CircleCheck, CircleX, Eraser, Signature, SquarePen } from "lucide-react";
 
 export default function SignatureSection() {
     const signatureRef = useRef(null);
@@ -40,7 +40,7 @@ export default function SignatureSection() {
                         Restablecer
                     </Button>
 
-                    <SignatureCanvas
+                    <SignaturePad
                         ref={signatureRef}
                         canvasProps={{
                             className: "signature-pad"

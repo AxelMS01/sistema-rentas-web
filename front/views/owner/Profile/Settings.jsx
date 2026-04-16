@@ -10,18 +10,27 @@ import { Button, Label } from "flowbite-react";
 import SignatureSection from "../../../components/settings/Signature";
 
 function OwnerProfile() {
-    const [name, setName] = useState("");
-    const [fatherSurname, setFatherSurname] = useState("");
-    const [motherSurname, setMotherSurname] = useState("");
-    const [email, setEmail] = useState("");
-    const [phoneNumber, setPhoneNumber] = useState("");
-    const [street, setStreet] = useState("");
-    const [division, setDivision] = useState("");
-    const [postalCode, setPostalCode] = useState("");
-    const [extNum, setExtNum] = useState("");
-    const [city, setCity] = useState("Durango");
-    const [state, setState] = useState("Durango");
-    const [activeTab, setActiveTab] = useState("profile")
+    const [activeTab, setActiveTab] = useState("profile");
+    const [successfulAction, setSuccessfulAction] = useState(0);
+
+    const [ownerInfo, setOwnerInfo] = useState({
+        name: "",
+        fatherSurname: "",
+        motherSurname: "",
+        email: "",
+        phoneNumber: "",
+        street: "",
+        division: "",
+        postalCode: "",
+        extNum: "",
+        city: "",
+        state: "",
+        signatureUrl: "",
+        chargeFee: "",
+        minimumContractDur: "",
+        curp: "",
+        card1: "",
+    })
 
     const loggedUserId = useUser((state) => state.loggedUser);
 
@@ -34,17 +43,31 @@ function OwnerProfile() {
 
             if (error) throw error;
 
-            setName(data[0].name);
-            setFatherSurname(data[0].father_surname);
-            setMotherSurname(data[0].mother_surname);
-            setStreet(data[0].street);
-            setDivision(data[0].division);
-            setPostalCode(data[0].postal_code);
-            setExtNum(data[0].ext_num);
+            const userData = data[0];
+
+            setOwnerInfo({
+                name: userData.name,
+                fatherSurname: userData.father_surname,
+                motherSurname: userData.mother_surname,
+                email: userData.email,
+                phoneNumber: userData.phone,
+                street: userData.street,
+                division: userData.division,
+                postalCode: userData.postal_code,
+                extNum: userData.ext_num,
+                city: userData.city,
+                state: userData.state,
+                signatureUrl: userData.signature_url,
+                chargeFee: userData.charge_fee,
+                minimumContractDur: userData.minimum_duration,
+                curp: userData.governmentid,
+                card1: userData.card1,
+
+            })
         };
 
         fetchProfileData();
-    }, []);
+    }, [successfulAction]);
 
     return (
         <div className="w-full min-h-screen flex flex-col gap-8! lg:px-20! sm:px-16! px-8! py-10!">
@@ -54,15 +77,32 @@ function OwnerProfile() {
                 <TabNavigator onTabChange={setActiveTab} />
 
                 {activeTab === "profile" && (
-                    <Profile />
+                    <Profile
+                        name={ownerInfo.name}
+                        fatherSurname={ownerInfo.fatherSurname}
+                        motherSurname={ownerInfo.motherSurname}
+                        email={ownerInfo.email}
+                        phoneNumber={ownerInfo.phoneNumber}
+                        street={ownerInfo.street}
+                        extNum={ownerInfo.extNum}
+                        division={ownerInfo.division}
+                        city={ownerInfo.city}
+                        state={ownerInfo.state}
+                        onEditSuccess={() => setSuccessfulAction(successfulAction + 1)}
+                    />
                 )}
 
                 {activeTab === "payments" && (
-                    <PaymentIntegration />
+                    <PaymentIntegration
+                        card1={ownerInfo.card1}
+                    />
                 )}
 
                 {activeTab === "globals" && (
-                    <Globals />
+                    <Globals
+                        chargeFee={ownerInfo.chargeFee}
+                        minMonths={ownerInfo.minimumContractDur}
+                    />
                 )}
 
                 {activeTab === "signature" && (

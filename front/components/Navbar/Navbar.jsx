@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Settings, Bell, X, Eraser } from "lucide-react";
+import { Settings, Bell, X, Eraser, LogOut } from "lucide-react";
 import { supabase } from "../../config/supabase-client";
 import useUser from "../../stores/user-store";
 import toast, { Toaster } from "react-hot-toast";
@@ -139,15 +139,6 @@ const Navbar = () => {
             {!isTenant && (
               <>
                 <button
-                  onClick={() => setShowModal(true)}
-                  className="btn btn-light bg-white border rounded-circle p-2 shadow-sm d-flex align-items-center justify-content-center"
-                  style={{ width: "40px", height: "40px" }}
-                  title="Configuración"
-                >
-                  <Settings size={20} className="text-secondary" />
-                </button>
-
-                <button
                   className="btn btn-light bg-white border rounded-circle p-2 shadow-sm d-flex align-items-center justify-content-center position-relative"
                   style={{ width: "40px", height: "40px" }}
                 >
@@ -182,17 +173,19 @@ const Navbar = () => {
                 >
                   <button
                     type="button"
-                    className="btn btn-link hover:bg-slate-100! text-decoration-none text-dark w-100 text-start px-3 py-2"
-                    onClick={() => navigate("/perfil-arrendador")}
+                    className="btn btn-link hover:bg-slate-100! flex! flex-row gap-1.5 items-center! text-decoration-none text-dark w-100 text-start px-3 py-2"
+                    onClick={() => navigate("/configuracion")}
                   >
-                    Perfil y datos
+                    <Settings size={18}/>
+                    Configuración
                   </button>
 
                   <button
                     type="button"
-                    className="btn btn-link hover:bg-slate-100! text-decoration-none text-dark w-100 text-start px-3 py-2"
+                    className="btn btn-link hover:bg-slate-100! flex! flex-row gap-1.5 items-center! text-decoration-none text-dark w-100 text-start px-3 py-2"
                     onClick={handleLogout}
                   >
+                    <LogOut size={18}/>
                     Cerrar sesion
                   </button>
                 </div>
