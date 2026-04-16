@@ -104,10 +104,6 @@ export default function Globals({
 
 
             <div className='flex sm:flex-row flex-col items-start self-start gap-2'>
-                <Button onClick={restablishValues} size="sm" className='text-sm! w-full rounded-md! py-0! text-nowrap' color="alternative">
-                    Restablecer valores
-                </Button>
-
                 <Button type="button" onClick={onSaveChanges} size="sm" className='text-sm! w-full text-nowrap rounded-md! py-0! bg-sky-600 hover:bg-sky-700!' color="default">
                     Guardar cambios
                 </Button>

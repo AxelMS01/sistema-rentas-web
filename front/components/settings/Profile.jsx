@@ -3,6 +3,7 @@ import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { Button, Label } from "flowbite-react";
 import EditPersonalDetails from "./EditPersonalDetailsModal";
+import EditLocationModal from "./EditLocationModal";
 
 export default function Profile({
     name,
@@ -18,10 +19,12 @@ export default function Profile({
     onEditSuccess
 }) {
     const [profDetailsModal, setProfDetailsModal] = useState(false);
+    const [locationModal, setLocationModal] = useState(false);
 
-    function handleSuccess({successMsg}) {
+    function handleSuccess(successMsg) {
         toast.success(successMsg);
         setProfDetailsModal(false);
+        setLocationModal(false);
         onEditSuccess();
     };
 
@@ -31,6 +34,12 @@ export default function Profile({
             <EditPersonalDetails 
                 isModalOpen={profDetailsModal}
                 onCloseModal={() => setProfDetailsModal(false)}
+                onEditSuccess={() => handleSuccess("¡Ubicación guardada correctamente!")}
+            />
+
+            <EditLocationModal 
+                isModalOpen={locationModal}
+                onCloseModal={() => setLocationModal(false)}
                 onEditSuccess={() => handleSuccess("¡Datos guardados correctamente!")}
             />
 
@@ -47,19 +56,10 @@ export default function Profile({
                 </div>
 
                 <div className="w-auto flex flex-col sm:gap-2! gap-3! md:items-start items-center">
-                    <p className="text-xl! font-semibold text-slate-900 text-center!">{name} {fatherSurname} {motherSurname}</p>
+                    <p className="text-xl! font-semibold text-slate-900 lg:text-center! text-start!">{name} {fatherSurname} {motherSurname}</p>
                     <p className="text-base text-slate-600 font-medium text-center!">Arrendador</p>
-                    <p className="location text-slate-500 text-sm text-center!">Durango, México</p>
-                    <Button onClick={() => ""} color="alternative" size='sm' className='sm:hidden flex text-sm! font-semibold! px-2 py-0.5! rounded-lg! flex-row gap-2 items-center'>
-                        <SquarePen size={16} />
-                        Editar
-                    </Button>
+                    <p className="location text-slate-500 text-sm text-center!">{city}, México</p>
                 </div>
-
-                <Button onClick={() => ""} color="alternative" size='sm' className='sm:flex hidden absolute top-8 right-8 text-sm! font-semibold! px-2 py-0.5! rounded-lg! flex-row gap-2 items-center'>
-                    <SquarePen size={16} />
-                    Editar
-                </Button>
             </div>
 
             <div className="relative w-full flex items-start gap-8 justify-start flex-col bg-white sm:p-8 p-6 border border-slate-200 rounded-xl!">
@@ -74,34 +74,34 @@ export default function Profile({
                 <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 md:gap-x-20 gap-y-8">
                     <div className="flex flex-col gap-2 items-start">
                         <Label className="text-sm text-slate-400 font-medium">Nombre(s)</Label>
-                        <p className="text-base text-slate-900 font-medium">
+                        <p className="text-base text-slate-900 font-medium text-start">
                             {name}
                         </p>
                     </div>
 
                     <div className="flex flex-col gap-2 items-start">
-                        <Label className="text-sm text-slate-400 font-medium">Apellido materno</Label>
-                        <p className="text-base text-slate-900 font-medium">
+                        <Label className="text-sm text-slate-400 font-medium text-start!">Apellido materno</Label>
+                        <p className="text-base text-slate-900 font-medium text-start">
                             {fatherSurname}
                         </p>
                     </div>
 
                     <div className="flex flex-col gap-2 items-start">
-                        <Label className="text-sm text-slate-400 font-medium">Apellido paterno</Label>
-                        <p className="text-base text-slate-900 font-medium">
+                        <Label className="text-sm text-slate-400 font-medium text-start!">Apellido paterno</Label>
+                        <p className="text-base text-slate-900 font-medium text-start">
                             {motherSurname}
                         </p>
                     </div>
 
                     <div className="flex flex-col gap-2 items-start">
-                        <Label className="text-sm text-slate-400 font-medium">Número de teléfono</Label>
-                        <p className="text-base text-slate-900 font-medium">
+                        <Label className="text-sm text-slate-400 font-medium text-start!">Número de teléfono</Label>
+                        <p className="text-base text-slate-900 font-medium text-start">
                             {phoneNumber}
                         </p>
                     </div>
 
                     <div className="flex flex-col gap-2 items-start">
-                        <Label className="text-sm text-slate-400 font-medium">Correo electrónico</Label>
+                        <Label className="text-sm text-slate-400 font-medium text-start!">Correo electrónico</Label>
                         <p className="text-base text-slate-900 font-medium">
                             {email}
                         </p>
@@ -112,7 +112,7 @@ export default function Profile({
             <div className="relative w-full flex items-start gap-8 justify-start flex-col bg-white sm:p-8 p-6 border border-slate-200 rounded-xl!">
                 <div className="w-full flex flex-row items-center justify-between">
                     <h1 className="text-xl! font-semibold! tracking-tight text-slate-900">Detalles de Dirección</h1>
-                    <Button onClick={() => ""} color="alternative" size='sm' className='sm:flex hidden absolute top-8 right-8 text-sm! font-semibold! px-2 py-0.5! rounded-lg! flex-row gap-2 items-center'>
+                    <Button onClick={() => setLocationModal(true)} color="alternative" size='sm' className='sm:flex hidden absolute top-8 right-8 text-sm! font-semibold! px-2 py-0.5! rounded-lg! flex-row gap-2 items-center'>
                         <SquarePen size={16} />
                         Editar
                     </Button>
@@ -120,8 +120,8 @@ export default function Profile({
 
                 <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 md:gap-x-20 gap-y-8">
                     <div className="flex flex-col gap-2 items-start">
-                        <Label className="text-sm text-slate-400 font-medium">Calle</Label>
-                        <p className="text-base text-slate-900 font-medium">
+                        <Label className="text-sm text-slate-400 font-medium text-start!">Calle</Label>
+                        <p className="text-base text-slate-900 font-medium text-start!">
                             {street}
                         </p>
                     </div>
@@ -133,9 +133,9 @@ export default function Profile({
                         </p>
                     </div>
 
-                    <div className="flex flex-col gap-2 items-start">
-                        <Label className="text-sm text-slate-400 font-medium">Colonia/Fraccionamiento</Label>
-                        <p className="text-base text-slate-900 font-medium">
+                    <div className="flex flex-col gap-2 items-start wrap-break-word!">
+                        <Label className="text-sm text-slate-400 font-medium text-start! wrap-break-word!">Colonia/Fraccionamiento</Label>
+                        <p className="text-base text-slate-900 font-medium text-start!">
                             {division}
                         </p>
                     </div>

@@ -7,7 +7,7 @@ import { supabase } from "../../config/supabase-client";
  * Represents an edition modal for the Setting's profile section.
  */
 
-export default function EditPersonalDetails({ onCloseModal, isModalOpen, onEditSuccess }) {
+export default function EditLocationModal({ onCloseModal, isModalOpen, onEditSuccess }) {
     const [street, setStreet] = useState("");
     const [extNum, setExtNum]  = useState("");
     const [division, setDivision] = useState("");
@@ -20,11 +20,11 @@ export default function EditPersonalDetails({ onCloseModal, isModalOpen, onEditS
         const { error } = await supabase
             .from("owners")
             .update({
-                name: name,
-                father_surname: fatherSurname,
-                mother_surname: motherSurname,
-                phone: phoneNumber,
-                email: email
+                street: street,
+                ext_num: extNum,
+                division: division,
+                city: city,
+                state: state
             })
             .eq("id", loggedUserId);
 
@@ -84,28 +84,28 @@ export default function EditPersonalDetails({ onCloseModal, isModalOpen, onEditS
 
                         <div>
                             <div className="mb-2 block">
-                                <Label htmlFor="password">Estado</Label>
+                                <Label htmlFor="password">Ciudad</Label>
                             </div>
                             <TextInput
                                 className="text-sm"
                                 type="text"
                                 placeholder="Ciudad"
-                                value={state}
-                                onChange={(e) => setState(e.target.value)}
+                                value={city}
+                                onChange={(e) => setCity(e.target.value)}
                                 required
                             />
                         </div>
 
                         <div>
                             <div className="mb-2 block">
-                                <Label htmlFor="password">Ciudad</Label>
+                                <Label htmlFor="password">State</Label>
                             </div>
                             <TextInput
                                 className="text-sm"
                                 type="text"
-                                placeholder="Correo electrónico"
-                                value={city}
-                                onChange={(e) => setCity(e.target.value)}
+                                placeholder="Estado"
+                                value={state}
+                                onChange={(e) => setState(e.target.value)}
                                 required
                             />
                         </div>
@@ -115,7 +115,7 @@ export default function EditPersonalDetails({ onCloseModal, isModalOpen, onEditS
                                 Cancelar
                             </Button>
                             <Button className="w-full text-sm! rounded-lg! bg-sky-600 hover:bg-sky-700! px-4! py-2!" onClick={handleSaveData}>
-                                Guardar contrato
+                                Guardar datos
                             </Button>
                         </div>
                     </div>
