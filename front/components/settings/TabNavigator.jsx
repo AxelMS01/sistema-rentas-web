@@ -11,7 +11,7 @@ export default function TabNavigator({ onTabChange }) {
     };
 
     return (
-        <div className="flex flex-col gap-2 border-r border-slate-200 pr-8">
+        <div className="flex flex-col gap-2 lg:border-r lg:border-b-0 border-b border-r-0 border-slate-200 lg:pr-8 pb-8">
             <ProfileTab
                 tabName="Perfil"
                 isActive={activeTab === "profile"}

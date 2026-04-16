@@ -53,7 +53,7 @@ export default function Globals({
                 <div className="w-full flex items-start gap-6 flex-col bg-white sm:p-6 p-4 border border-slate-200 rounded-xl!">
                     <h1 className="text-xl! font-semibold! tracking-tight text-slate-900">Cobros y Mora</h1>
 
-                    <div className="flex flex-row gap-3">
+                    <div className="flex sm:flex-row flex-col gap-3">
                         <div className="flex flex-col items-start min-w-40">
                             <div className="mb-2 block">
                                 <Label htmlFor="countries">Tipo de cargo</Label>

@@ -127,14 +127,14 @@ export default function Profile({
                     </div>
 
                     <div className="flex flex-col gap-2 items-start">
-                        <Label className="text-sm text-slate-400 font-medium">Número exterior</Label>
+                        <Label className="text-sm text-slate-400 font-medium text-start!">Número exterior</Label>
                         <p className="text-base text-slate-900 font-medium">
                             {extNum}
                         </p>
                     </div>
 
                     <div className="flex flex-col gap-2 items-start wrap-break-word!">
-                        <Label className="text-sm text-slate-400 font-medium text-start! wrap-break-word!">Colonia/Fraccionamiento</Label>
+                        <Label className="text-sm text-slate-400 font-medium text-start! wrap-break-word! text-wrap!">Colonia o Fraccionamiento</Label>
                         <p className="text-base text-slate-900 font-medium text-start!">
                             {division}
                         </p>

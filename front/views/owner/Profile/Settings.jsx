@@ -73,7 +73,7 @@ function OwnerProfile() {
         <div className="w-full min-h-screen flex flex-col gap-8! lg:px-20! sm:px-16! px-8! py-10!">
             <h1 className="text-start font-semibold! tracking-tight">Configuración</h1>
 
-            <div className="flex flex-row gap-8 bg-white border border-slate-200 p-6! rounded-2xl">
+            <div className="flex lg:flex-row flex-col gap-8 bg-white border border-slate-200 p-6! rounded-2xl">
                 <TabNavigator onTabChange={setActiveTab} />
 
                 {activeTab === "profile" && (
