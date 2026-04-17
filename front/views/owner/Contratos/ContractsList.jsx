@@ -44,7 +44,6 @@ const Viviendas = () => {
       if (error) throw error;
 
       setContratos(data);
-      console.log(data);
 
     } catch (err) {
       console.error(err);

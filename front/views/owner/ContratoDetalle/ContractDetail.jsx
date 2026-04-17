@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Modal, Button, Form, Spinner } from "react-bootstrap";
 
 import EditarContratoModal from "../Forms/EditarContratoModal";
 import { supabase } from "../../../config/supabase-client";

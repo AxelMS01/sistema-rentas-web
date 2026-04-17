@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { LuHand, LuHouse, LuInfo, LuSettings, LuArrowLeft, LuSquarePen, LuArchive, LuArchiveRestore, LuCircleCheck, LuCircleDot } from "react-icons/lu";
-import { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
+import CreateTenantModal from "../../../components/apartments/CreateTenantModal";
 import mensajeExito from "../../../utils/mensaje-exito";
 import EditarForm from "../Forms/Editarform";
 import Button from "../../../components/Button";
@@ -53,6 +54,8 @@ export default function ViviendaDetalle() {
   const [tenantSaving, setTenantSaving] = useState(false);
   const [tenantMsg, setTenantMsg] = useState("");
   const [isOnEdit, setIsOnEdit] = useState(false);
+  const [tenantCreation, setTenantCreation] = useState(false);
+  const [successfulAction, setSuccessfulAction] = useState(0);
 
   useEffect(() => {
     const fetchVivienda = async () => {
@@ -77,10 +80,16 @@ export default function ViviendaDetalle() {
     };
 
     fetchVivienda();
-  }, [id]);
+  }, [id, successfulAction]);
 
   if (loading) return <div className="text-center py-5">Cargando detalles...</div>;
   if (error) return <div className="text-center py-5 text-danger">{error}</div>;
+
+  function onCreateTenant() {
+    toast.success("¡Arrendatario creado!");
+    setTenantCreation(false);
+    setSuccessfulAction(successfulAction + 1);
+  };
 
   const cambiarEstado = () => {
     setVivienda((prev) => ({
@@ -117,42 +126,6 @@ export default function ViviendaDetalle() {
       mensajeExito("¡Estatus actualizado!");
       setSaving(false);
     };
-  };
-
-  const abrirGestionArrendatario = async () => {
-    if (!vivienda) return;
-
-    // Manejar la edición de las credenciales de un arrendatario (cuando ya se ha creado).
-    /*
-    setTenantMsg("");
-    setTenantForm({
-      ...emptyTenantForm,
-      name: vivienda.tenant_name || "",
-      phone: vivienda.tenant_phone || "",
-      email: vivienda.tenant_email || ""
-    });
-
-    if (!vivienda.tenant_id) return;
-
-    try {
-      
-      const res = await fetch(`${REACT_APP_API_URL}/tenants/${vivienda.tenant_id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      if (!res.ok) return;
-
-      const data = await res.json();
-      setTenantForm((prev) => ({
-        ...prev,
-        name: data?.name || prev.name,
-        phone: data?.phone || prev.phone,
-        email: data?.email || prev.email,
-        governmentid: data?.governmentid || ""
-      }));
-    } catch (err) {
-      console.error(err);
-    }*/
   };
 
   const guardarArrendatario = async (e) => {
@@ -225,7 +198,7 @@ export default function ViviendaDetalle() {
   const isOccupied = vivienda?.status === "OCCUPIED";
 
   return (
-    <div className="w-full h-full flex flex-col gap-6! lg:px-20! py-10">
+    <div className="w-full h-full flex flex-col gap-6! lg:px-20! sm:px-14 px-8 py-10 items-start">
       <Link to="/viviendas" style={{ textDecoration: "none" }} className="flex flex-row gap-2 items-center justify-center w-auto self-start m-0 bg-white border border-slate-200 px-3 py-2 rounded-md">
         <LuArrowLeft className="text-sky-600" size={18} />
 
@@ -234,10 +207,10 @@ export default function ViviendaDetalle() {
         </p>
       </Link>
 
-      <div className="flex lg:flex-row flex-col justify-between items-center">
-        <div className="flex flex-col items-start">
+      <div className="flex w-full lg:flex-row flex-col justify-between! lg:items-center! items-start gap-6">
+        <div className="flex flex-col items-start gap-2">
           <h1 className="text-start font-light fw-semibold tracking-tight">Viviendas</h1>
-          <p className="text-base font-medium text-slate-500">Visualiza las viviendas registradas en el sistema fácil y rápidamente.</p>
+          <p className="text-base font-medium text-slate-500 text-start">Visualiza las viviendas registradas en el sistema fácil y rápidamente.</p>
         </div>
 
         <button
@@ -245,7 +218,7 @@ export default function ViviendaDetalle() {
           className="bg-sky-600 flex flex-row gap-2 px-3 py-2 rounded-md! items-center justify-center text-sm! text-white font-medium"
           data-bs-toggle="modal"
           data-bs-target="#tenantAccountModal"
-          onClick={abrirGestionArrendatario}
+          onClick={() => setTenantCreation(true)}
         >
           <LuSettings size={18} />
           Gestionar cuenta de arrendatario
@@ -255,11 +228,11 @@ export default function ViviendaDetalle() {
       <Toaster />
 
       <div className="w-full grid grid-cols-3 gap-4">
-        <div className="general-detail col-span-2 w-full bg-white border border-slate-200 p-4 rounded-xl flex flex-col gap-4 justify-start">
+        <div className="general-detail lg:col-span-2 col-span-3 w-full bg-white border border-slate-200 p-4 rounded-xl flex flex-col gap-4 justify-start">
           <div className="card-header flex flex-row gap-2 items-center justify-start w-full">
             <LuHouse size={21} strokeWidth={2.5} />
 
-            <h1 className="text-2xl! m-0! font-semibold!">
+            <h1 className="text-2xl! m-0! font-semibold! text-start text-wrap">
               Datos Generales
             </h1>
           </div>
@@ -277,7 +250,7 @@ export default function ViviendaDetalle() {
           </div>
         </div>
 
-        <div className="w-full flex flex-col gap-4">
+        <div className="w-full flex flex-col gap-4 lg:col-span-1 col-span-3">
           <div className="general-detail w-full bg-white border border-slate-200 p-4 rounded-xl flex flex-col gap-4 justify-start">
             <div className="card-header flex flex-row gap-2 items-center justify-start w-full">
               <LuInfo size={21} strokeWidth={2.5} />
@@ -399,115 +372,7 @@ export default function ViviendaDetalle() {
         />
       )}
 
-      <div
-        className="modal fade"
-        id="tenantAccountModal"
-        tabIndex="-1"
-        aria-labelledby="tenantAccountModalLabel"
-        aria-hidden="true"
-      >
-        <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id="tenantAccountModalLabel">
-                {vivienda?.tenant_id ? "Editar arrendatario" : "Crear arrendatario"}
-              </h5>
-              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-
-            <form onSubmit={guardarArrendatario}>
-              <div className="modal-body">
-                <div className="mb-3">
-                  <label className="form-label">Nombre(s)</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={tenantForm.name}
-                    onChange={(e) => setTenantForm((prev) => ({ ...prev, name: e.target.value }))}
-                    required
-                  />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Apellido paterno</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={tenantForm.father_surname}
-                    onChange={(e) => setTenantForm((prev) => ({ ...prev, father_surname: e.target.value }))}
-                    required
-                  />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Apellido materno</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={tenantForm.mother_surname}
-                    onChange={(e) => setTenantForm((prev) => ({ ...prev, mother_surname: e.target.value }))}
-                    required
-                  />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Teléfono</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={tenantForm.phone}
-                    onChange={(e) => setTenantForm((prev) => ({ ...prev, phone: e.target.value }))}
-                  />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Correo</label>
-                  <input
-                    type="email"
-                    className="form-control"
-                    value={tenantForm.email}
-                    onChange={(e) => setTenantForm((prev) => ({ ...prev, email: e.target.value }))}
-                  />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Identificación oficial</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={tenantForm.governmentid}
-                    onChange={(e) => setTenantForm((prev) => ({ ...prev, governmentid: e.target.value }))}
-                    required
-                  />
-                </div>
-                <div className="mb-0">
-                  <label className="form-label">
-                    {vivienda?.tenant_id ? "Nueva contraseña (opcional)" : "Contraseña"}
-                  </label>
-                  <input
-                    type="password"
-                    className="form-control"
-                    value={tenantForm.password}
-                    onChange={(e) => setTenantForm((prev) => ({ ...prev, password: e.target.value }))}
-                    required={!vivienda?.tenant_id}
-                  />
-                </div>
-                {tenantMsg && (
-                  <small
-                    className={`d-block mt-2 ${tenantMsg.includes("correctamente") ? "text-success" : "text-danger"
-                      }`}
-                  >
-                    {tenantMsg}
-                  </small>
-                )}
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-outline-secondary" data-bs-dismiss="modal">
-                  Cerrar
-                </button>
-                <button type="submit" className="btn btn-dark" disabled={tenantSaving}>
-                  {tenantSaving ? "Guardando..." : "Guardar arrendatario"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+      <CreateTenantModal isModalOpen={tenantCreation} onCreateSuccess={onCreateTenant} onCloseModal={() => setTenantCreation(false)}/>
     </div>
   );
 }

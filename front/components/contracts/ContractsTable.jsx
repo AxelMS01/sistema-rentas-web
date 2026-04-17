@@ -1,4 +1,3 @@
-
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from "flowbite-react";
 import { useNavigate } from 'react-router-dom';
 import { format } from "date-fns";
@@ -7,38 +6,59 @@ import "../../views/owner/Incidencias/Incidencias.css";
 import { supabase } from "../../config/supabase-client";
 import { Button } from "flowbite-react";
 import { Eye, SquarePen } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function ContractsTable({
     contracts,
     onEdit
 }) {
-
     const navigate = useNavigate();
+    const [apartmentNames, setApartmentNames] = useState([]);
+    const [tenantNames, setTenantNames] = useState([{}]);
 
-    const getApartmentName = async (tenantId) => {
-        const { data, error } = await supabase
-            .from("apartments")
-            .select("name")
-            .eq("tenant_id", tenantId)
+    useEffect(() => {
+        async function getApartmentsNames() {
+            const apartmentNamesPromises = Array.from(contracts).map(async (contract) => {
+                try {
+                    const { data, error } = await supabase
+                        .from("apartments")
+                        .select("name")
+                        .eq("id", contract.apartmentid)
 
-        if (error) throw error;
+                    if (error) throw error;
+                    
+                    setApartmentNames(data);
+                } catch (error) {
+                    console.log(error);
+                };
+            });
 
-        return data[0].name;
-    };
+            await Promise.all(apartmentNamesPromises);
+        };
 
-    const getTenantName = async (tenantId) => {
-        const { data, error } = await supabase
-            .from("tenants")
-            .select("name", "father_surname", "mother_surname")
-            .eq("id", tenantId);
+        async function getTenantsNames() {
+            const tenantNamesPromises = Array.from(contracts).map(async (contract) => {
+                try {
+                    const { data, error } = await supabase
+                        .from("tenants")
+                        .select("name, father_surname, mother_surname")
+                        .eq("id", contract.tenantid);
 
-        if (error) throw error;
+                    if (error) throw error;
 
-        // Build a string containing the name of the tenant, using the received data from Supabase.
-        const tenantName = data[0].name + " " + data[0].father_surname + " " + data[0].mother_surname;
+                    console.log("data2", data);
 
-        return tenantName;
-    };
+                    setTenantNames(data);
+                } catch (error) {
+                    console.log(error);
+                };
+            });
+
+            await Promise.all(tenantNamesPromises);
+        };
+
+        getApartmentsNames().then(getTenantsNames());
+    }, []);
 
     return (
         <div className="overflow-x-auto" >
@@ -55,14 +75,20 @@ export default function ContractsTable({
                 </TableHead>
                 <TableBody className="divide-y! border-b-gray-200!">
                     {contracts.map((contract, id) => {
+                        const apartmentName = apartmentNames[id].name;
+                        const tenantName = tenantNames[id].name + " " + tenantNames[id].father_surname + " " + tenantNames[id].mother_surname;
+
                         return (
                             <TableRow key={id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                                <TableCell>Contrato-{(contract.id).toString().padStart(4, '0')}</TableCell>
-                                <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">{getApartmentName(contract.id)}</TableCell>
-                                <TableCell>{getTenantName(contract.tenantid)}</TableCell>
+                                <TableCell>Contrato-{contract.id}</TableCell>
+                                <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">{apartmentName}</TableCell>
+                                <TableCell>{tenantName}</TableCell>
                                 <TableCell>
-                                    {format(contract.startdate, "PPP", { locale: es })} al
-                                    {format(contract.enddate, "PPP", { locale: es })}
+                                    <div className="flex! w-full flex-col! gap-2">
+                                        <p className="font-medium">{format(contract.startdate, "dd-MM-yyyy", { locale: es })}</p>
+                                        <p>al</p>
+                                        <p className="font-medium">{format(contract.enddate, "dd-MM-yyyy", { locale: es })}</p>
+                                    </div>
                                 </TableCell>
                                 <TableCell>
                                     <p className="text-green-500 font-medium">${contract.depositamount} MXN</p>

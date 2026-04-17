@@ -1,7 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import LoginForm from "../views/owner/LoginForm/LoginForm";
 import RegisterPage from "../views/owner/Register/Register";
 import Dashboard from "../views/owner/Dashboard/Dashboard";
@@ -16,6 +13,9 @@ import Navbar from "../components/Navbar/Navbar";
 import Home from "../views/tenant/Home/Home";
 import WelcomeForm from "../views/tenant/WelcomeForm";
 import Settings from "../views/owner/Profile/Settings";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 // REMOVED: import Configuracion from "./Components/Forms/Configuracion";
 

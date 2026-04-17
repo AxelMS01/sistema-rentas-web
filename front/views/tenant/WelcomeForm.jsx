@@ -7,6 +7,7 @@ import { CircleUser, Eraser, Grid2X2Check } from 'lucide-react';
 import { Button } from 'flowbite-react';
 import SignatureCanvas from 'react-signature-canvas';
 import { useNavigate } from 'react-router-dom';
+import Signature from "@uiw/react-signature/canvas";
 
 export default function WelcomeForm({ firstName }) {
     const [curp, setCurp] = useState("");
@@ -16,7 +17,7 @@ export default function WelcomeForm({ firstName }) {
     const [fatherSurname, setFatherSurname] = useState("");
     const [alternateAddress, setAlternateAddress] = useState("");
     const [currentStep, setCurrentStep] = useState(1);
-    const signatureRef = useRef(null);
+    const $canvas = useRef(null);
 
     const navigate = useNavigate();
 
@@ -25,8 +26,9 @@ export default function WelcomeForm({ firstName }) {
 
     function onSubmitData(e) {
         e.preventDefault;
+        console.log($canvas.current?.canvas.toDataURL());
 
-        if (!name || !motherSurname || !fatherSurname || !alternateAddress | !signatureRef) {
+        if (!name || !motherSurname || !fatherSurname || !alternateAddress | !$canvas) {
             toast.error("¡Ningún campo del formulario puede quedarse vacío!");
             return;
         };
@@ -175,15 +177,32 @@ export default function WelcomeForm({ firstName }) {
                         <div className='flex flex-col gap-4 items-start justify-start'>
                             <p className='text-start text-sm! text-slate-600'>Por favor, dibuja tu firma en el siguiente lienzo, la cual será utilizada para firmar el contrato final.</p>
 
-                            <div className='relative signature-container w-full h-48 border border-slate-200 rounded-xl bg-slate-50'>
-                                <Button onClick={() => signatureRef.current.clear()} color="alternative" size='xs' className='absolute top-3 right-3 text-xs! font-semibold! px-2 py-0.5! rounded-lg! flex flex-row gap-2 items-center'>
+                            <div className='relative signature-container items-start border border-slate-200 rounded-xl bg-slate-50'>
+                                <Button onClick={() => $canvas.current.clear()} color="alternative" size='xs' className='absolute z-999 top-3 right-3 text-xs! font-semibold! px-2 py-0.5! rounded-lg! flex flex-row gap-2 items-center'>
                                     <Eraser size={16} />
                                     Restablecer
                                 </Button>
 
-                                <SignatureCanvas
-                                    canvasProps={{ className: "canvas" }}
-                                    ref={signatureRef}
+                                <Signature
+                                    ref={$canvas}
+                                    options={{
+                                        smoothing: 0.46,
+                                        thinning: 0.73,
+                                        streamline: 0.5,
+                                        easing: (t) => t,
+                                        simulatePressure: true,
+                                        last: true,
+                                        start: {
+                                            cap: true,
+                                            taper: 0,
+                                            easing: (t) => t,
+                                        },
+                                        end: {
+                                            cap: true,
+                                            taper: 0,
+                                            easing: (t) => t,
+                                        },
+                                    }}
                                 />
                             </div>
 

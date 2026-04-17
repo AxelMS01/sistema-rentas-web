@@ -106,7 +106,10 @@ function OwnerProfile() {
                 )}
 
                 {activeTab === "signature" && (
-                    <SignatureSection />
+                    <SignatureSection
+                        defaultSignUrl={ownerInfo.signatureUrl}
+                        onUpdateSuccess={() => setSuccessfulAction(successfulAction + 1)}
+                    />
                 )}
             </div>
         </div>
