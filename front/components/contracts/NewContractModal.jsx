@@ -139,7 +139,7 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
                     <form onSubmit={onSubmitData} className='flex flex-col gap-4'>
 
                         <div className='flex flex-col gap-2 items-start text-start'>
-                            <p className='text-sm font-medium!'>Selecciona una vivienda</p>
+                            <p className='text-sm font-medium!'>Selecciona una de tus viviendas</p>
                             <Select className="w-full" defaultValue="1" value={apartmentId} onChange={(e) => setApartmentId(e.target.value)}>
                                 {apartmentOptions.map((apartment, id) => {
                                     return (

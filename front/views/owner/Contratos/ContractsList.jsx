@@ -101,7 +101,7 @@ const Viviendas = () => {
         />
       </div>
 
-      <ContractsTable contracts={contratos} onEdit={setEditingContractId} />
+      <ContractsTable contracts={contratos} onEdit={setEditingContractId} finishLoading={() => setLoading(false)} />
 
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 footer-pagination mt-4">
         <span className="text-muted small">Mostrando {contratos.length} contratos</span>
