@@ -100,12 +100,18 @@ export default function ContractsTable({
                                     </TableCell>
                                     <TableCell>
                                         <div className="w-full flex flex-col gap-2">
-                                            <Button onClick={() => onEdit(contract.id)} className="rounded-md! flex flex-row gap-1.5 text-nowrap text-[13px]!" size="xs" color="alternative">
+                                            <Button onClick={() => onEdit(contract)} className="rounded-md! flex flex-row gap-1.5 text-nowrap text-[13px]!" size="xs" color="alternative">
                                                 <SquarePen size={14} />
                                                 Editar
                                             </Button>
 
-                                            <Button onClick={() => navigate("/contratos/" + contract.id)} className="rounded-md! flex flex-row gap-1.5 text-nowrap text-[13px]!" size="xs" color="alternative">
+                                            <Button onClick={() => navigate("/contratos/" + contract.id + "/detalles", {state: {
+                                                tenantName: tenantName,
+                                                rentCost: contract.depositamount,
+                                                startDate: contract.startdate,
+                                                endDate: contract.enddate,
+                                                contractStatus: contract.status
+                                            }})} className="rounded-md! flex flex-row gap-1.5 text-nowrap text-[13px]!" size="xs" color="alternative">
                                                 <Eye size={14} />
                                                 Ver detalles
                                             </Button>

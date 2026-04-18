@@ -24,6 +24,8 @@ const Viviendas = () => {
   const [propiedadSeleccionada, setPropiedadSeleccionada] = useState(null);
   const [editingContractId, setEditingContractId] = useState(null);
 
+  const [editData, setEditData] = useState();
+
   useEffect(() => {
     setPaginaActual(1); // Reset to first page on filter change
   }, [filtroStatus, filtroBusqueda]);
@@ -70,6 +72,12 @@ const Viviendas = () => {
   if (loading) return <div className="text-center py-5">Cargando datos...</div>;
   if (error) return <div className="text-center py-5 text-danger">{error}</div>;
 
+  function handleOpenEdit(editContractData) {
+    console.log(editContractData);
+    setEditData(editContractData);
+    setShowCreationModal(true);
+  };
+
   // ------------------------------
   //  NORMAL RENDER
   // ------------------------------
@@ -77,7 +85,7 @@ const Viviendas = () => {
   return (
     <div className="w-full h-screen flex flex-col gap-4! lg:px-20! sm:px-16! px-8! py-10">
       {showCreationModal && (
-        <NewContractModal isModalOpen={showCreationModal} onCloseModal={() => setShowCreationModal(false)} />
+        <NewContractModal isModalOpen={showCreationModal} onCloseModal={() => setShowCreationModal(false)} isOnEditData={editData} />
       )}
 
       <div className="flex w-full md:flex-row flex-col justify-between md:items-center items-start gap-6">
@@ -101,7 +109,7 @@ const Viviendas = () => {
         />
       </div>
 
-      <ContractsTable contracts={contratos} onEdit={setEditingContractId} finishLoading={() => setLoading(false)} />
+      <ContractsTable contracts={contratos} onEdit={handleOpenEdit} finishLoading={() => setLoading(false)} />
 
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 footer-pagination mt-4">
         <span className="text-muted small">Mostrando {contratos.length} contratos</span>
@@ -120,14 +128,6 @@ const Viviendas = () => {
           </ul>
         </nav>
       </div>
-
-      {editingContractId && (
-        <EditarContratoModal
-          contractId={editingContractId}
-          onClose={() => setEditingContractId(null)}
-          onUpdated={handleContractUpdated}
-        />
-      )}
     </div>
   );
 };

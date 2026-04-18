@@ -29,9 +29,15 @@ const Home = () => {
           .from("tenants")
           .select()
           .eq("id", loggedUserId);
-        
-          if (error) throw error;
 
+        if (error) throw error;
+
+        // Check if it's the first time of the user in the system.
+        if (data[0].is_first_time === true) {
+          navigate("/bienvenida", { state: data[0] });
+        } else {
+          setDatos(data[0]);
+        }
       } catch (error) {
         console.log("Error details:", error)
       } finally {

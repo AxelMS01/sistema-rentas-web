@@ -1,42 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-
+import { Link, useLocation, useParams } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 import EditarContratoModal from "../Forms/EditarContratoModal";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 import { supabase } from "../../../config/supabase-client";
-
+import { ArrowLeft, Banknote, Download, Info, ScrollText, Settings } from "lucide-react";
+import ContractPaymentsTable from "../../../components/contracts/ContractPaymentsTable";
+import ContractBadge from "../../../components/contracts/ContractBadge";
 export const token = localStorage.getItem("token");
-
-const StatusBadge = ({ status }) => {
-
-
-    let color = "secondary";
-    let dotColor = "secondary";
-
-    if (status === "PENDING") {
-        color = "danger";
-        dotColor = "danger";
-    } else if (status === "PAID") {
-        color = "success";
-        dotColor = "success";
-    } else if (status === "PENDING") {
-        color = "warning";
-        dotColor = "warning";
-    }
-
-    return (
-        <span className={`badge bg-light text-dark border`}>
-            <span
-                className={`me-1 rounded-circle bg-${dotColor}`}
-                style={{ width: 8, height: 8, display: "inline-block" }}
-            ></span>
-            {status}
-        </span>
-    );
-};
 
 export default function ContractDetails() {
 
+    // React Router functions.
     const { id } = useParams();
+    const location = useLocation().state;
+
     const [contrato, setContrato] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -50,8 +29,6 @@ export default function ContractDetails() {
     const [paymentMethod, setPaymentMethod] = useState('CASH');
     const [paymentLoading, setPaymentLoading] = useState(false);
     const [paymentError, setPaymentError] = useState('');
-
-
     const [editingContractId, setEditingContractId] = useState(null);
 
     const handleContractUpdated = () => {
@@ -88,36 +65,20 @@ export default function ContractDetails() {
         try {
             setLoading(true);
 
-            {/*
-                            const [contractRes, invoicesRes] = await Promise.all([
-                fetch(`${REACT_APP_API_URL}/rentalcontracts/${id}`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                }),
-                fetch(`${REACT_APP_API_URL}/invoices?contract_id=${id}`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                })
-            ]);
+            const { data, error } = await supabase
+                .from("rentalcontracts")
+                .select()
+                .eq("id", id);
 
-            if (!contractRes.ok || !invoicesRes.ok) {
-                throw new Error("Error loading data");
-            }
+            if (error) throw error;
 
-            const contractData = await contractRes.json();
-            const invoicesData = await invoicesRes.json();
-                */}
-
-            const { contractData } = await supabase.from("rentalcontracts").select();
-            const { invoicesData } = await supabase.from("invoices").select();
-
-            setContrato(contractData);
-            setInvoices(invoicesData);
-
+            setContrato(data[0]);
         } catch (err) {
             console.error(err);
-            setError("Error loading data");
+            setError("Hubo un error al cargar los datos");
         } finally {
             setLoading(false);
-        }
+        };
     };
 
     // ⬇ Fetch data from backend on page load
@@ -129,188 +90,95 @@ export default function ContractDetails() {
     if (loading) return <div className="text-center py-5">Cargando datos...</div>;
     if (error) return <div className="text-center py-5 text-danger">{error}</div>;
 
-    const contractId = contrato?.id ? String(contrato.id).padStart(4, "0") : "----";
-
     return (
-        <div className="container-fluid px-5 py-4 bg-light min-vh-100">
+        <div className="w-full min-h-screen flex flex-col gap-6! lg:px-20! sm:px-14 px-8 py-10 items-start">
+            <Link to="/contratos" style={{ textDecoration: "none" }} className="flex flex-row gap-2 items-center justify-center w-auto self-start m-0 bg-white border border-slate-200 px-3 py-2 rounded-md">
+                <ArrowLeft className="text-sky-600" size={18} />
 
-            {editingContractId && (
-                <EditarContratoModal
-                    contractId={editingContractId}
-                    onClose={() => setEditingContractId(null)}
-                    onUpdated={handleContractUpdated}
-                />
-            )}
+                <p className="text-start font-semibold text-sky-600 m-0! text-sm">
+                    Regresar a todos los contratos
+                </p>
+            </Link>
 
-            {/* HEADER */}
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h3 className="fw-bold">Contratos</h3>
-                    <p className="text-muted mb-1">
-                        Consulta los contratos que han sido generados en el sistema.
-                    </p>
-
-                    <div className="mt-2">
-                        <span className="text-muted">Todos los Contratos</span>
-                        <span className="mx-2">{">"}</span>
-                        <span className="text-primary fw-semibold">
-                            Detalles del Contrato-{contractId}
-                        </span>
+            <div className="flex w-full lg:flex-row flex-col justify-between! lg:items-center! items-start gap-6">
+                <div className="flex flex-col items-start gap-3">
+                    <h1 className="text-start font-light fw-semibold tracking-tight">Detalles del contrato</h1>
+                    <div className="w-full text-sm! flex flex-row gap-2 px-3 py-2 bg-sky-50 items-center rounded border border-sky-400!">
+                        <ScrollText size={18} className="text-sky-700" />
+                        <p className="font-medium text-sky-700">ID del contrato:</p>
+                        <p className="font-medium text-slate-800">Contrato-{contrato.id}</p>
                     </div>
                 </div>
 
-                <button className="btn btn-dark" onClick={() => setEditingContractId(contrato.id)}>
-                    <i className="bi bi-pencil me-2"></i>
-                    Editar contrato
-                </button>
+                {contrato.status != "pending" && (
+                    <button
+                        type="button"
+                        className="bg-sky-600 flex flex-row gap-2 px-3 py-2 rounded-md! items-center justify-center text-sm! text-white font-medium"
+                        data-bs-toggle="modal"
+                        data-bs-target="#tenantAccountModal"
+                        onClick={() => setTenantCreation(true)}
+                    >
+                        <Download size={18} />
+                        Descargar en PDF
+                    </button>
+                )}
             </div>
 
-            <div className="row g-4">
+            <Toaster />
 
-                {/* LEFT SIDE - PAYMENT TABLE */}
-                <div className="col-lg-8">
-                    <div className="card w-100 shadow-sm border-0 rounded-4">
-                        <div className="card-body">
+            <div className="w-full grid grid-cols-3 gap-4">
+                <div className="general-detail lg:col-span-2 col-span-3 w-full bg-white border border-slate-200 p-4 rounded-xl flex flex-col gap-4 justify-start">
+                    <div className="card-header flex flex-row gap-2 items-center justify-start w-full">
+                        <Banknote size={28} strokeWidth={2.5} />
 
-                            <h6 className="fw-bold mb-3">
-                                <i className="bi bi-credit-card me-2"></i>
-                                Corrida de pagos de renta
-                            </h6>
+                        <h1 className="text-2xl! m-0! font-semibold! text-start text-wrap">
+                            Corrida de pagos de renta
+                        </h1>
+                    </div>
 
-                            <div className="table-responsive">
-                                <table className="table align-middle">
-                                    <thead className="table-light">
-                                        <tr>
-                                            <th>Fecha de pago</th>
-                                            <th>Concepto</th>
-                                            <th>Pago pendiente</th>
-                                            <th>Pagado</th>
-                                            <th>Estado</th>
-                                            <th>Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {invoices.map((p, index) => (
-                                            <tr key={p.id}>
-                                                <td>{formatDate(p.duedate)}</td>
-                                                <td>Pago de renta</td>
-                                                <td className="text-warning fw-semibold">
-                                                    ${p.amount - p.total_paid}
-                                                </td>
-                                                <td className="text-success fw-semibold">
-                                                    ${p.total_paid}
-                                                </td>
-                                                <td>
-                                                    <StatusBadge status={p.status} />
-                                                </td>
-                                                <td>
-                                                    <div className="d-flex gap-2">
-                                                        <button title="Ver recibo" className="btn btn-sm btn-outline-secondary">
-                                                            <i className="bi bi-receipt"></i>
-                                                        </button>
-                                                        <button
-                                                            title="Pago manual"
-                                                            className="btn btn-sm btn-outline-secondary"
-                                                            onClick={() => {
-                                                                setSelectedInvoice(p);
-                                                                setPaymentAmount(p.amount - p.total_paid);
-                                                                setPaymentDate(new Date().toISOString().split('T')[0]);
-                                                                setPaymentMethod('CASH');
-                                                                setShowPaymentModal(true);
-                                                            }}
-                                                        >
-                                                            <i className="bi bi-pencil"></i>
-                                                        </button>
-                                                        <button title="Enviar recordatorio" className="btn btn-sm btn-outline-secondary">
-                                                            <i className="bi bi-envelope"></i>
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                    <ContractPaymentsTable />
+                </div>
 
-                            <div className="d-flex justify-content-between mt-3">
-                                <small className="text-muted">Mostrando {invoices.length} pagos</small>
-                                <small className="text-muted">
-                                    Página 1 de 1
-                                </small>
-                            </div>
+                <div className="w-full flex flex-col gap-4 lg:col-span-1 col-span-3">
+                    <div className="general-detail w-full bg-white border border-slate-200 p-4 rounded-xl flex flex-col gap-4 justify-start">
+                        <div className="card-header flex flex-row gap-2 items-center justify-start w-full">
+                            <Info size={21} strokeWidth={2.5} />
 
+                            <h1 className="text-2xl! m-0! font-semibold!">
+                                Información
+                            </h1>
+                        </div>
+
+                        <div className="flex sm:flex-row flex-col sm:gap-4 gap-2 sm:items-center items-start w-full justify-between">
+                            <span className="font-medium text-slate-500">Costo de renta</span>
+                            <span className="text-emerald-500 font-semibold">
+                                ${contrato.depositamount}
+                            </span>
+                        </div>
+
+                        <div className="flex sm:flex-row flex-col sm:gap-4 gap-2 sm:items-center items-start w-full justify-between">
+                            <span className="font-medium text-slate-500">Arrendatario</span>
+                            <span className="info-value">
+                                {location.tenantName}
+                            </span>
+                        </div>
+
+                        <div className="flex sm:flex-row flex-col sm:gap-4 gap-2 items-start w-full justify-between">
+                            <span className="font-medium text-slate-500">Duración del contrato</span>
+                            <span className="info-value">
+                                <p>{format(location.startDate, "PP", { locale: es })}</p>
+                                <p className="font-normal text-slate-600">al</p>
+                                <p>{format(location.endDate, "PP", { locale: es })}</p>
+                            </span>
+                        </div>
+
+                        <div className="flex sm:flex-row flex-col sm:gap-4 gap-2 sm:items-center items-start w-full justify-between">
+                            <span className="font-medium text-slate-500">Estado</span>
+                            <ContractBadge contractStatus={location.contractStatus} />
                         </div>
                     </div>
                 </div>
-
-                {/* RIGHT SIDE - CONTRACT INFO */}
-                <div className="col-lg-4">
-                    <div className="card shadow-sm border-0 rounded-4">
-                        <div className="card-body">
-
-                            <h6 className="fw-bold mb-3">
-                                <i className="bi bi-info-circle me-2"></i>
-                                Información del Contrato
-                            </h6>
-
-                            <div className="mb-3">
-                                <small className="text-muted">Costo de Renta</small>
-                                <div className="text-success fw-bold">${contrato.depositamount}</div>
-                            </div>
-
-                            <div className="mb-3">
-                                <small className="text-muted">Arrendatario</small>
-                                <div>{contrato.tenantname}</div>
-                            </div>
-
-                            <div>
-                                <small className="text-muted">Duración del contrato</small>
-                                <div>
-                                    {formatDate(contrato.startdate)} al
-                                    <br />
-                                    {formatDate(contrato.enddate)}
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
             </div>
-
-            {/* PAYMENT MODAL */}
-            <Modal show={showPaymentModal} onHide={() => setShowPaymentModal(false)} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>Registrar Pago Manual</Modal.Title>
-                </Modal.Header>
-                <Form onSubmit={handlePaymentSubmit}>
-                    <Modal.Body>
-                        {paymentError && <div className="alert alert-danger">{paymentError}</div>}
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Monto a pagar</Form.Label>
-                            <div className="input-group">
-                                <span className="input-group-text">$</span>
-                                <Form.Control
-                                    type="number"
-                                    step="0.01"
-                                    required
-                                    value={paymentAmount}
-                                    onChange={(e) => setPaymentAmount(e.target.value)}
-                                />
-                            </div>
-                        </Form.Group>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={() => setShowPaymentModal(false)}>
-                            Cancelar
-                        </Button>
-                        <Button variant="dark" type="submit" disabled={paymentLoading}>
-                            {paymentLoading ? <Spinner size="sm" animation="border" /> : "Guardar Pago"}
-                        </Button>
-                    </Modal.Footer>
-                </Form>
-            </Modal>
         </div>
     );
 }

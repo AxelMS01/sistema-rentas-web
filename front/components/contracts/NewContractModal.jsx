@@ -7,19 +7,19 @@ import useUser from "../../stores/user-store";
 import { supabase } from "../../config/supabase-client";
 import { UserRoundKey } from "lucide-react";
 
-export default function NewContractModal({ isModalOpen, onCloseModal, onSaveContract }) {
+export default function NewContractModal({ isModalOpen, onCloseModal, onSaveContract, isOnEditData }) {
     const loggedUserId = useUser((state) => state.loggedUser);
 
     // Inputs for the apartment selection.
     const [apartmentId, setApartmentId] = useState(0);
-    const [tenantName, setTenantName] = useState();
-    const [tenantLastName, setTenantLastName] = useState();
+    const [tenantName, setTenantName] = useState("");
+    const [tenantLastName, setTenantLastName] = useState("");
     const [apartmentOptions, setApartmentOptions] = useState([{}]);
 
     const [selectedTenantId, setSelectedTenantId] = useState();
 
     // Inputs for the guarantor.
-    const [guarantorName, setGuarantorName] = useState("");
+    const [guarantorName, setGuarantorName] = useState(isOnEditData ? isOnEditData.guarantorName : "");
     const [guarantorFatSurn, setGuarantorFatSurn] = useState("");
     const [guarantorMotSurn, setGuarantorMotSurn] = useState("");
     const [guarantorNation, setGuarantorNation] = useState("");
@@ -79,7 +79,7 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
         };
 
         async function insertGuarantorData() {
-            const { error } = await supabase
+            const { data: guarantorData, error: guarantorError } = await supabase
                 .from("guarantors")
                 .insert({
                     apartment_id: apartmentId,
@@ -90,22 +90,9 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
                 })
 
             if (error) throw error;
-        };
 
-        let newGuarantorId;
+            let newGuarantorId = guarantorData[0].id;
 
-        async function getNewGuarantorId() {
-            const { data, error } = await supabase
-                .from("guarantors")
-                .select("id")
-                .eq("apartment_id", apartmentId)
-
-            if (error) throw error;
-
-            newGuarantorId = data[0].id;
-        };
-
-        async function insertContractData() {
             const { error } = await supabase
                 .from("rentalcontracts")
                 .insert({
@@ -123,10 +110,7 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
         };
 
         // Promise chain.
-        insertGuarantorData()
-            .then(getNewGuarantorId())
-            .then(insertContractData())
-            .finally(onSaveContract());
+        insertGuarantorData();
     };
 
     return (

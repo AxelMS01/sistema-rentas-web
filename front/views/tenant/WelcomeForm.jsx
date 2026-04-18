@@ -3,19 +3,25 @@ import { useRef, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import "./SignatureCanvas.css";
 import FormStep from '../../components/welcome-form/FormStep';
-import { CircleUser, Eraser, Grid2X2Check } from 'lucide-react';
+import { CircleUser, Eraser, Grid2X2Check, House } from 'lucide-react';
 import { Button } from 'flowbite-react';
 import SignatureCanvas from 'react-signature-canvas';
 import { useNavigate } from 'react-router-dom';
 import Signature from "@uiw/react-signature/canvas";
+import { useLocation } from 'react-router-dom';
 
 export default function WelcomeForm({ firstName }) {
+    const location = useLocation().state;
+    console.log(location);
+
     const [curp, setCurp] = useState("");
     // Inicializar los siguientes tres estados con la información cargada de la base de datos.
-    const [name, setName] = useState("");
-    const [motherSurname, setMotherSurname] = useState("");
-    const [fatherSurname, setFatherSurname] = useState("");
-    const [alternateAddress, setAlternateAddress] = useState("");
+    const [name, setName] = useState(location.name);
+    const [motherSurname, setMotherSurname] = useState(location.father_surname);
+    const [fatherSurname, setFatherSurname] = useState(location.mother_surname);
+    const [alternateStreet, setAlternateStreet] = useState("");
+    const [alternateExtNum, setAlternateExtNum] = useState("");
+    const [alternateDivision, setAlternateDivision] = useState("");
     const [currentStep, setCurrentStep] = useState(1);
     const $canvas = useRef(null);
 
@@ -28,7 +34,7 @@ export default function WelcomeForm({ firstName }) {
         e.preventDefault;
         console.log($canvas.current?.canvas.toDataURL());
 
-        if (!name || !motherSurname || !fatherSurname || !alternateAddress | !$canvas) {
+        if (!name || !motherSurname || !fatherSurname || !alternateStreet | !$canvas) {
             toast.error("¡Ningún campo del formulario puede quedarse vacío!");
             return;
         };
@@ -97,14 +103,38 @@ export default function WelcomeForm({ firstName }) {
                                 />
                             </div>
 
+                            <div className='flex flex-row gap-2 items-center'>
+                                <House size={20} strokeWidth={2}/>
+                                <p className='text-lg! font-semibold'>Ingresa una dirección alternativa</p>
+                            </div>
+
                             <div className='flex flex-col gap-2 items-start'>
-                                <p className='text-sm font-medium! text-start'>Dirección de vivienda alternativa</p>
+                                <p className='text-sm font-medium! text-start'>Calle</p>
                                 <TextInput
                                     className='w-full text-sm'
-                                    placeholder='Calle, número exterior y colonia'
-                                    value={alternateAddress}
-                                    onChange={(e) => setAlternateAddress(e.target.value)}
-                                    minLength={18}
+                                    placeholder='Calle'
+                                    value={alternateStreet}
+                                    onChange={(e) => setAlternateStreet(e.target.value)}
+                                />
+                            </div>
+
+                            <div className='flex flex-col gap-2 items-start'>
+                                <p className='text-sm font-medium! text-start'>Número exterior</p>
+                                <TextInput
+                                    className='w-full text-sm'
+                                    placeholder='Número exterior'
+                                    value={alternateExtNum}
+                                    onChange={(e) => setAlternateExtNum(e.target.value)}
+                                />
+                            </div>
+
+                            <div className='flex flex-col gap-2 items-start'>
+                                <p className='text-sm font-medium! text-start'>Colonia o fraccionamiento</p>
+                                <TextInput
+                                    className='w-full text-sm'
+                                    placeholder='Colonia o fraccionamiento'
+                                    value={alternateDivision}
+                                    onChange={(e) => setAlternateDivision(e.target.value)}
                                 />
                             </div>
                         </>
@@ -121,7 +151,6 @@ export default function WelcomeForm({ firstName }) {
                                     placeholder='Nombre'
                                     value={name}
                                     onChange={(e) => setCurp(e.target.value)}
-                                    minLength={18}
                                 />
                             </div>
 
@@ -132,7 +161,6 @@ export default function WelcomeForm({ firstName }) {
                                     placeholder='Apellido materno'
                                     value={motherSurname}
                                     onChange={(e) => setMotherSurname(e.target.value)}
-                                    minLength={18}
                                 />
                             </div>
 
@@ -143,7 +171,6 @@ export default function WelcomeForm({ firstName }) {
                                     placeholder='Apellido paterno'
                                     value={fatherSurname}
                                     onChange={(e) => setFatherSurname(e.target.value)}
-                                    minLength={18}
                                 />
                             </div>
 
@@ -155,7 +182,6 @@ export default function WelcomeForm({ firstName }) {
                                     placeholder='Nombre'
                                     value={contractDuration}
                                     onChange={(e) => setCurp(e.target.value)}
-                                    minLength={18}
                                 />
                             </div>
 
@@ -167,7 +193,6 @@ export default function WelcomeForm({ firstName }) {
                                     placeholder='Nombre'
                                     value={"$" + payment + " pesos mensuales"}
                                     onChange={(e) => setCurp(e.target.value)}
-                                    minLength={18}
                                 />
                             </div>
                         </>
