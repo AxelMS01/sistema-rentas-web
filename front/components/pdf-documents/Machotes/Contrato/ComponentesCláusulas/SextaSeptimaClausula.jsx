@@ -2,14 +2,6 @@ import { Text, View } from '@react-pdf/renderer';
 import estilos from '../EstilosContrato';
 
 export function SextaSeptimaClausula({calleArrendador, numExtArrendador, fraccionamientoArrendador, cpArrendador, ciudadArrendador}) {
-    const info = {
-        calleArrendador: "Mimosa",
-        numExtArrendador: "132",
-        fraccionamientoArrendador: "Jardínes de Durango",
-        cpArrendador: "34200",
-        ciudadArrendador: "Durango, Durango",
-    };
-
     return (
         <View style={estilos.seccion}>
             <Text style={estilos.textoBold}>
@@ -51,11 +43,11 @@ export function SextaSeptimaClausula({calleArrendador, numExtArrendador, fraccio
                         <Text style={estilos.textoMayus}>El Arrendador</Text>
 
                         <Text style={estilos.textoMayus}>
-                            C. {info.calleArrendador} {info.numExtArrendador}
+                            C. {calleArrendador} {numExtArrendador}
 
-                            Fracc. {info.fraccionamientoArrendador}
+                            Fracc. {fraccionamientoArrendador}
 
-                            C.P. {info.cpArrendador} {info.ciudadArrendador}
+                            C.P. {cpArrendador} {ciudadArrendador}
                         </Text>
                     </View>
 

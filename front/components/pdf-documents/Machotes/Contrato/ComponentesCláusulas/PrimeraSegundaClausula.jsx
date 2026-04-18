@@ -4,14 +4,6 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 export function PrimeraSegundaClausula({ nombreVivienda, calle, numExt, colonia, inicioContrato, finContrato }) {
-    const info = {
-        nombreVivienda: "HABITACIÓN NÚMERO 8",
-        calle: "República de Uruguay",
-        numExt: "410",
-        colonia: "Francisco Zarco",
-        inicioContrato: new Date(2026, 2, 31),
-        finContrato: new Date(2027, 30, 2),
-    };
 
     const nacionalidad = "colombiana";
 
@@ -27,8 +19,8 @@ export function PrimeraSegundaClausula({ nombreVivienda, calle, numExt, colonia,
 
             <Text style={estilos.viñetaLetra}>
                 Por virtud de la celebración del presente instrumento, el "ARRENDADOR", da en arrendamiento al "ARRENDATARIO" la habitación ubicada dentro del inmueble en
-                <Text style={estilos.textoSubrayado}> Calle {info.calle} No. {info.numExt} de la Colonia {info.colonia} en esta Ciudad Capital,</Text>
-                identificada como "{info.nombreVivienda}", quien la recibe de conformidad, a cambio del pago de una cantidad rentaria en los términos expuestos
+                <Text style={estilos.textoSubrayado}> Calle {calle} No. {numExt} de la Colonia {colonia} en esta Ciudad Capital,</Text>
+                identificada como "{nombreVivienda}", quien la recibe de conformidad, a cambio del pago de una cantidad rentaria en los términos expuestos
                 en el clausulado siguiente.
             </Text>
 
@@ -43,8 +35,8 @@ export function PrimeraSegundaClausula({ nombreVivienda, calle, numExt, colonia,
             </Text>
 
             <Text style={estilos.viñetaLetra}>
-                Las partes convienen en que el plazo al que se hace referencia en el párraf anterior empezará a tener vigencia el día {format(info.inicioContrato, "PPP", { locale: es })},
-                y terminará el día {format(info.finContrato, "PPP", { locale: es })}.
+                Las partes convienen en que el plazo al que se hace referencia en el párraf anterior empezará a tener vigencia el día {format(inicioContrato, "PPP", { locale: es })},
+                y terminará el día {format(finContrato, "PPP", { locale: es })}.
             </Text>
 
             <Text style={estilos.viñetaLetra}>

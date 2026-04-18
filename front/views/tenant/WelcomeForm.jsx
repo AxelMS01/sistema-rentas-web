@@ -1,50 +1,84 @@
 import { TextInput, Label } from 'flowbite-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import "./SignatureCanvas.css";
 import FormStep from '../../components/welcome-form/FormStep';
 import { CircleUser, Eraser, Grid2X2Check, House } from 'lucide-react';
 import { Button } from 'flowbite-react';
+import useUser from '../../stores/user-store';
 import SignatureCanvas from 'react-signature-canvas';
+import { supabase } from "../../config/supabase-client";
 import { useNavigate } from 'react-router-dom';
 import Signature from "@uiw/react-signature/canvas";
 import { useLocation } from 'react-router-dom';
+import { DocumentoContrato } from '../../components/pdf-documents/Machotes/Contrato/Contrato';
+import { PDFViewer } from '@react-pdf/renderer';
 
 export default function WelcomeForm({ firstName }) {
     const location = useLocation().state;
-    console.log(location);
+    const loggedTenant = useUser((state) => state.loggedUser);
 
     const [curp, setCurp] = useState("");
     // Inicializar los siguientes tres estados con la información cargada de la base de datos.
     const [name, setName] = useState(location.name);
     const [motherSurname, setMotherSurname] = useState(location.father_surname);
     const [fatherSurname, setFatherSurname] = useState(location.mother_surname);
+    const [contractStart, setContractStart] = useState();
+    const [contractEnd, setContractEnd] = useState();
+    const [rentalCost, setRentalCost] = useState();
     const [alternateStreet, setAlternateStreet] = useState("");
     const [alternateExtNum, setAlternateExtNum] = useState("");
     const [alternateDivision, setAlternateDivision] = useState("");
     const [currentStep, setCurrentStep] = useState(1);
     const $canvas = useRef(null);
 
+    useEffect(() => {
+        async function getContractData() {
+            const { data, error } = await supabase
+                .from("rentalcontracts")
+                .select("startdate, enddate, depositamount")
+                .eq("tenantid", location.id);
+
+            if (error) throw error;
+
+            const contractInfo = data[0];
+
+            setContractStart(contractInfo.startdate);
+            setContractEnd(contractInfo.enddate);
+            setRentalCost(contractInfo.depositamount);
+        };
+
+        getContractData();
+    }, [])
+
     const navigate = useNavigate();
 
-    const contractDuration = "Del 31/04/2026 al 31/12/2026";
-    const payment = 4000;
-
-    function onSubmitData(e) {
+    async function onSubmitData(e) {
         e.preventDefault;
         console.log($canvas.current?.canvas.toDataURL());
 
-        if (!name || !motherSurname || !fatherSurname || !alternateStreet | !$canvas) {
+        if (!curp || !name || !motherSurname || !fatherSurname || !alternateStreet || !alternateExtNum || !alternateDivision) {
             toast.error("¡Ningún campo del formulario puede quedarse vacío!");
             return;
         };
 
-        console.log("Success");
-        navigate("/home");
+        const { error } = await supabase
+            .from("tenants")
+            .update({
+                name: name,
+                governmentid: curp,
+                father_surname: fatherSurname,
+                mother_surname: motherSurname,
+                alt_street: alternateStreet,
+                alt_ext_num: alternateExtNum,
+                alt_division: alternateDivision
+            })
+            .eq("id", location.id);
 
+        if (error) throw error;
+
+        setCurrentStep(currentStep + 1);
     };
-
-    console.log(currentStep);
 
     return (
         <div className="w-full min-h-screen h-auto flex flex-col items-center justify-center gap-4! lg:px-20! sm:px-16! px-8! py-10 bg-sky-600">
@@ -89,6 +123,17 @@ export default function WelcomeForm({ firstName }) {
                     </div>
                 )}
 
+                {currentStep === 3 && (
+                    <div className='flex md:flex-row flex-col gap-4'>
+                        <FormStep
+                            name="Creación de firma"
+                            status={currentStep === 3 ? "active" : (currentStep === 2 ? "completed" : "normal")}
+                            stepNum={currentStep}
+                            icon={<Grid2X2Check size={18} />}
+                        />
+                    </div>
+                )}
+
                 <form onSubmit={onSubmitData} className='flex flex-col gap-4'>
                     {currentStep === 1 && (
                         <>
@@ -104,7 +149,7 @@ export default function WelcomeForm({ firstName }) {
                             </div>
 
                             <div className='flex flex-row gap-2 items-center'>
-                                <House size={20} strokeWidth={2}/>
+                                <House size={20} strokeWidth={2} />
                                 <p className='text-lg! font-semibold'>Ingresa una dirección alternativa</p>
                             </div>
 
@@ -175,13 +220,22 @@ export default function WelcomeForm({ firstName }) {
                             </div>
 
                             <div className='flex flex-col gap-2 items-start text-start'>
-                                <p className='text-sm font-medium!'>Duración del contrato</p>
+                                <p className='text-sm font-medium!'>Inicio del contrato</p>
                                 <TextInput
                                     className='w-full text-sm'
                                     disabled
-                                    placeholder='Nombre'
-                                    value={contractDuration}
-                                    onChange={(e) => setCurp(e.target.value)}
+                                    placeholder='Inicio'
+                                    value={contractStart}
+                                />
+                            </div>
+
+                            <div className='flex flex-col gap-2 items-start text-start'>
+                                <p className='text-sm font-medium!'>Fin del contrato</p>
+                                <TextInput
+                                    className='w-full text-sm'
+                                    disabled
+                                    placeholder='Inicio'
+                                    value={contractEnd}
                                 />
                             </div>
 
@@ -191,14 +245,19 @@ export default function WelcomeForm({ firstName }) {
                                     className='w-full text-sm'
                                     disabled
                                     placeholder='Nombre'
-                                    value={"$" + payment + " pesos mensuales"}
-                                    onChange={(e) => setCurp(e.target.value)}
+                                    value={"$" + rentalCost + " pesos mensuales"}
                                 />
                             </div>
                         </>
                     )}
 
                     {currentStep === 3 && (
+                        <PDFViewer width={500} height={800}>
+                            <DocumentoContrato />
+                        </PDFViewer>
+                    )}
+
+                    {currentStep === 4 && (
                         <div className='flex flex-col gap-4 items-start justify-start'>
                             <p className='text-start text-sm! text-slate-600'>Por favor, dibuja tu firma en el siguiente lienzo, la cual será utilizada para firmar el contrato final.</p>
 
@@ -242,7 +301,7 @@ export default function WelcomeForm({ firstName }) {
                             </Button>
                         )}
 
-                        <Button type="button" onClick={currentStep === 3 ? (e) => onSubmitData(e) : () => setCurrentStep(currentStep + 1)} className='text-sm! w-full text-nowrap rounded-md! py-0! bg-sky-600 hover:bg-sky-700!' color="default">
+                        <Button type="button" onClick={currentStep === 2 ? (e) => onSubmitData(e) : (currentStep === 4 ? (e) => "" : () => setCurrentStep(currentStep + 1))} className='text-sm! w-full text-nowrap rounded-md! py-0! bg-sky-600 hover:bg-sky-700!' color="default">
                             {currentStep === 3 ? "Terminar" : "Avanzar al siguiente paso"}
                         </Button>
                     </div>

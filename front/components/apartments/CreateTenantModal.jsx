@@ -175,7 +175,7 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
 
                         <div>
                             <div className="mb-2 block">
-                                <Label htmlFor="file-input">Identificación oficial</Label>
+                                <Label htmlFor="file-input">Identificación oficial/Credencial de estudiante</Label>
                             </div>
                             <FileInput
                                 id="file-input"

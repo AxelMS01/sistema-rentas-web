@@ -1,16 +1,10 @@
 import { Text, View } from '@react-pdf/renderer';
 import estilos from '../EstilosContrato';
 
-export function DeclaracionesArrendatario(curp, nombreArrendador, nombrePatArrendador, apellidoMatArrendador) {
-    const infoDeclaraciones = {
-        curp: "PUAJ010302HNENLNA7",
-        nombreArrendador: "Betzái",
-        apellidoPatArrendador: "Cháidez",
-        apellidoMatArrendador: "Lechuga",
-    };
+export function DeclaracionesArrendatario({curp, nombreArrendador, apellidoPatArrendador, apellidoMatArrendador}) {
 
     const nacionalidad = "mexicana";
-    const nombreCompletoArrendador = infoDeclaraciones.nombreArrendador + " " + infoDeclaraciones.apellidoPatArrendador + " " + infoDeclaraciones.apellidoMatArrendador;
+    const nombreCompletoArrendador = nombreArrendador + " " + apellidoPatArrendador + " " + apellidoMatArrendador;
 
     return (
         <View style={estilos.seccion}>
@@ -50,7 +44,7 @@ export function DeclaracionesArrendatario(curp, nombreArrendador, nombrePatArren
                     d).-
                 </Text>
 
-                Que se identifica en términos de CURP con clave {infoDeclaraciones.curp}
+                Que se identifica en términos de CURP con clave {curp}
             </Text>
 
             <Text style={estilos.viñetaLetra}>

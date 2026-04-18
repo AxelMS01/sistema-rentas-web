@@ -11,21 +11,9 @@ export function DecimaClausula({
     apellidoPatTestigo1,
     apellidoMatTestigo1
 }) {
-    const info = {
-        nombreArrendador: "Betzai",
-        apellidoPatArrendador: "Cháidez",
-        apellidoMatArrendador: "Lechuga",
-        nombreArrendatario: "Juan Sebastían",
-        apellidoPatArrendatario: "Puin",
-        apellidoMatArrendatario: "Almario",
-        nombreTestigo1: "Ricardo José",
-        apellidoPatTestigo1: "Ontiveros",
-        apellidoMatTestigo1: "López",
-    };
-
-    const nombreComArrendador = info.nombreArrendador + " " + info.apellidoPatArrendador + " " + info.apellidoMatArrendador;
-    const nombreComArrendatario = info.nombreArrendatario + " " + info.apellidoPatArrendatario + " " + info.apellidoMatArrendatario;
-    const nombreComTestigo1 = info.nombreTestigo1 + " " + info.apellidoPatTestigo1 + " " + info.apellidoMatTestigo1;
+    const nombreComArrendador = nombreArrendador + " " + apellidoPatArrendador + " " + apellidoMatArrendador;
+    const nombreComArrendatario = nombreArrendatario + " " + apellidoPatArrendatario + " " + apellidoMatArrendatario;
+    const nombreComTestigo1 = nombreTestigo1 + " " + apellidoPatTestigo1 + " " + apellidoMatTestigo1;
 
     return (
         <View style={estilos.seccion}>

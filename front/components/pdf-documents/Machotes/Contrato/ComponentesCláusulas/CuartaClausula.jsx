@@ -2,9 +2,6 @@ import { Text, View } from '@react-pdf/renderer';
 import estilos from '../EstilosContrato';
 
 export function CuartaClausula({ tasaInteres }) {
-    const info = {
-        tasaInteres: 8,
-    };
 
     return (
         <View style={estilos.seccion}>
@@ -25,7 +22,7 @@ export function CuartaClausula({ tasaInteres }) {
             <Text style={estilos.viñetaLetra}>
                 Será obligación del ARRENDATARIO cubrir el monto mensual de
                 arrendamiento dentro de los primeros treinta días de cada mes, en la inteligencia de que,
-                de no ser así, el ARRENDADOR quedará facultado para cobrar el {info.tasaInteres}% de interés diario
+                de no ser así, el ARRENDADOR quedará facultado para cobrar el {tasaInteres}% de interés diario
                 sobre el monto del arrendamiento hasta la total liquidación del adeudo.
             </Text>
 
