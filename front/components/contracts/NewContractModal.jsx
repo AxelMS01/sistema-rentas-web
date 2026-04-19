@@ -232,4 +232,4 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
             </Modal>
         </>
     );
-}
+};

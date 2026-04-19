@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { UserRound } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Send, UserRound } from 'lucide-react';
 import "./LoginForm.css";
+import toast, { Toaster } from 'react-hot-toast';
 import { FaUser, FaEnvelope } from "react-icons/fa6";
 import { FaLock } from "react-icons/fa6";
 import { TextInput, Label } from 'flowbite-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import useUser from '../../../stores/user-store';
 import { supabase } from '../../../config/supabase-client';
 import { ShieldUser, UserRoundKey } from 'lucide-react';
@@ -20,12 +21,42 @@ const LoginForm = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
   const updateUserId = useUser((state) => state.updateLoggedUser);
   const updateUserRole = useUser((state) => state.updateUserRole);
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
   };
+
+  useEffect(() => {
+    if (location.state) {
+      toast.custom((t) => (
+        <div
+          className={`${t.visible ? 'animate-custom-enter' : 'animate-custom-leave'
+            } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+        >
+          <div className="flex-1 w-0 p-4">
+            <div className="flex items-start">
+              <div className="shrink-0 pt-0.5 p-2 bg-sky-100 text-sky-500 rounded-md!">
+                <Send size={20} />
+              </div>
+              <div className="ml-3 flex-1">
+                <p className="text-base font-semibold! text-gray-900">
+                  {location.state.welcomeFormErr}
+                </p>
+                <p className="mt-1 text-sm text-gray-500">
+                  {location.state.welcomeFormErrDesc}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ));
+
+      window.history.replaceState({}, '');
+    };
+  }, [])
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -81,6 +112,7 @@ const LoginForm = () => {
 
   return (
     <div className='login-page'>
+      <Toaster />
       <div className={`flex flex-col gap-2 bg-white max-w-md px-8 py-8 rounded-2xl`}>
         <form onSubmit={handleLogin} className='w-auto! flex flex-col gap-4'>
           <p className="text-2xl! font-semibold!">Administración de Rentas</p>

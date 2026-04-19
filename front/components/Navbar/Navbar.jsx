@@ -8,6 +8,7 @@ import toast, { Toaster } from "react-hot-toast";
 import "./Navbar.css";
 import casaLogo from "../../src/assets/casa.png";
 import { Button } from "flowbite-react";
+import NotificationDropdownContent from "../notifications/Notifications";
 
 const Navbar = () => {
   const location = useLocation();
@@ -22,9 +23,11 @@ const Navbar = () => {
   const [firma, setFirma] = useState();
   const [firmaURL, setFirmaURL] = useState("");
   const [minimumMonths, setMinimumMonths] = useState("");
+  const [notifications, setNotifications] = useState();
 
   const [activeTab, setActiveTab] = useState("pagos");
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showNotifs, setShowNotifs] = useState(false);
   const userMenuRef = useRef(null);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [lienzoFirma, setLienzoFirma] = useState(false);
@@ -135,7 +138,7 @@ const Navbar = () => {
           )}
 
           {/* Actions & Toggler */}
-          <div className="d-flex align-items-center gap-2 gap-md-3 order-2 order-lg-3 ms-auto ms-lg-0">
+          <div className="position-relative d-flex align-items-center gap-2 gap-md-3 order-2 order-lg-3 ms-auto ms-lg-0">
             {!isTenant && (
               <>
                 <button
@@ -148,6 +151,8 @@ const Navbar = () => {
                     style={{ width: "10px", height: "10px" }}
                   />
                 </button>
+
+                {/*NotificationDropdownContent isOpen={showNotifs} />*/}
               </>
             )}
 
@@ -176,7 +181,7 @@ const Navbar = () => {
                     className="btn btn-link hover:bg-slate-100! flex! flex-row gap-1.5 items-center! text-decoration-none text-dark w-100 text-start px-3 py-2"
                     onClick={() => navigate("/configuracion")}
                   >
-                    <Settings size={18}/>
+                    <Settings size={18} />
                     Configuración
                   </button>
 
@@ -185,7 +190,7 @@ const Navbar = () => {
                     className="btn btn-link hover:bg-slate-100! flex! flex-row gap-1.5 items-center! text-decoration-none text-dark w-100 text-start px-3 py-2"
                     onClick={handleLogout}
                   >
-                    <LogOut size={18}/>
+                    <LogOut size={18} />
                     Cerrar sesion
                   </button>
                 </div>

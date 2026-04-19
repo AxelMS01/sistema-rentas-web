@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import "./SignatureCanvas.css";
 import FormStep from '../../components/welcome-form/FormStep';
-import { CircleUser, Eraser, Grid2X2Check, House } from 'lucide-react';
+import { CircleUser, Eraser, Grid2X2Check, House, TriangleAlert } from 'lucide-react';
 import { Button } from 'flowbite-react';
 import useUser from '../../stores/user-store';
 import SignatureCanvas from 'react-signature-canvas';
@@ -15,6 +15,9 @@ import Signature from "@uiw/react-signature/canvas";
 import { useLocation } from 'react-router-dom';
 import { DocumentoContrato } from '../../components/pdf-documents/Machotes/Contrato/Contrato';
 import { PDFViewer } from '@react-pdf/renderer';
+import StepOneContent from '../../components/welcome-form/StepOneContent';
+import StepTwoContent from '../../components/welcome-form/StepTwoContent';
+import IncorrectDataModal from '../../components/welcome-form/IncorrectDataModal';
 
 export default function WelcomeForm({ firstName }) {
     const location = useLocation().state;
@@ -33,12 +36,15 @@ export default function WelcomeForm({ firstName }) {
     const [tenantInfo, setTenantInfo] = useState();
     const [guarantorInfo, setGuarantorInfo] = useState();
     const [apartmentInfo, setApartmentInfo] = useState();
+    const [incorrectDataModal, setIncorrectDataModal] = useState();
 
     const [alternateStreet, setAlternateStreet] = useState("");
     const [alternateExtNum, setAlternateExtNum] = useState("");
     const [alternateDivision, setAlternateDivision] = useState("");
     const [currentStep, setCurrentStep] = useState(1);
     const $canvas = useRef(null);
+
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         // Fetch all the needed data for the contract.
@@ -92,11 +98,12 @@ export default function WelcomeForm({ firstName }) {
             } catch (error) {
                 console.log(error);
             } finally {
+                setIsLoading(false);
             };
         };
 
         fetchData();
-    }, [])
+    }, [currentStep])
 
     const navigate = useNavigate();
 
@@ -130,257 +137,206 @@ export default function WelcomeForm({ firstName }) {
         if ($canvas.current) {
             const signatureURL = $canvas.current.canvas.toDataURL();
 
-            const { error } = await supabase
+            const { error: tenantError } = await supabase
                 .from("tenants")
                 .update({
                     is_first_time: false,
-                    signature_url: signatureURL 
+                    signature_url: signatureURL
                 })
                 .eq("id", location.id);
 
-            if (error) throw error;
+            if (tenantError) throw tenantError;
+
+            const { error: contractError } = await supabase
+                .from("rentalcontracts")
+                .update({
+                    status: "active"
+                })
+                .eq("id", contractInfo.id);
 
             navigate("/home", { state: { isWelcomeCompleted: true } });
         } else {
             toast.error("¡La firma no puede quedar vacía!");
         };
-    }
+    };
+
+    async function handleIncorrectData() {
+        // An array that describes the set of information that each step in the form aims to collect
+        const infoByStep = [
+            ""
+        ];
+
+        const { error } = await supabase
+            .from("notifications")
+            .insert({
+                type: "rentalcontracts",
+                tenantid: location.id,
+                ownerid: ownerInfo.id,
+                title: "Información marcada como incorrecta",
+                description: `El arrendador ${location.name} ${location.father_surname} marcó como incorrecta la información `
+            })
+        navigate("/home", { state: { welcomeFormErr: "Le notificaremos al arrendador que hubo un error. ¡Gracias!" } })
+    };
 
     return (
-        <div className="w-full min-h-screen h-auto flex flex-col items-center justify-center gap-4! lg:px-20! sm:px-16! px-8! py-10 bg-sky-600">
-            <Toaster />
+        <>
+            {!isLoading && (
+                <div className="w-full min-h-screen h-auto flex flex-col items-center justify-center gap-4! lg:px-20! sm:px-16! px-8! py-10 bg-sky-600">
+                    <Toaster />
 
-            <div className="form-content flex flex-col max-w-xl w-auto px-8 py-12 bg-white rounded-xl gap-4">
-                <div className="welcome-message flex flex-col gap-1 items-start">
-                    <h1 className="text-2xl! font-semibold!">¡Bienvenido, {firstName}</h1>
-                    <p className="text-slate-600 text-start">Para empezar a usar el sistema, por favor, completa el siguiente formulario para terminar de generar tu contrato.</p>
-                </div>
+                    <IncorrectDataModal isModalOpen={incorrectDataModal} onCloseModal={() => setIncorrectDataModal(false)} ownerId={ownerInfo.id} tenantId={tenantInfo.id} />
 
-                {currentStep === 1 && (
-                    <div className='flex md:flex-row flex-col gap-4'>
-                        <FormStep
-                            name="Datos personales faltantes"
-                            status={currentStep === 1 ? "active" : (currentStep === 2 ? "completed" : "normal")}
-                            stepNum={currentStep}
-                            icon={<CircleUser size={18} />}
-                        />
-                    </div>
-                )}
-
-                {currentStep === 2 && (
-                    <div className='flex md:flex-row flex-col gap-4'>
-                        <FormStep
-                            name="Confirmación de datos"
-                            status={currentStep === 2 ? "active" : (currentStep === 2 ? "completed" : "normal")}
-                            stepNum={currentStep}
-                            icon={<Grid2X2Check size={18} />}
-                        />
-                    </div>
-                )}
-
-                {currentStep === 3 && (
-                    <div className='flex flex-col gap-4 items-start'>
-                        <FormStep
-                            name="Previsualización del contrato"
-                            status={currentStep === 3 ? "active" : (currentStep === 2 ? "completed" : "normal")}
-                            stepNum={currentStep}
-                            icon={<Grid2X2Check size={18} />}
-                        />
-
-                        <p className='text-base text-slate-600'>La siguiente es una vista previa del contrato que será generado. Si estás de acuerdo con la información, por favor, pasa a firmarlo en el siguiente paso.</p>
-                    </div>
-                )}
-
-                {currentStep === 4 && (
-                    <div className='flex flex-col gap-4 items-start'>
-                        <FormStep
-                            name="Firma de los documentos"
-                            status={currentStep === 4 ? "active" : (currentStep === 2 ? "completed" : "normal")}
-                            stepNum={currentStep}
-                            icon={<Grid2X2Check size={18} />}
-                        />
-                    </div>
-                )}
-
-                <form onSubmit={onSubmitData} className='flex flex-col gap-4'>
-                    {currentStep === 1 && (
-                        <>
-                            <div className='flex flex-col gap-2 items-start text-start'>
-                                <p className='text-sm font-medium!'>Ingresa tu CURP</p>
-                                <TextInput
-                                    className='w-full text-sm'
-                                    placeholder='CURP'
-                                    value={curp}
-                                    onChange={(e) => setCurp(e.target.value)}
-                                    minLength={18}
-                                />
-                            </div>
-
-                            <div className='flex flex-row gap-2 items-center'>
-                                <House size={20} strokeWidth={2} />
-                                <p className='text-lg! font-semibold'>Ingresa una dirección alternativa</p>
-                            </div>
-
-                            <div className='flex flex-col gap-2 items-start'>
-                                <p className='text-sm font-medium! text-start'>Calle</p>
-                                <TextInput
-                                    className='w-full text-sm'
-                                    placeholder='Calle'
-                                    value={alternateStreet}
-                                    onChange={(e) => setAlternateStreet(e.target.value)}
-                                />
-                            </div>
-
-                            <div className='flex flex-col gap-2 items-start'>
-                                <p className='text-sm font-medium! text-start'>Número exterior</p>
-                                <TextInput
-                                    className='w-full text-sm'
-                                    placeholder='Número exterior'
-                                    value={alternateExtNum}
-                                    onChange={(e) => setAlternateExtNum(e.target.value)}
-                                />
-                            </div>
-
-                            <div className='flex flex-col gap-2 items-start'>
-                                <p className='text-sm font-medium! text-start'>Colonia o fraccionamiento</p>
-                                <TextInput
-                                    className='w-full text-sm'
-                                    placeholder='Colonia o fraccionamiento'
-                                    value={alternateDivision}
-                                    onChange={(e) => setAlternateDivision(e.target.value)}
-                                />
-                            </div>
-                        </>
-                    )}
-
-                    {currentStep === 2 && (
-                        <>
-                            <p className='text-lg font-semibold text-start'>¿Confirmas que estos datos son correctos?</p>
-
-                            <div className='flex flex-col gap-2 items-start text-start'>
-                                <p className='text-sm font-medium!'>Tu(s) nombre(s)</p>
-                                <TextInput
-                                    className='w-full text-sm'
-                                    placeholder='Nombre'
-                                    value={location.name}
-                                    onChange={(e) => setCurp(e.target.value)}
-                                />
-                            </div>
-
-                            <div className='flex flex-col gap-2 items-start text-start'>
-                                <p className='text-sm font-medium!'>Apellido materno</p>
-                                <TextInput
-                                    className='w-full text-sm'
-                                    placeholder='Apellido materno'
-                                    value={location.mother_surname}
-                                    onChange={(e) => setMotherSurname(e.target.value)}
-                                />
-                            </div>
-
-                            <div className='flex flex-col gap-2 items-start text-start'>
-                                <p className='text-sm font-medium!'>Apellido paterno</p>
-                                <TextInput
-                                    className='w-full text-sm'
-                                    placeholder='Apellido paterno'
-                                    value={location.father_surname}
-                                    onChange={(e) => setFatherSurname(e.target.value)}
-                                />
-                            </div>
-
-                            <div className='flex flex-col gap-2 items-start text-start'>
-                                <p className='text-sm font-medium!'>Inicio del contrato</p>
-                                <TextInput
-                                    className='w-full text-sm'
-                                    disabled
-                                    placeholder='Inicio'
-                                    value={format(contractInfo.startdate, "PPP", { locale: es })}
-                                />
-                            </div>
-
-                            <div className='flex flex-col gap-2 items-start text-start'>
-                                <p className='text-sm font-medium!'>Fin del contrato</p>
-                                <TextInput
-                                    className='w-full text-sm'
-                                    disabled
-                                    placeholder='Inicio'
-                                    value={format(contractInfo.enddate, "PPP", { locale: es })}
-                                />
-                            </div>
-
-                            <div className='flex flex-col gap-2 items-start text-start'>
-                                <p className='text-sm font-medium!'>Monto del arrendamiento</p>
-                                <TextInput
-                                    className='w-full text-sm'
-                                    disabled
-                                    placeholder='Nombre'
-                                    value={"$" + contractInfo.depositamount + " pesos mensuales"}
-                                />
-                            </div>
-                        </>
-                    )}
-
-                    {currentStep === 3 && (
-                        <PDFViewer width={500} height={800}>
-                            <DocumentoContrato
-                                contractInfo={contractInfo}
-                                ownerInfo={ownerInfo}
-                                tenantInfo={location}
-                                guarantorInfo={guarantorInfo}
-                                apartmentInfo={apartmentInfo}
-                            />
-                        </PDFViewer>
-                    )}
-
-                    {currentStep === 4 && (
-                        <div className='flex flex-col gap-4 items-start justify-start'>
-                            <p className='text-start text-sm! text-slate-600'>Por favor, dibuja tu firma en el siguiente lienzo, la cual será utilizada para firmar el contrato final.</p>
-
-                            <div className='relative signature-container items-start border border-slate-200 rounded-xl bg-slate-50'>
-                                <Button onClick={() => $canvas.current.clear()} color="alternative" size='xs' className='absolute z-999 top-3 right-3 text-xs! font-semibold! px-2 py-0.5! rounded-lg! flex flex-row gap-2 items-center'>
-                                    <Eraser size={16} />
-                                    Restablecer
-                                </Button>
-
-                                <Signature
-                                    ref={$canvas}
-                                    options={{
-                                        smoothing: 0.46,
-                                        thinning: 0.73,
-                                        streamline: 0.5,
-                                        easing: (t) => t,
-                                        simulatePressure: true,
-                                        last: true,
-                                        start: {
-                                            cap: true,
-                                            taper: 0,
-                                            easing: (t) => t,
-                                        },
-                                        end: {
-                                            cap: true,
-                                            taper: 0,
-                                            easing: (t) => t,
-                                        },
-                                    }}
-                                />
-                            </div>
-
-                            <p className='text-start text-sm! text-slate-600'>Si estás conforme con tu firma y estás seguro de que la información previa es correcta, ¡puedes terminar el formulario y entrar a tu sistema!</p>
+                    <div className="form-content flex flex-col max-w-xl w-auto px-8 py-12 bg-white rounded-xl gap-4">
+                        <div className="welcome-message flex flex-col gap-1 items-start">
+                            <h1 className="text-2xl! font-semibold!">¡Bienvenido, {firstName}</h1>
+                            <p className="text-slate-600 text-start">Para empezar a usar el sistema, por favor, completa el siguiente formulario para terminar de generar tu contrato.</p>
                         </div>
-                    )}
 
-                    <div className='flex sm:flex-row flex-col w-full items-center gap-2'>
-                        {currentStep > 1 && (
-                            <Button onClick={() => setCurrentStep(currentStep - 1)} className='text-sm! w-full rounded-md! py-0!' color="alternative">
-                                Regresar
-                            </Button>
+                        {currentStep === 1 && (
+                            <div className='flex md:flex-row flex-col gap-4'>
+                                <FormStep
+                                    name="Datos personales faltantes"
+                                    status={currentStep === 1 ? "active" : (currentStep === 2 ? "completed" : "normal")}
+                                    stepNum={currentStep}
+                                    icon={<CircleUser size={18} />}
+                                />
+                            </div>
                         )}
 
-                        <Button type="button" onClick={currentStep === 2 ? (e) => onSubmitData(e) : (currentStep === 4 ? handleFinishForm : () => setCurrentStep(currentStep + 1))} className='text-sm! w-full text-nowrap rounded-md! py-0! bg-sky-600 hover:bg-sky-700!' color="default">
-                            {currentStep === 3 ? "Pasar a firmar" : (currentStep === 4 ? "Terminar" : "Avanzar al siguiente paso")}
-                        </Button>
+                        {currentStep === 2 && (
+                            <div className='flex md:flex-row flex-col gap-4'>
+                                <FormStep
+                                    name="Confirmación de datos"
+                                    status={currentStep === 2 ? "active" : (currentStep === 2 ? "completed" : "normal")}
+                                    stepNum={currentStep}
+                                    icon={<Grid2X2Check size={18} />}
+                                />
+                            </div>
+                        )}
+
+                        {currentStep === 3 && (
+                            <div className='flex flex-col gap-4 items-start'>
+                                <FormStep
+                                    name="Previsualización del contrato"
+                                    status={currentStep === 3 ? "active" : (currentStep === 2 ? "completed" : "normal")}
+                                    stepNum={currentStep}
+                                    icon={<Grid2X2Check size={18} />}
+                                />
+
+                                <p className='text-base text-slate-600'>La siguiente es una vista previa del contrato que será generado. Si estás de acuerdo con la información, por favor, pasa a firmarlo en el siguiente paso.</p>
+                            </div>
+                        )}
+
+                        {currentStep === 4 && (
+                            <div className='flex flex-col gap-4 items-start'>
+                                <FormStep
+                                    name="Firma de los documentos"
+                                    status={currentStep === 4 ? "active" : (currentStep === 2 ? "completed" : "normal")}
+                                    stepNum={currentStep}
+                                    icon={<Grid2X2Check size={18} />}
+                                />
+                            </div>
+                        )}
+
+                        <form onSubmit={onSubmitData} className='flex flex-col gap-4'>
+                            {currentStep === 1 && (
+                                <StepOneContent
+                                    curp={curp}
+                                    setCurp={(e) => setCurp(e)}
+                                    alternateStreet={alternateStreet}
+                                    setAlternateStreet={(e) => setAlternateStreet(e)}
+                                    alternateExtNum={alternateExtNum}
+                                    setAlternateExtNum={(e) => setAlternateExtNum(e)}
+                                    alternateDivision={alternateDivision}
+                                    setAlternateDivision={(e) => setAlternateDivision(e)}
+                                />
+                            )}
+
+                            {currentStep === 2 && (
+                                <StepTwoContent
+                                    name={name}
+                                    setName={(e) => setName(e)}
+                                    motherSurname={motherSurname}
+                                    setMotherSurname={(e) => setMotherSurname(e)}
+                                    fatherSurname={fatherSurname}
+                                    setFatherSurname={(e) => setFatherSurname(e)}
+                                    startDate={format(contractInfo.startdate, "PPP", { locale: es })}
+                                    endDate={format(contractInfo.enddate, "PPP", { locale: es })}
+                                    paymentAmount={"$" + contractInfo.depositamount + " pesos mensuales"}
+                                />
+                            )}
+
+                            {currentStep === 3 && (
+                                <PDFViewer width={500} height={800}>
+                                    <DocumentoContrato
+                                        contractInfo={contractInfo}
+                                        ownerInfo={ownerInfo}
+                                        tenantInfo={location}
+                                        guarantorInfo={guarantorInfo}
+                                        apartmentInfo={apartmentInfo}
+                                    />
+                                </PDFViewer>
+                            )}
+
+                            {currentStep === 4 && (
+                                <div className='flex flex-col gap-4 items-start justify-start'>
+                                    <p className='text-start text-sm! text-slate-600'>Por favor, dibuja tu firma en el siguiente lienzo, la cual será utilizada para firmar el contrato final.</p>
+
+                                    <div className='relative signature-container items-start border border-slate-200 rounded-xl bg-slate-50'>
+                                        <Button onClick={() => $canvas.current.clear()} color="alternative" size='xs' className='absolute z-999 top-3 right-3 text-xs! font-semibold! px-2 py-0.5! rounded-lg! flex flex-row gap-2 items-center'>
+                                            <Eraser size={16} />
+                                            Restablecer
+                                        </Button>
+
+                                        <Signature
+                                            ref={$canvas}
+                                            options={{
+                                                smoothing: 0.46,
+                                                thinning: 0.73,
+                                                streamline: 0.5,
+                                                easing: (t) => t,
+                                                simulatePressure: true,
+                                                last: true,
+                                                start: {
+                                                    cap: true,
+                                                    taper: 0,
+                                                    easing: (t) => t,
+                                                },
+                                                end: {
+                                                    cap: true,
+                                                    taper: 0,
+                                                    easing: (t) => t,
+                                                },
+                                            }}
+                                        />
+                                    </div>
+
+                                    <p className='text-start text-sm! text-slate-600'>Si estás conforme con tu firma y estás seguro de que la información previa es correcta, ¡puedes terminar el formulario y entrar a tu sistema!</p>
+                                </div>
+                            )}
+
+                            <div className='flex sm:flex-row flex-col w-full items-center gap-2'>
+                                {currentStep > 1 && (
+                                    <Button onClick={() => setCurrentStep(currentStep - 1)} className='text-sm! w-full rounded-md! py-0!' color="alternative">
+                                        Regresar
+                                    </Button>
+                                )}
+
+                                <Button type="button" onClick={currentStep === 2 ? (e) => onSubmitData(e) : (currentStep === 4 ? handleFinishForm : () => setCurrentStep(currentStep + 1))} className='text-sm! w-full text-nowrap rounded-md! py-0! bg-sky-600 hover:bg-sky-700!' color="default">
+                                    {currentStep === 3 ? "Pasar a firmar" : (currentStep === 4 ? "Terminar" : "Avanzar al siguiente paso")}
+                                </Button>
+                            </div>
+
+                            {currentStep === 2 && (
+                                <button type='button' onClick={() => setIncorrectDataModal(true)} className='text-sm! text-start text-nowrap font-medium flex flex-row gap-2 items-center justify-center text-sky-600 hover:text-sky-800 cursor-pointer'>
+                                    <TriangleAlert size={18} />
+                                    Hay datos incorrectos en este paso
+                                </button>
+                            )}
+                        </form>
                     </div>
-                </form>
-            </div>
-        </div>
+                </div>
+            )}
+        </>
     );
 };
