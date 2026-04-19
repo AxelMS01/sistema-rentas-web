@@ -15,7 +15,7 @@ import { OctavaNovenaClausula } from './ComponentesCláusulas/OctavaNovena';
 import { DecimaClausula } from './ComponentesCláusulas/DecimaClausula';
 import { supabase } from '../../../../config/supabase-client';
 
-export function DocumentoContrato({ contractInfo, ownerInfo, tenantInfo, guarantorInfo, apartmentInfo }) {
+export function DocumentoContrato({ contractInfo, ownerInfo, tenantInfo, guarantorInfo, apartmentInfo, isActive }) {
     console.log("contratooo:", contractInfo);
     console.log("arrendatario:", ownerInfo);
     console.log("inquilino:", tenantInfo);
@@ -163,6 +163,7 @@ export function DocumentoContrato({ contractInfo, ownerInfo, tenantInfo, guarant
                         nombreTestigo1=""
                         apellidoPatTestigo1=""
                         apellidoMatTestigo1=""
+                        isActive={isActive}
                     />
                 </Page>
             </Document>

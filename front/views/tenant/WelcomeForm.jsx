@@ -18,6 +18,7 @@ import { PDFViewer } from '@react-pdf/renderer';
 import StepOneContent from '../../components/welcome-form/StepOneContent';
 import StepTwoContent from '../../components/welcome-form/StepTwoContent';
 import IncorrectDataModal from '../../components/welcome-form/IncorrectDataModal';
+import useContractData from '../../lib/useContractData';
 
 export default function WelcomeForm({ firstName }) {
     const location = useLocation().state;
@@ -28,14 +29,6 @@ export default function WelcomeForm({ firstName }) {
     const [name, setName] = useState(location.name);
     const [motherSurname, setMotherSurname] = useState(location.father_surname);
     const [fatherSurname, setFatherSurname] = useState(location.mother_surname);
-
-    // Stateful variables for each element necessary for the contract.
-    // There's no state for the tenant, since its information is contained in the 'location' object.
-    const [contractInfo, setContractInfo] = useState();
-    const [ownerInfo, setOwnerInfo] = useState();
-    const [tenantInfo, setTenantInfo] = useState();
-    const [guarantorInfo, setGuarantorInfo] = useState();
-    const [apartmentInfo, setApartmentInfo] = useState();
     const [incorrectDataModal, setIncorrectDataModal] = useState();
     const [signAuthorization, setSignAuthorization] = useState(false);
 
@@ -44,69 +37,18 @@ export default function WelcomeForm({ firstName }) {
     const [alternateDivision, setAlternateDivision] = useState("");
     const [currentStep, setCurrentStep] = useState(1);
     const $canvas = useRef(null);
-
     const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        // Fetch all the needed data for the contract.
-        const fetchData = async () => {
-            try {
-                const { data: contractData, error: contractError } = await supabase
-                    .from("rentalcontracts")
-                    .select()
-                    .eq("tenantid", location.id);
-
-                if (contractError) throw error;
-                setContractInfo(contractData[0]);
-
-                // Variables for the rest of the tables.
-                const ownerId = contractData[0].owner_id;
-                const tenantId = contractData[0].tenantid;
-                const guarantorId = contractData[0].guarantorid;
-                const apartmentId = contractData[0].apartmentid;
-
-                const { data: ownerData, error: ownerError } = await supabase
-                    .from("owners")
-                    .select()
-                    .eq("id", ownerId);
-
-                if (ownerError) throw error;
-                setOwnerInfo(ownerData[0]);
-
-                const { data: tenantData, error: tenantError } = await supabase
-                    .from("tenants")
-                    .select()
-                    .eq("id", tenantId);
-
-                if (tenantError) throw error;
-                setTenantInfo(tenantData[0]);
-
-                const { data: guarantorData, error: guarantorError } = await supabase
-                    .from("guarantors")
-                    .select()
-                    .eq("id", guarantorId);
-
-                if (guarantorError) throw error;
-                setGuarantorInfo(guarantorData[0]);
-
-                const { data: apartmentData, error: apartmentError } = await supabase
-                    .from("apartments")
-                    .select()
-                    .eq("id", apartmentId);
-
-                if (apartmentError) throw error;
-                setApartmentInfo(apartmentData[0]);
-            } catch (error) {
-                console.log(error);
-            } finally {
-                setIsLoading(false);
-            };
-        };
-
-        fetchData();
-    }, [currentStep])
-
     const navigate = useNavigate();
+
+    // Fetch the necessary contract's data using the created hook.
+    const {
+        isDataLoading,
+        contractInfo,
+        ownerInfo,
+        tenantInfo,
+        guarantorInfo,
+        apartmentInfo
+    } = useContractData("tenants", location.id);
 
     async function onSubmitData(e) {
         e.preventDefault;
@@ -138,6 +80,7 @@ export default function WelcomeForm({ firstName }) {
         if ($canvas.current) {
             const signatureURL = $canvas.current.canvas.toDataURL();
 
+            // Update the tenant's first time status and their signature URL.
             const { error: tenantError } = await supabase
                 .from("tenants")
                 .update({
@@ -148,12 +91,23 @@ export default function WelcomeForm({ firstName }) {
 
             if (tenantError) throw tenantError;
 
+            // Update the contract's status to mark it as active.
             const { error: contractError } = await supabase
                 .from("rentalcontracts")
                 .update({
                     status: "active"
                 })
                 .eq("id", contractInfo.id);
+
+            if (contractError) throw contractError;
+
+            // Finally, update the apartment's status to mark it as occupied.
+            const { erorr: apartmentError } = await supabase
+                .from("apartments")
+                .update({ status: "OCCUPIED" })
+                .eq("id", apartmentInfo.id);
+
+            if (apartmentError) throw apartmentError;
 
             navigate("/home", { state: { isWelcomeCompleted: true } });
         } else {
@@ -181,7 +135,7 @@ export default function WelcomeForm({ firstName }) {
 
     return (
         <>
-            {!isLoading && (
+            {!isDataLoading && (
                 <div className="w-full min-h-screen h-auto flex flex-col items-center justify-center gap-4! lg:px-20! sm:px-16! px-8! py-10 bg-sky-600">
                     <Toaster />
 
@@ -298,7 +252,7 @@ export default function WelcomeForm({ firstName }) {
                             )}
                         </form>
 
-                        <div className='sm:px-8 pt-0 pb-8 flex flex-col gap-4'>
+                        <div className='px-8 pb-8 pt-0 flex flex-col gap-4'>
                             <div className='flex sm:flex-row flex-col w-full items-center gap-2'>
                                 {currentStep > 1 && (
                                     <Button onClick={() => setCurrentStep(currentStep - 1)} className='text-sm! w-full rounded-md! py-0!' color="alternative">

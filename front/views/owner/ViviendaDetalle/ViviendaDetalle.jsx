@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 import { LuHand, LuHouse, LuInfo, LuSettings, LuArrowLeft, LuSquarePen, LuArchive, LuArchiveRestore, LuCircleCheck, LuCircleDot } from "react-icons/lu";
 import toast, { Toaster } from 'react-hot-toast';
 import CreateTenantModal from "../../../components/apartments/CreateTenantModal";
 import mensajeExito from "../../../utils/mensaje-exito";
 import EditarForm from "../Forms/Editarform";
-import Button from "../../../components/Button";
+import { Button } from "flowbite-react";
 import "./ViviendaDetalle.css";
 import { supabase } from "../../../config/supabase-client";
 import useUser from "../../../stores/user-store";
+import useContractData from "../../../lib/useContractData";
+import { Download } from "lucide-react";
+import { DocumentoContrato } from "../../../components/pdf-documents/Machotes/Contrato/Contrato";
 
 const token = localStorage.getItem("token");
 
@@ -45,6 +49,7 @@ export default function ViviendaDetalle() {
 
   const { id } = useParams();
   const { state } = useLocation();
+
   const [vivienda, setVivienda] = useState(state?.propiedad || null);
   const [loading, setLoading] = useState(!state?.propiedad);
   const [error, setError] = useState(null);
@@ -56,9 +61,20 @@ export default function ViviendaDetalle() {
   const [isOnEdit, setIsOnEdit] = useState(false);
   const [tenantCreation, setTenantCreation] = useState(false);
   const [successfulAction, setSuccessfulAction] = useState(0);
+  const [isAccountCreated, setIsAccountCreated] = useState(false); // Indicates whether the tenant's system account has already been created or not.
+
+  // Fetch the necessary contract's data using the created hook.
+  const {
+    isDataLoading,
+    contractInfo,
+    ownerInfo,
+    tenantInfo,
+    guarantorInfo,
+    apartmentInfo
+  } = useContractData("owners", ownerId);
 
   useEffect(() => {
-    const fetchVivienda = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
@@ -79,7 +95,7 @@ export default function ViviendaDetalle() {
       }
     };
 
-    fetchVivienda();
+    fetchData();
   }, [id, successfulAction]);
 
   if (loading) return <div className="text-center py-5">Cargando detalles...</div>;
@@ -284,6 +300,49 @@ export default function ViviendaDetalle() {
                 {statusLabel(vivienda?.status)}
               </span>
             </div>
+
+            {vivienda.status === "OCCUPIED" && (
+              <div className="flex flex-col gap-4 justify-start">
+                <div className="flex md:flex-row gap-4 items-center w-full justify-between">
+                  <span className="info-key">Contrato</span>
+
+                  <PDFDownloadLink document={
+                    <DocumentoContrato
+                      contractInfo={contractInfo}
+                      ownerInfo={ownerInfo}
+                      tenantInfo={tenantInfo}
+                      guarantorInfo={guarantorInfo}
+                      apartmentInfo={apartmentInfo}
+                    />
+                  } className="no-underline!" fileName={`Contrato-${contractInfo.id}`}>
+                    <Button
+                      type="button"
+                      color="alternative"
+                      className="flex flex-row gap-2 px-3! py-2!  rounded-md! items-center justify-center text-sm! font-medium"
+                    >
+                      <Download size={18} />
+                      Descargar en PDF
+                    </Button>
+                  </PDFDownloadLink>
+                </div>
+
+                <div className="flex md:flex-row gap-4 items-center w-full justify-between">
+                  <span className="info-key">Pagarés</span>
+
+                  <Button
+                    type="button"
+                    color="alternative"
+                    className="flex flex-row gap-2 px-3! py-2! rounded-md! items-center justify-center text-sm! font-medium"
+                    onClick={() => setTenantCreation(true)}
+                  >
+                    <Download size={18} />
+                    Descargar en PDF
+                  </Button>
+                </div>
+              </div>
+            )}
+
+
           </div>
 
           <div className="general-detail w-full bg-white border border-slate-200 p-4 rounded-xl flex flex-col gap-4 justify-start">
@@ -358,7 +417,7 @@ export default function ViviendaDetalle() {
             </div>
 
             <div>
-              <Button text="Guardar estatus" onClick={guardarStatus} />
+              <Button color="default" className="text-white! rounded-md! px-3 py-1.5 bg-sky-600 text-sm!" size="sm" onClick={guardarStatus} >Guardar estatus</Button>
             </div>
           </div>
         </div>
@@ -372,7 +431,7 @@ export default function ViviendaDetalle() {
         />
       )}
 
-      <CreateTenantModal isModalOpen={tenantCreation} onCreateSuccess={onCreateTenant} onCloseModal={() => setTenantCreation(false)}/>
+      <CreateTenantModal isModalOpen={tenantCreation} onCreateSuccess={onCreateTenant} onCloseModal={() => setTenantCreation(false)} />
     </div>
   );
 }

@@ -10,7 +10,8 @@ export function DecimaClausula({
     apellidoMatArrendatario,
     nombreTestigo1,
     apellidoPatTestigo1,
-    apellidoMatTestigo1
+    apellidoMatTestigo1,
+    isActive,
 }) {
     const nombreComArrendador = nombreArrendador + " " + apellidoPatArrendador + " " + apellidoMatArrendador;
     const nombreComArrendatario = nombreArrendatario + " " + apellidoPatArrendatario + " " + apellidoMatArrendatario;
@@ -42,9 +43,11 @@ export function DecimaClausula({
                     <Text style={estilos.textoBold}>EL ARRENDADOR</Text>
 
                     <View style={estilos.contenedorFirmaImg}>
-                        <Image>
-                            {/* Incluir aquí la firma del arrendador */}
-                        </Image>
+                        {isActive && (
+                            <Image>
+                                {/* Incluir aquí la firma del arrendador */}
+                            </Image>
+                        )}
                     </View>
 
                     <Text style={estilos.textoBold}>
@@ -56,9 +59,11 @@ export function DecimaClausula({
                     <Text style={estilos.textoBold}>EL ARRENDATARIO</Text>
 
                     <View style={estilos.contenedorFirmaImg}>
-                        <Image>
-                            {/* Incluir aquí la firma del arrendatario */}
-                        </Image>
+                        {isActive && (
+                            <Image>
+                                {/* Incluir aquí la firma del arrendador */}
+                            </Image>
+                        )}
                     </View>
 
                     <Text style={estilos.textoBold}>
