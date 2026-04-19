@@ -33,7 +33,7 @@ export default function IncorrectDataModal({ isModalOpen, onCloseModal, contract
     return (
         <>
             <Modal show={isModalOpen} size="xl" onClose={onCloseModal} popup>
-                <ModalHeader className="p-4">
+                <ModalHeader className="pb-0 px-6! pt-6!">
                     <p className="text-2xl! tracking-tight font-semibold">Reportar datos incorrectos</p>
                 </ModalHeader>
                 <ModalBody>

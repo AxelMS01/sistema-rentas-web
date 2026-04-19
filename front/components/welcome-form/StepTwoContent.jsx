@@ -1,6 +1,8 @@
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { TextInput } from "flowbite-react";
+import { Grid2X2Check } from "lucide-react";
+import FormStep from "./FormStep";
 
 export default function StepTwoContent({
     name,
@@ -15,6 +17,14 @@ export default function StepTwoContent({
 }) {
     return (
         <>
+            <div className='flex md:flex-row flex-col gap-4'>
+                <FormStep
+                    name="Confirmación de datos"
+                    stepNum={2}
+                    icon={<Grid2X2Check size={18} />}
+                />
+            </div>
+
             <p className='text-lg font-semibold text-start'>¿Confirmas que estos datos son correctos?</p>
 
             <div className='flex flex-col gap-2 items-start text-start'>

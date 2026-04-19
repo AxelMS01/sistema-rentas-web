@@ -1,5 +1,6 @@
 import { TextInput } from "flowbite-react";
-import { House } from "lucide-react";
+import { CircleUser, House } from "lucide-react";
+import FormStep from "./FormStep";
 
 export default function StepOneContent({
     curp,
@@ -13,6 +14,14 @@ export default function StepOneContent({
 }) {
     return (
         <>
+            <div className='flex md:flex-row flex-col gap-4'>
+                <FormStep
+                    name="Datos personales faltantes"
+                    stepNum={1}
+                    icon={<CircleUser size={18} />}
+                />
+            </div>
+
             <div className='flex flex-col gap-2 items-start text-start'>
                 <p className='text-sm font-medium!'>Ingresa tu CURP</p>
                 <TextInput

@@ -51,11 +51,7 @@ export function SextaSeptimaClausula({ ownerAlternateAddr, tenantAlternateAddr }
                         <Text style={estilos.textoMayus}>El Arrendatario</Text>
 
                         <Text style={estilos.textoMayus}>
-                            C. {tenantAlternateAddr.calle} {tenantAlternateAddr.numExt} 
-
-                            Fracc. {tenantAlternateAddr.fraccionamiento}, 
-
-                            {tenantAlternateAddr.ciudad}
+                            C. {tenantAlternateAddr.calle} {tenantAlternateAddr.numExt} Fracc. {tenantAlternateAddr.fraccionamiento}, {tenantAlternateAddr.ciudad}
                         </Text>
                     </View>
                 </View>

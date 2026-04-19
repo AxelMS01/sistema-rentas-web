@@ -103,10 +103,9 @@ export default function ContractDetails() {
             <div className="flex w-full lg:flex-row flex-col justify-between! lg:items-center! items-start gap-6">
                 <div className="flex flex-col items-start gap-3">
                     <h1 className="text-start font-light fw-semibold tracking-tight">Detalles del contrato</h1>
-                    <div className="w-full text-sm! flex flex-row gap-2 px-3 py-2 bg-sky-50 items-center rounded border border-sky-400!">
+                    <div className="w-full text-sm! flex flex-row gap-1.5 px-3 py-2 bg-sky-50 items-center rounded border border-sky-400!">
                         <ScrollText size={18} className="text-sky-700" />
-                        <p className="font-medium text-sky-700">ID del contrato:</p>
-                        <p className="font-medium text-slate-800">Contrato-{contrato.id}</p>
+                        <p className="font-medium text-sky-700">ID del contrato: <span className="font-medium text-slate-800">Contrato-{contrato.id}</span></p>
                     </div>
                 </div>
 

@@ -1,4 +1,4 @@
-import { TextInput, Label } from 'flowbite-react';
+import { TextInput, Label, Checkbox } from 'flowbite-react';
 import { useEffect, useRef, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { format } from 'date-fns';
@@ -37,6 +37,7 @@ export default function WelcomeForm({ firstName }) {
     const [guarantorInfo, setGuarantorInfo] = useState();
     const [apartmentInfo, setApartmentInfo] = useState();
     const [incorrectDataModal, setIncorrectDataModal] = useState();
+    const [signAuthorization, setSignAuthorization] = useState(false);
 
     const [alternateStreet, setAlternateStreet] = useState("");
     const [alternateExtNum, setAlternateExtNum] = useState("");
@@ -186,59 +187,13 @@ export default function WelcomeForm({ firstName }) {
 
                     <IncorrectDataModal isModalOpen={incorrectDataModal} onCloseModal={() => setIncorrectDataModal(false)} ownerId={ownerInfo.id} tenantId={tenantInfo.id} />
 
-                    <div className="form-content flex flex-col max-w-xl w-auto px-8 py-12 bg-white rounded-xl gap-4">
-                        <div className="welcome-message flex flex-col gap-1 items-start">
+                    <div className="form-content flex flex-col max-w-xl w-auto bg-white rounded-xl gap-8">
+                        <div className="welcome-message flex flex-col gap-1 items-start p-8 border-b border-b-slate-200">
                             <h1 className="text-2xl! font-semibold!">¡Bienvenido, {firstName}</h1>
                             <p className="text-slate-600 text-start">Para empezar a usar el sistema, por favor, completa el siguiente formulario para terminar de generar tu contrato.</p>
                         </div>
 
-                        {currentStep === 1 && (
-                            <div className='flex md:flex-row flex-col gap-4'>
-                                <FormStep
-                                    name="Datos personales faltantes"
-                                    status={currentStep === 1 ? "active" : (currentStep === 2 ? "completed" : "normal")}
-                                    stepNum={currentStep}
-                                    icon={<CircleUser size={18} />}
-                                />
-                            </div>
-                        )}
-
-                        {currentStep === 2 && (
-                            <div className='flex md:flex-row flex-col gap-4'>
-                                <FormStep
-                                    name="Confirmación de datos"
-                                    status={currentStep === 2 ? "active" : (currentStep === 2 ? "completed" : "normal")}
-                                    stepNum={currentStep}
-                                    icon={<Grid2X2Check size={18} />}
-                                />
-                            </div>
-                        )}
-
-                        {currentStep === 3 && (
-                            <div className='flex flex-col gap-4 items-start'>
-                                <FormStep
-                                    name="Previsualización del contrato"
-                                    status={currentStep === 3 ? "active" : (currentStep === 2 ? "completed" : "normal")}
-                                    stepNum={currentStep}
-                                    icon={<Grid2X2Check size={18} />}
-                                />
-
-                                <p className='text-base text-slate-600'>La siguiente es una vista previa del contrato que será generado. Si estás de acuerdo con la información, por favor, pasa a firmarlo en el siguiente paso.</p>
-                            </div>
-                        )}
-
-                        {currentStep === 4 && (
-                            <div className='flex flex-col gap-4 items-start'>
-                                <FormStep
-                                    name="Firma de los documentos"
-                                    status={currentStep === 4 ? "active" : (currentStep === 2 ? "completed" : "normal")}
-                                    stepNum={currentStep}
-                                    icon={<Grid2X2Check size={18} />}
-                                />
-                            </div>
-                        )}
-
-                        <form onSubmit={onSubmitData} className='flex flex-col gap-4'>
+                        <form onSubmit={onSubmitData} className={`flex flex-col gap-4 sm:px-8 px-6 sm:pb-8 pb-6 pt-0 ${currentStep != 3 ? "max-h-96" : "h-auto"} overflow-y-scroll`}>
                             {currentStep === 1 && (
                                 <StepOneContent
                                     curp={curp}
@@ -267,54 +222,83 @@ export default function WelcomeForm({ firstName }) {
                             )}
 
                             {currentStep === 3 && (
-                                <PDFViewer width={500} height={800}>
-                                    <DocumentoContrato
-                                        contractInfo={contractInfo}
-                                        ownerInfo={ownerInfo}
-                                        tenantInfo={location}
-                                        guarantorInfo={guarantorInfo}
-                                        apartmentInfo={apartmentInfo}
-                                    />
-                                </PDFViewer>
+                                <>
+                                    <div className='flex flex-col gap-4 items-start'>
+                                        <FormStep
+                                            name="Previsualización del contrato"
+                                            status={currentStep === 3 ? "active" : (currentStep === 2 ? "completed" : "normal")}
+                                            stepNum={currentStep}
+                                            icon={<Grid2X2Check size={18} />}
+                                        />
+
+                                        <p className='text-base text-slate-600'>La siguiente es una vista previa del contrato que será generado. Si estás de acuerdo con la información, por favor, pasa a firmarlo en el siguiente paso.</p>
+                                    </div>
+
+                                    <PDFViewer width={500} height={800}>
+                                        <DocumentoContrato
+                                            contractInfo={contractInfo}
+                                            ownerInfo={ownerInfo}
+                                            tenantInfo={location}
+                                            guarantorInfo={guarantorInfo}
+                                            apartmentInfo={apartmentInfo}
+                                        />
+                                    </PDFViewer>
+                                </>
                             )}
 
                             {currentStep === 4 && (
-                                <div className='flex flex-col gap-4 items-start justify-start'>
-                                    <p className='text-start text-sm! text-slate-600'>Por favor, dibuja tu firma en el siguiente lienzo, la cual será utilizada para firmar el contrato final.</p>
-
-                                    <div className='relative signature-container items-start border border-slate-200 rounded-xl bg-slate-50'>
-                                        <Button onClick={() => $canvas.current.clear()} color="alternative" size='xs' className='absolute z-999 top-3 right-3 text-xs! font-semibold! px-2 py-0.5! rounded-lg! flex flex-row gap-2 items-center'>
-                                            <Eraser size={16} />
-                                            Restablecer
-                                        </Button>
-
-                                        <Signature
-                                            ref={$canvas}
-                                            options={{
-                                                smoothing: 0.46,
-                                                thinning: 0.73,
-                                                streamline: 0.5,
-                                                easing: (t) => t,
-                                                simulatePressure: true,
-                                                last: true,
-                                                start: {
-                                                    cap: true,
-                                                    taper: 0,
-                                                    easing: (t) => t,
-                                                },
-                                                end: {
-                                                    cap: true,
-                                                    taper: 0,
-                                                    easing: (t) => t,
-                                                },
-                                            }}
+                                <>
+                                    <div className='flex flex-col gap-4 items-start'>
+                                        <FormStep
+                                            name="Firma de los documentos"
+                                            status={currentStep === 4 ? "active" : (currentStep === 2 ? "completed" : "normal")}
+                                            stepNum={currentStep}
+                                            icon={<Grid2X2Check size={18} />}
                                         />
                                     </div>
 
-                                    <p className='text-start text-sm! text-slate-600'>Si estás conforme con tu firma y estás seguro de que la información previa es correcta, ¡puedes terminar el formulario y entrar a tu sistema!</p>
-                                </div>
-                            )}
+                                    <div className='flex flex-col gap-4 items-start justify-start'>
+                                        <p className='text-start text-sm! text-slate-800'>Por favor, dibuja tu firma en el siguiente lienzo, la cual será utilizada para firmar el contrato final.</p>
 
+                                        <div className='relative signature-container items-start border border-slate-200 rounded-xl bg-slate-50'>
+                                            <Button onClick={() => $canvas.current.clear()} color="alternative" size='xs' className='absolute z-999 top-3 right-3 text-xs! font-semibold! px-2 py-0.5! rounded-lg! flex flex-row gap-2 items-center'>
+                                                <Eraser size={16} />
+                                                Restablecer
+                                            </Button>
+
+                                            <Signature
+                                                ref={$canvas}
+                                                options={{
+                                                    smoothing: 0.46,
+                                                    thinning: 0.73,
+                                                    streamline: 0.5,
+                                                    easing: (t) => t,
+                                                    simulatePressure: true,
+                                                    last: true,
+                                                    start: {
+                                                        cap: true,
+                                                        taper: 0,
+                                                        easing: (t) => t,
+                                                    },
+                                                    end: {
+                                                        cap: true,
+                                                        taper: 0,
+                                                        easing: (t) => t,
+                                                    },
+                                                }}
+                                            />
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                            <Checkbox checked={signAuthorization} onChange={() => setSignAuthorization(!signAuthorization)} id="promotion" />
+                                            <Label htmlFor="promotion">Acepto que mi firma también sea usada en los pagarés del arrendamiento.</Label>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </form>
+
+                        <div className='sm:px-8 pt-0 pb-8 flex flex-col gap-4'>
                             <div className='flex sm:flex-row flex-col w-full items-center gap-2'>
                                 {currentStep > 1 && (
                                     <Button onClick={() => setCurrentStep(currentStep - 1)} className='text-sm! w-full rounded-md! py-0!' color="alternative">
@@ -322,7 +306,7 @@ export default function WelcomeForm({ firstName }) {
                                     </Button>
                                 )}
 
-                                <Button type="button" onClick={currentStep === 2 ? (e) => onSubmitData(e) : (currentStep === 4 ? handleFinishForm : () => setCurrentStep(currentStep + 1))} className='text-sm! w-full text-nowrap rounded-md! py-0! bg-sky-600 hover:bg-sky-700!' color="default">
+                                <Button disabled={currentStep === 4 && !signAuthorization} type="button" onClick={currentStep === 2 ? (e) => onSubmitData(e) : (currentStep === 4 ? handleFinishForm : () => setCurrentStep(currentStep + 1))} className='text-sm! w-full text-nowrap rounded-md! py-0! bg-sky-600 hover:bg-sky-700!' color="default">
                                     {currentStep === 3 ? "Pasar a firmar" : (currentStep === 4 ? "Terminar" : "Avanzar al siguiente paso")}
                                 </Button>
                             </div>
@@ -333,7 +317,7 @@ export default function WelcomeForm({ firstName }) {
                                     Hay datos incorrectos en este paso
                                 </button>
                             )}
-                        </form>
+                        </div>
                     </div>
                 </div>
             )}
