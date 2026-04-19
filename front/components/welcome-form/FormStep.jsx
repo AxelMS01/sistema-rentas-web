@@ -1,5 +1,5 @@
 function FormStep({ name, icon, status, stepNum }) {
-    const totalSteps = 3;
+    const totalSteps = 4;
 
     return (
         <div className="flex sm:flex-col flex-row gap-2 items-center justify-center px-2 py-2 rounded-md border border-sky-500! bg-sky-50">
@@ -8,7 +8,7 @@ function FormStep({ name, icon, status, stepNum }) {
             </div>
 
             <p className={`${status === "active" ? "text-slate-900" : (status === "unseen" ? "text-slate-600" : "text-green-500")} font-medium text-sm text-start`}>
-                Paso {stepNum} de 3: {name}
+                Paso {stepNum} de {totalSteps}: {name}
             </p>
         </div>
     );

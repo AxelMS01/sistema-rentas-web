@@ -3,7 +3,7 @@ import estilos from '../EstilosContrato';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
-export function PrimeraSegundaClausula({ nombreVivienda, calle, numExt, colonia, inicioContrato, finContrato }) {
+export function PrimeraSegundaClausula({ nombreVivienda, calle, numExt, colonia, inicioContrato, finContrato, duracionForzosa }) {
 
     const nacionalidad = "colombiana";
 
@@ -19,7 +19,7 @@ export function PrimeraSegundaClausula({ nombreVivienda, calle, numExt, colonia,
 
             <Text style={estilos.viñetaLetra}>
                 Por virtud de la celebración del presente instrumento, el "ARRENDADOR", da en arrendamiento al "ARRENDATARIO" la habitación ubicada dentro del inmueble en
-                <Text style={estilos.textoSubrayado}> Calle {calle} No. {numExt} de la Colonia {colonia} en esta Ciudad Capital,</Text>
+                <Text style={estilos.textoSubrayado}> Calle {calle} No. {numExt} de la Colonia {colonia} en esta Ciudad Capital, </Text>
                 identificada como "{nombreVivienda}", quien la recibe de conformidad, a cambio del pago de una cantidad rentaria en los términos expuestos
                 en el clausulado siguiente.
             </Text>
@@ -29,7 +29,7 @@ export function PrimeraSegundaClausula({ nombreVivienda, calle, numExt, colonia,
             </Text>
 
             <Text style={estilos.viñetaLetra}>
-                Las partes contratantes pactan que el presente contrato se celebra con una duración forzosa de <Text style={estilos.textoBold}>DOS MESES</Text> para
+                Las partes contratantes pactan que el presente contrato se celebra con una duración forzosa de <Text style={estilos.textoBold}>{duracionForzosa} MESES</Text> para
                 ambas partes, sin que pueda prorrograrse por ningún motivo, y en todo caso a su terminación, de ser procedente las partes suscribirán nuevo contrato,
                 el cual deberá constar por escrito.
             </Text>

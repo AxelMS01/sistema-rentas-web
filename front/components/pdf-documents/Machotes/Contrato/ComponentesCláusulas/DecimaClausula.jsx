@@ -6,6 +6,7 @@ export function DecimaClausula({
     apellidoPatArrendador,
     apellidoMatArrendador,
     nombreArrendatario,
+    apellidoPatArrendatario,
     apellidoMatArrendatario,
     nombreTestigo1,
     apellidoPatTestigo1,
@@ -66,13 +67,12 @@ export function DecimaClausula({
                 </View>
             </View>
 
-            <Text style={{textAlign: "center", marginTop: 20, fontWeight: 600, fontSize: 12}}>TESTIGOS</Text>
+            {/*</View>Text style={{textAlign: "center", marginTop: 20, fontWeight: 600, fontSize: 12}}>TESTIGOS</Text>
 
             <View style={estilos.dosFirmas}>
                 <View style={estilos.espacioFirma}>
                     <View style={estilos.contenedorFirmaImg}>
                         <Image>
-                            {/* Incluir aquí la firma del arrendador */}
                         </Image>
                     </View>
 
@@ -84,7 +84,6 @@ export function DecimaClausula({
                 <View style={estilos.espacioFirma}>
                     <View style={estilos.contenedorFirmaImg}>
                         <Image>
-                            {/* Incluir aquí la firma del arrendatario */}
                         </Image>
                     </View>
 
@@ -92,7 +91,7 @@ export function DecimaClausula({
                         NOMBRE TESTIGO 2
                     </Text>
                 </View>
-            </View>
+            </View>*/}
         </View>
     );
 };

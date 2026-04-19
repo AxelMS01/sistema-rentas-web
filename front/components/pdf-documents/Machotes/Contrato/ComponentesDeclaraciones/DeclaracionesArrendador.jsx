@@ -28,8 +28,8 @@ export function DeclaracionesArrendador({nombreVivienda, calle, numero, colonia,
                 </Text>
 
                 Que comparece al presente acto en calidad de propietario legal de la habitación
-                ubicada dentro del inmueble en Calle {infoDeclaraciones.calle} No. {infoDeclaraciones.numero}, Colonia {infoDeclaraciones.colonia}
-                en esta Ciudad Capital, identificada como {infoDeclaraciones.nombreVivienda}, mismo que cuenta con dos tarimas y colchones individuales, dos mesas de trabajo, dos sillas,
+                ubicada dentro del inmueble en Calle {calle} No. {numero}, Colonia {colonia} 
+                en esta Ciudad Capital, identificada como {nombreVivienda}, mismo que cuenta con dos tarimas y colchones individuales, dos mesas de trabajo, dos sillas,
                 persianas, baño individual, espejo fijo, clóset, juego de llaves, etc.
             </Text>
 

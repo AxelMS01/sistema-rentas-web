@@ -1,7 +1,7 @@
 import { Text, View } from '@react-pdf/renderer';
 import estilos from '../EstilosContrato';
 
-export function SextaSeptimaClausula({calleArrendador, numExtArrendador, fraccionamientoArrendador, cpArrendador, ciudadArrendador}) {
+export function SextaSeptimaClausula({ ownerAlternateAddr, tenantAlternateAddr }) {
     return (
         <View style={estilos.seccion}>
             <Text style={estilos.textoBold}>
@@ -33,7 +33,7 @@ export function SextaSeptimaClausula({calleArrendador, numExtArrendador, fraccio
                 SÉPTIMA.- DE LOS DOMICILIOS.
             </Text>
 
-            <View style={{flexDirection: "column", gap: 10}}>
+            <View style={{ flexDirection: "column", gap: 10 }}>
                 <Text style={estilos.viñetaLetra}>
                     Para cualquier aviso o notificación que las partes deban darse de conformidad con el presente Contrato,
                     señalan como domicilios los siguientes:
@@ -43,16 +43,20 @@ export function SextaSeptimaClausula({calleArrendador, numExtArrendador, fraccio
                         <Text style={estilos.textoMayus}>El Arrendador</Text>
 
                         <Text style={estilos.textoMayus}>
-                            C. {calleArrendador} {numExtArrendador}
-
-                            Fracc. {fraccionamientoArrendador}
-
-                            C.P. {cpArrendador} {ciudadArrendador}
+                            C. {ownerAlternateAddr.calle} {ownerAlternateAddr.numExt} Fracc. {ownerAlternateAddr.fraccionamiento}, C.P. {ownerAlternateAddr.cp}, {ownerAlternateAddr.ciudad}
                         </Text>
                     </View>
 
                     <View style={estilos.bloqueDomicilio}>
                         <Text style={estilos.textoMayus}>El Arrendatario</Text>
+
+                        <Text style={estilos.textoMayus}>
+                            C. {tenantAlternateAddr.calle} {tenantAlternateAddr.numExt} 
+
+                            Fracc. {tenantAlternateAddr.fraccionamiento}, 
+
+                            {tenantAlternateAddr.ciudad}
+                        </Text>
                     </View>
                 </View>
             </View>

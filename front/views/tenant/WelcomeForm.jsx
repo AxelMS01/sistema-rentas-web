@@ -1,6 +1,8 @@
 import { TextInput, Label } from 'flowbite-react';
 import { useEffect, useRef, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import "./SignatureCanvas.css";
 import FormStep from '../../components/welcome-form/FormStep';
 import { CircleUser, Eraser, Grid2X2Check, House } from 'lucide-react';
@@ -16,16 +18,22 @@ import { PDFViewer } from '@react-pdf/renderer';
 
 export default function WelcomeForm({ firstName }) {
     const location = useLocation().state;
-    const loggedTenant = useUser((state) => state.loggedUser);
+    const loggedTenantId = useUser((state) => state.loggedUser);
 
     const [curp, setCurp] = useState("");
     // Inicializar los siguientes tres estados con la información cargada de la base de datos.
     const [name, setName] = useState(location.name);
     const [motherSurname, setMotherSurname] = useState(location.father_surname);
     const [fatherSurname, setFatherSurname] = useState(location.mother_surname);
-    const [contractStart, setContractStart] = useState();
-    const [contractEnd, setContractEnd] = useState();
-    const [rentalCost, setRentalCost] = useState();
+
+    // Stateful variables for each element necessary for the contract.
+    // There's no state for the tenant, since its information is contained in the 'location' object.
+    const [contractInfo, setContractInfo] = useState();
+    const [ownerInfo, setOwnerInfo] = useState();
+    const [tenantInfo, setTenantInfo] = useState();
+    const [guarantorInfo, setGuarantorInfo] = useState();
+    const [apartmentInfo, setApartmentInfo] = useState();
+
     const [alternateStreet, setAlternateStreet] = useState("");
     const [alternateExtNum, setAlternateExtNum] = useState("");
     const [alternateDivision, setAlternateDivision] = useState("");
@@ -33,29 +41,67 @@ export default function WelcomeForm({ firstName }) {
     const $canvas = useRef(null);
 
     useEffect(() => {
-        async function getContractData() {
-            const { data, error } = await supabase
-                .from("rentalcontracts")
-                .select("startdate, enddate, depositamount")
-                .eq("tenantid", location.id);
+        // Fetch all the needed data for the contract.
+        const fetchData = async () => {
+            try {
+                const { data: contractData, error: contractError } = await supabase
+                    .from("rentalcontracts")
+                    .select()
+                    .eq("tenantid", location.id);
 
-            if (error) throw error;
+                if (contractError) throw error;
+                setContractInfo(contractData[0]);
 
-            const contractInfo = data[0];
+                // Variables for the rest of the tables.
+                const ownerId = contractData[0].owner_id;
+                const tenantId = contractData[0].tenantid;
+                const guarantorId = contractData[0].guarantorid;
+                const apartmentId = contractData[0].apartmentid;
 
-            setContractStart(contractInfo.startdate);
-            setContractEnd(contractInfo.enddate);
-            setRentalCost(contractInfo.depositamount);
+                const { data: ownerData, error: ownerError } = await supabase
+                    .from("owners")
+                    .select()
+                    .eq("id", ownerId);
+
+                if (ownerError) throw error;
+                setOwnerInfo(ownerData[0]);
+
+                const { data: tenantData, error: tenantError } = await supabase
+                    .from("tenants")
+                    .select()
+                    .eq("id", tenantId);
+
+                if (tenantError) throw error;
+                setTenantInfo(tenantData[0]);
+
+                const { data: guarantorData, error: guarantorError } = await supabase
+                    .from("guarantors")
+                    .select()
+                    .eq("id", guarantorId);
+
+                if (guarantorError) throw error;
+                setGuarantorInfo(guarantorData[0]);
+
+                const { data: apartmentData, error: apartmentError } = await supabase
+                    .from("apartments")
+                    .select()
+                    .eq("id", apartmentId);
+
+                if (apartmentError) throw error;
+                setApartmentInfo(apartmentData[0]);
+            } catch (error) {
+                console.log(error);
+            } finally {
+            };
         };
 
-        getContractData();
+        fetchData();
     }, [])
 
     const navigate = useNavigate();
 
     async function onSubmitData(e) {
         e.preventDefault;
-        console.log($canvas.current?.canvas.toDataURL());
 
         if (!curp || !name || !motherSurname || !fatherSurname || !alternateStreet || !alternateExtNum || !alternateDivision) {
             toast.error("¡Ningún campo del formulario puede quedarse vacío!");
@@ -73,12 +119,32 @@ export default function WelcomeForm({ firstName }) {
                 alt_ext_num: alternateExtNum,
                 alt_division: alternateDivision
             })
-            .eq("id", location.id);
+            .eq("id", loggedTenantId);
 
         if (error) throw error;
 
         setCurrentStep(currentStep + 1);
     };
+
+    async function handleFinishForm() {
+        if ($canvas.current) {
+            const signatureURL = $canvas.current.canvas.toDataURL();
+
+            const { error } = await supabase
+                .from("tenants")
+                .update({
+                    is_first_time: false,
+                    signature_url: signatureURL 
+                })
+                .eq("id", location.id);
+
+            if (error) throw error;
+
+            navigate("/home", { state: { isWelcomeCompleted: true } });
+        } else {
+            toast.error("¡La firma no puede quedar vacía!");
+        };
+    }
 
     return (
         <div className="w-full min-h-screen h-auto flex flex-col items-center justify-center gap-4! lg:px-20! sm:px-16! px-8! py-10 bg-sky-600">
@@ -113,21 +179,23 @@ export default function WelcomeForm({ firstName }) {
                 )}
 
                 {currentStep === 3 && (
-                    <div className='flex md:flex-row flex-col gap-4'>
+                    <div className='flex flex-col gap-4 items-start'>
                         <FormStep
-                            name="Creación de firma"
+                            name="Previsualización del contrato"
                             status={currentStep === 3 ? "active" : (currentStep === 2 ? "completed" : "normal")}
                             stepNum={currentStep}
                             icon={<Grid2X2Check size={18} />}
                         />
+
+                        <p className='text-base text-slate-600'>La siguiente es una vista previa del contrato que será generado. Si estás de acuerdo con la información, por favor, pasa a firmarlo en el siguiente paso.</p>
                     </div>
                 )}
 
-                {currentStep === 3 && (
-                    <div className='flex md:flex-row flex-col gap-4'>
+                {currentStep === 4 && (
+                    <div className='flex flex-col gap-4 items-start'>
                         <FormStep
-                            name="Creación de firma"
-                            status={currentStep === 3 ? "active" : (currentStep === 2 ? "completed" : "normal")}
+                            name="Firma de los documentos"
+                            status={currentStep === 4 ? "active" : (currentStep === 2 ? "completed" : "normal")}
                             stepNum={currentStep}
                             icon={<Grid2X2Check size={18} />}
                         />
@@ -194,7 +262,7 @@ export default function WelcomeForm({ firstName }) {
                                 <TextInput
                                     className='w-full text-sm'
                                     placeholder='Nombre'
-                                    value={name}
+                                    value={location.name}
                                     onChange={(e) => setCurp(e.target.value)}
                                 />
                             </div>
@@ -204,7 +272,7 @@ export default function WelcomeForm({ firstName }) {
                                 <TextInput
                                     className='w-full text-sm'
                                     placeholder='Apellido materno'
-                                    value={motherSurname}
+                                    value={location.mother_surname}
                                     onChange={(e) => setMotherSurname(e.target.value)}
                                 />
                             </div>
@@ -214,7 +282,7 @@ export default function WelcomeForm({ firstName }) {
                                 <TextInput
                                     className='w-full text-sm'
                                     placeholder='Apellido paterno'
-                                    value={fatherSurname}
+                                    value={location.father_surname}
                                     onChange={(e) => setFatherSurname(e.target.value)}
                                 />
                             </div>
@@ -225,7 +293,7 @@ export default function WelcomeForm({ firstName }) {
                                     className='w-full text-sm'
                                     disabled
                                     placeholder='Inicio'
-                                    value={contractStart}
+                                    value={format(contractInfo.startdate, "PPP", { locale: es })}
                                 />
                             </div>
 
@@ -235,7 +303,7 @@ export default function WelcomeForm({ firstName }) {
                                     className='w-full text-sm'
                                     disabled
                                     placeholder='Inicio'
-                                    value={contractEnd}
+                                    value={format(contractInfo.enddate, "PPP", { locale: es })}
                                 />
                             </div>
 
@@ -245,7 +313,7 @@ export default function WelcomeForm({ firstName }) {
                                     className='w-full text-sm'
                                     disabled
                                     placeholder='Nombre'
-                                    value={"$" + rentalCost + " pesos mensuales"}
+                                    value={"$" + contractInfo.depositamount + " pesos mensuales"}
                                 />
                             </div>
                         </>
@@ -253,7 +321,13 @@ export default function WelcomeForm({ firstName }) {
 
                     {currentStep === 3 && (
                         <PDFViewer width={500} height={800}>
-                            <DocumentoContrato />
+                            <DocumentoContrato
+                                contractInfo={contractInfo}
+                                ownerInfo={ownerInfo}
+                                tenantInfo={location}
+                                guarantorInfo={guarantorInfo}
+                                apartmentInfo={apartmentInfo}
+                            />
                         </PDFViewer>
                     )}
 
@@ -301,8 +375,8 @@ export default function WelcomeForm({ firstName }) {
                             </Button>
                         )}
 
-                        <Button type="button" onClick={currentStep === 2 ? (e) => onSubmitData(e) : (currentStep === 4 ? (e) => "" : () => setCurrentStep(currentStep + 1))} className='text-sm! w-full text-nowrap rounded-md! py-0! bg-sky-600 hover:bg-sky-700!' color="default">
-                            {currentStep === 3 ? "Terminar" : "Avanzar al siguiente paso"}
+                        <Button type="button" onClick={currentStep === 2 ? (e) => onSubmitData(e) : (currentStep === 4 ? handleFinishForm : () => setCurrentStep(currentStep + 1))} className='text-sm! w-full text-nowrap rounded-md! py-0! bg-sky-600 hover:bg-sky-700!' color="default">
+                            {currentStep === 3 ? "Pasar a firmar" : (currentStep === 4 ? "Terminar" : "Avanzar al siguiente paso")}
                         </Button>
                     </div>
                 </form>
