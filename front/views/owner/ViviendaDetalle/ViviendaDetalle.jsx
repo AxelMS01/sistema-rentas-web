@@ -440,7 +440,7 @@ export default function ViviendaDetalle() {
         />
       )}
 
-      <CreateTenantModal isModalOpen={tenantCreation} onCreateSuccess={onCreateTenant} onCloseModal={() => setTenantCreation(false)} />
+      <CreateTenantModal isModalOpen={tenantCreation} apartmentId={id} ownerId={ownerId} onCreateSuccess={onCreateTenant} onCloseModal={() => setTenantCreation(false)} />
     </div>
   );
 }

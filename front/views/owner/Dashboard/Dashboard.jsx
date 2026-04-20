@@ -206,10 +206,10 @@ const Dashboard = () => {
             {/* --- KPI CARDS --- */}
             <div className="row g-3 mb-4">
               <div className="col-md-3">
-                <div className="h-100 p-3 rounded-4 d-flex flex-column justify-content-center" style={{ backgroundColor: THEME.bgCard }}>
+                <div className="h-100 p-3 rounded-4 d-flex flex-column justify-content-center border border-slate-200 bg-slate-100">
                   <div className="d-flex align-items-center gap-2 mb-1">
                     <TrendingUp size={18} style={{ color: THEME.textLight }} />
-                    <span className="fw-medium" style={{ color: THEME.textLight, fontSize: '14px' }}>Ganancia Mensual</span>
+                    <span className="text-sm font-medium text-slate-500">Ganancia Mensual</span>
                   </div>
                   <div className="fw-bold" style={{ color: THEME.textDark, fontSize: '24px' }}>{formatCurrency(dashboardData.gananciaMensual)}</div>
                 </div>

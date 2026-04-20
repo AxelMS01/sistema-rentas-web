@@ -3,6 +3,7 @@ import "./ContractsList.css";
 import ContractsTable from "../../../components/contracts/ContractsTable";
 import EditarContratoModal from "../Forms/EditarContratoModal";
 import { supabase } from "../../../config/supabase-client";
+import toast, { Toaster } from "react-hot-toast";
 import SearchBar from "../../../components/SearchBar";
 import useUser from "../../../stores/user-store";
 import Button from "../../../components/Button";
@@ -18,6 +19,7 @@ const Contracts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showCreationModal, setShowCreationModal] = useState(false);
+  const [successfulAction, setSuccessfulAction] = useState(0);
 
   const [filtroStatus, setFiltroStatus] = useState("todos");
   const [filtroBusqueda, setFiltroBusqueda] = useState("");
@@ -78,6 +80,12 @@ const Contracts = () => {
     setShowCreationModal(true);
   };
 
+  function handleSuccessfulCreation() {
+    setShowCreationModal(false);
+    toast.success("¡Contrato creado correctamente!");
+    setSuccessfulAction(successfulAction + 1);
+  }
+
   // ------------------------------
   //  NORMAL RENDER
   // ------------------------------
@@ -85,7 +93,7 @@ const Contracts = () => {
   return (
     <div className="w-full h-screen flex flex-col gap-4! lg:px-20! sm:px-16! px-8! py-10">
       {showCreationModal && (
-        <NewContractModal isModalOpen={showCreationModal} onCloseModal={() => setShowCreationModal(false)} isOnEdit={true} isOnEditData={editData} />
+        <NewContractModal isModalOpen={showCreationModal} onSaveContract={handleSuccessfulCreation} onCloseModal={() => setShowCreationModal(false)} isOnEdit={true} isOnEditData={editData} />
       )}
 
       <div className="flex w-full md:flex-row flex-col justify-between md:items-center items-start gap-6">
