@@ -5,7 +5,6 @@ import { Settings, Bell, X, Eraser, LogOut } from "lucide-react";
 import { supabase } from "../../config/supabase-client";
 import useUser from "../../stores/user-store";
 import toast, { Toaster } from "react-hot-toast";
-import "./Navbar.css";
 import casaLogo from "../../src/assets/casa.png";
 import { Button } from "flowbite-react";
 import NotificationDropdownContent from "../notifications/Notifications";
