@@ -16,16 +16,6 @@ const formatCurrency = (value) => {
   }).format(amount);
 };
 
-const fetchJson = async (path) => {
-  /*
-  const response = await fetch(api(path));
-  if (!response.ok) {
-    const message = await response.text();
-    throw new Error(message || "Error de red");
-  }
-  return response.json();*/
-};
-
 const Reportes = () => {
   const loggedUserId = useUser((state) => state.loggedUser);
   const [ocupacion, setOcupacion] = useState(null);
