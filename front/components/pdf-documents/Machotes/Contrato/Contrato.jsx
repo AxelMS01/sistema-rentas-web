@@ -16,16 +16,9 @@ import { DecimaClausula } from './ComponentesCláusulas/DecimaClausula';
 import { supabase } from '../../../../config/supabase-client';
 
 export function DocumentoContrato({ contractInfo, ownerInfo, tenantInfo, guarantorInfo, apartmentInfo, isActive }) {
-    console.log("contratooo:", contractInfo);
-    console.log("arrendatario:", ownerInfo);
-    console.log("inquilino:", tenantInfo);
-    console.log("aval:", guarantorInfo);
-    console.log("apartamento:", apartmentInfo);
-
     const fechaContrato = new Date(contractInfo.startdate);
     const diaContrato = fechaContrato.getDate();
     const mesContrato = fechaContrato.getMonth();
-    console.log("mescontrato:", mesContrato);
     const añoContrato = fechaContrato.getFullYear();
 
     const nombreCompletoArrendador = ownerInfo.name + " " + ownerInfo.father_surname + " " + ownerInfo.mother_surname;
@@ -164,6 +157,8 @@ export function DocumentoContrato({ contractInfo, ownerInfo, tenantInfo, guarant
                         apellidoPatTestigo1=""
                         apellidoMatTestigo1=""
                         isActive={isActive}
+                        signatureOwner={ownerInfo.signature_url}
+                        signatureTenant={tenantInfo.signature_url}
                     />
                 </Page>
             </Document>

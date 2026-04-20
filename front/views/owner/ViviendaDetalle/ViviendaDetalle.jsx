@@ -13,6 +13,7 @@ import useUser from "../../../stores/user-store";
 import useContractData from "../../../lib/useContractData";
 import { Download } from "lucide-react";
 import { DocumentoContrato } from "../../../components/pdf-documents/Machotes/Contrato/Contrato";
+import { DocumentoPagare } from "../../../components/pdf-documents/Machotes/Pagares/Pagare";
 
 const token = localStorage.getItem("token");
 
@@ -301,7 +302,7 @@ export default function ViviendaDetalle() {
               </span>
             </div>
 
-            {vivienda.status === "OCCUPIED" && (
+            {vivienda.status === "OCCUPIED" && !isDataLoading && (
               <div className="flex flex-col gap-4 justify-start">
                 <div className="flex md:flex-row gap-4 items-center w-full justify-between">
                   <span className="info-key">Contrato</span>
@@ -313,6 +314,7 @@ export default function ViviendaDetalle() {
                       tenantInfo={tenantInfo}
                       guarantorInfo={guarantorInfo}
                       apartmentInfo={apartmentInfo}
+                      isActive={true}
                     />
                   } className="no-underline!" fileName={`Contrato-${contractInfo.id}`}>
                     <Button
@@ -329,20 +331,27 @@ export default function ViviendaDetalle() {
                 <div className="flex md:flex-row gap-4 items-center w-full justify-between">
                   <span className="info-key">Pagarés</span>
 
-                  <Button
-                    type="button"
-                    color="alternative"
-                    className="flex flex-row gap-2 px-3! py-2! rounded-md! items-center justify-center text-sm! font-medium"
-                    onClick={() => setTenantCreation(true)}
-                  >
-                    <Download size={18} />
-                    Descargar en PDF
-                  </Button>
+                  <PDFDownloadLink document={
+                    <DocumentoPagare
+                      pagareInfo={contractInfo}
+                      ownerInfo={ownerInfo}
+                      tenantInfo={tenantInfo}
+                      guarantorInfo={guarantorInfo}
+                      apartmentInfo={apartmentInfo}
+                    />
+                  } className="no-underline!" fileName={`Pagares-Contrato-${contractInfo.id}`}>
+                    <Button
+                      type="button"
+                      color="alternative"
+                      className="flex flex-row gap-2 px-3! py-2!  rounded-md! items-center justify-center text-sm! font-medium"
+                    >
+                      <Download size={18} />
+                      Descargar en PDF
+                    </Button>
+                  </PDFDownloadLink>
                 </div>
               </div>
             )}
-
-
           </div>
 
           <div className="general-detail w-full bg-white border border-slate-200 p-4 rounded-xl flex flex-col gap-4 justify-start">

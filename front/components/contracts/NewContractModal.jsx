@@ -23,6 +23,12 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
     const [guarantorFatSurn, setGuarantorFatSurn] = useState("");
     const [guarantorMotSurn, setGuarantorMotSurn] = useState("");
     const [guarantorNation, setGuarantorNation] = useState("");
+    const [guarantorStreet, setGuarantorStreet] = useState("");
+    const [guarantorExtNum, setGuarantorExtNum] = useState("");
+    const [guarantorDivision, setGuarantorDivision] = useState("");
+    const [guarantorCity, setGuarantorCity] = useState("");
+    const [guarantorState, setGuarantorState] = useState("");
+    const [guarantorPhone, setGuarantorPhone] = useState("");
 
     // Inputs for the contract.
     const [contractStart, setContractStart] = useState();
@@ -86,7 +92,13 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
                     name: guarantorName,
                     father_surname: guarantorFatSurn,
                     mother_surname: guarantorMotSurn,
-                    nationality: guarantorNation
+                    nationality: guarantorNation,
+                    street: guarantorStreet,
+                    ext_num: guarantorExtNum,
+                    division: guarantorDivision,
+                    city: guarantorCity,
+                    state: guarantorState,
+                    phone: guarantorPhone,
                 })
 
             if (error) throw error;
@@ -178,6 +190,73 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
                                     placeholder='Ej. Mexicana'
                                     value={guarantorNation}
                                     onChange={(e) => setGuarantorNation(e.target.value)}
+                                />
+                            </div>
+
+                            <div className="flex md:flex-row flex-col gap-4">
+                                <div className='flex flex-col gap-2 items-start'>
+                                    <p className='text-sm font-medium! text-start'>Calle</p>
+                                    <TextInput
+                                        className='w-full text-sm'
+                                        placeholder='Calle'
+                                        value={guarantorStreet}
+                                        onChange={(e) => setGuarantorStreet(e.target.value)}
+                                    />
+                                </div>
+
+                                <div className='flex flex-col gap-2 items-start'>
+                                    <p className='text-sm font-medium! text-start'>Número exterior</p>
+                                    <TextInput
+                                        className='w-full text-sm'
+                                        placeholder='Número exterior'
+                                        value={guarantorExtNum}
+                                        onChange={(e) => setGuarantorExtNum(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className='flex flex-col gap-2 items-start'>
+                                <p className='text-sm font-medium! text-start'>Colonia</p>
+                                <TextInput
+                                    className='w-full text-sm'
+                                    placeholder='Colonia'
+                                    value={guarantorDivision}
+                                    onChange={(e) => setGuarantorDivision(e.target.value)}
+                                />
+                            </div>
+
+                            <div className="flex md:flex-row flex-col gap-4">
+                                <div className='flex flex-col gap-2 items-start'>
+                                    <p className='text-sm font-medium! text-start'>Ciudad</p>
+                                    <TextInput
+                                        className='w-full text-sm'
+                                        placeholder='Ciudad'
+                                        value={guarantorCity}
+                                        onChange={(e) => setGuarantorCity(e.target.value)}
+                                    />
+                                </div>
+
+                                <div className='flex flex-col gap-2 items-start'>
+                                    <p className='text-sm font-medium! text-start'>Estado</p>
+                                    <TextInput
+                                        className='w-full text-sm'
+                                        placeholder='Estado'
+                                        value={guarantorState}
+                                        onChange={(e) => setGuarantorState(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className='flex flex-col gap-2 items-start'>
+                                <p className='text-sm font-medium! text-start'>Número de teléfono</p>
+                                <TextInput
+                                    type="tel"
+                                    min={10}
+                                    max={10}
+                                    className='w-full text-sm'
+                                    placeholder='Número de teléfono'
+                                    value={guarantorPhone}
+                                    onChange={(e) => setGuarantorPhone(e.target.value)}
                                 />
                             </div>
                         </div>

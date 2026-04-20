@@ -31,6 +31,7 @@ export default function WelcomeForm({ firstName }) {
     const [fatherSurname, setFatherSurname] = useState(location.mother_surname);
     const [incorrectDataModal, setIncorrectDataModal] = useState();
     const [signAuthorization, setSignAuthorization] = useState(false);
+    const [phoneNumber, setPhoneNumber] = useState("");
 
     const [alternateStreet, setAlternateStreet] = useState("");
     const [alternateExtNum, setAlternateExtNum] = useState("");
@@ -116,11 +117,6 @@ export default function WelcomeForm({ firstName }) {
     };
 
     async function handleIncorrectData() {
-        // An array that describes the set of information that each step in the form aims to collect
-        const infoByStep = [
-            ""
-        ];
-
         const { error } = await supabase
             .from("notifications")
             .insert({

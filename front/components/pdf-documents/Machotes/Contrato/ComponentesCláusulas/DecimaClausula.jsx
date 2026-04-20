@@ -10,6 +10,8 @@ export function DecimaClausula({
     apellidoMatArrendatario,
     nombreTestigo1,
     apellidoPatTestigo1,
+    signatureTenant,
+    signatureOwner,
     apellidoMatTestigo1,
     isActive,
 }) {
@@ -44,9 +46,7 @@ export function DecimaClausula({
 
                     <View style={estilos.contenedorFirmaImg}>
                         {isActive && (
-                            <Image>
-                                {/* Incluir aquí la firma del arrendador */}
-                            </Image>
+                            <Image src={signatureOwner} />
                         )}
                     </View>
 
@@ -60,9 +60,7 @@ export function DecimaClausula({
 
                     <View style={estilos.contenedorFirmaImg}>
                         {isActive && (
-                            <Image>
-                                {/* Incluir aquí la firma del arrendador */}
-                            </Image>
+                            <Image src={signatureTenant} />
                         )}
                     </View>
 

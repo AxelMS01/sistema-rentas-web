@@ -69,12 +69,15 @@ const estilos = StyleSheet.create({
     cuerpo: {
         fontSize: 8,
         lineHeight: "150%",
+        flexWrap: "wrap",
+        textOverflow: "ellipsis",
     },
     parteInferior: {
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
+
     },
     datosPersonas: {
         display: "flex",
@@ -86,27 +89,27 @@ const estilos = StyleSheet.create({
         flexDirection: "column",
         gap: 5,
     },
+    contenedorFirma: {
+        padding: 5,
+        borderBottomWidth: 1,
+        borderBottomStyle: "solid",
+        borderBottomColor: "black,"
+    },
     firmas: {
         display: "flex",
-        width: "60%",
         flexDirection: "row",
-        alignItems: "center",
+        alignItems: "flex-end",
         justifyContent: "center",
-        gap: 50,
+        width: "50%",
     },
     espacioFirma: {
         display: "flex",
         flexDirection: "column",
-        gap: 10,
+        columnGap: 10,
         alignItems: "center",
         justifyContent: "center",
-    },
-    contenedorFirma: {
-        padding: 5,
-        width: "100%",
-        borderBottomWidth: 1,
-        borderBottomStyle: "solid",
-        borderBottomColor: "black,"
+        marginRight: 20,
+        maxWidth: "50%",
     },
 });
 
