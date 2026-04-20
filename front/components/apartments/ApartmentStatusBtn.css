@@ -1,0 +1,52 @@
+.inactive {
+    background-color: white;
+    border: #e2e8f0 1px solid;
+    display: "flex";
+    padding-inline: 1rem;
+    padding-block: 0.5rem;
+    color: "black";
+}
+
+.active-all {
+    background-color: #0284c7;
+    color: "white";
+}
+
+.dot-all {
+    background-color: #0284c7;
+    width: 4px;
+    height: 4px;
+}
+
+.active-available {
+    background-color: #22c55e;
+    color: "white";
+}
+
+.dot-available {
+    background-color: #22c55e;
+    width: 4px;
+    height: 4px;
+}
+
+.active-occupied {
+    background-color: #ef4444;
+    color: "white";
+}
+
+.dot-occupied {
+    background-color: #ef4444;
+    width: 4px;
+    height: 4px;
+}
+
+.active-archived {
+    background-color: #64748b;
+    color: "white"
+}
+
+.dot-archived {
+    background-color: #64748b;
+    width: 4px;
+    height: 4px;
+}
