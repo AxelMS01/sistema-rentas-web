@@ -110,7 +110,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className='flex w-full min-h-screen bg-[url("../../../src/assets/fondo01.png")] bg-no-repeat bg-cover items-center justify-center'>
+    <div className='flex w-full min-h-screen bg-[url("../../../views/owner/Assets/fondo01.png")] bg-no-repeat bg-cover items-center justify-center'>
       <Toaster />
 
       <div className={`absolute bg-sky-950 opacity-80 w-full h-screen`}>
