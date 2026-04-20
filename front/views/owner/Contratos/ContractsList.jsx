@@ -11,7 +11,7 @@ import { LuPlus } from "react-icons/lu";
 
 export const token = localStorage.getItem("token");
 
-const Viviendas = () => {
+const Contracts = () => {
   const loggedUserId = useUser((state) => state.loggedUser);
 
   const [contratos, setContratos] = useState([]);
@@ -132,4 +132,4 @@ const Viviendas = () => {
   );
 };
 
-export default Viviendas;
+export default Contracts;

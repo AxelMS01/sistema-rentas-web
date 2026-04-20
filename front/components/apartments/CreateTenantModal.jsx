@@ -56,13 +56,6 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
 
     async function uploadGovIdImages() {
         try {
-            const { data, error } = await supabase
-                .storage
-                .from("gov_id_images")
-                .upload(`${newUserId}/govid`, govIdImg[0]);
-
-            if (error) throw error;
-
             // An array of promises that upload files to the gov_id_images file bucket.
             const fileUploadPromises = Array.from(govIdImg).map(async (image, id) => {
                 const { data, error } = await supabase

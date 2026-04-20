@@ -84,7 +84,7 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
             return;
         };
 
-        async function insertGuarantorData() {
+        async function insertNewData() {
             const { data: guarantorData, error: guarantorError } = await supabase
                 .from("guarantors")
                 .insert({
@@ -119,10 +119,12 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
                 });
 
             if (error) throw error;
+
+            // Pending: update either the apartments table or tenants table to relate these elements.
         };
 
         // Promise chain.
-        insertGuarantorData();
+        insertNewData();
     };
 
     return (
