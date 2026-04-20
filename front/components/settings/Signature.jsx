@@ -1,7 +1,6 @@
 import { Button, Toast } from "flowbite-react";
 import SignaturePad from "react-signature-canvas";
 import toast, { Toaster } from "react-hot-toast";
-import "./Signature.css";
 import Signature from "@uiw/react-signature/canvas";
 import useUser from "../../stores/user-store";
 import { supabase } from "../../config/supabase-client";
