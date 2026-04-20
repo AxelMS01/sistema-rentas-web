@@ -19,7 +19,7 @@ const Home = () => {
 
     const [tenantInfo, setTenantInfo] = useState();
     const [isLoading, setIsLoading] = useState(true);
-    const [contractDetailModal, setContractDetail] = useState(true);
+    const [contractDetailModal, setContractDetail] = useState(false);
 
     useEffect(() => {
         async function getTenantData() {

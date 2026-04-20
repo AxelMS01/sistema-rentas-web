@@ -179,7 +179,7 @@ const Navbar = () => {
                   <button
                     type="button"
                     className="btn btn-link hover:bg-slate-100! flex! flex-row gap-1.5 items-center! text-decoration-none text-dark w-100 text-start px-3 py-2"
-                    onClick={() => navigate("/configuracion")}
+                    onClick={!isTenant ? () => navigate("/configuracion") : ""}
                   >
                     <Settings size={18} />
                     Configuración
