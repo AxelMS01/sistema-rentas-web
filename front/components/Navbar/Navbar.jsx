@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import SignatureCanvas from "react-signature-canvas";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Settings, Bell, X, Eraser, LogOut } from "lucide-react";
 import { supabase } from "../../config/supabase-client";
