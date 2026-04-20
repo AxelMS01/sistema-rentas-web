@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Send, UserRound } from 'lucide-react';
-import "./LoginForm.css";
 import toast, { Toaster } from 'react-hot-toast';
 import { FaUser, FaEnvelope } from "react-icons/fa6";
 import { FaLock } from "react-icons/fa6";
@@ -111,11 +110,15 @@ const LoginForm = () => {
   };
 
   return (
-    <div className='login-page'>
+    <div className='flex w-full min-h-screen bg-[url("../../../src/assets/fondo01.png")] bg-no-repeat bg-cover items-center justify-center'>
       <Toaster />
-      <div className={`flex flex-col gap-2 bg-white max-w-md px-8 py-8 rounded-2xl`}>
+
+      <div className={`absolute bg-sky-950 opacity-80 w-full h-screen`}>
+      </div>
+
+      <div className={`flex flex-col z-10 gap-2 bg-white max-w-md px-8 py-8 rounded-2xl`}>
         <form onSubmit={handleLogin} className='w-auto! flex flex-col gap-4'>
-          <p className="text-2xl! font-semibold!">Administración de Rentas</p>
+          <p className="text-2xl! font-semibold! text-center">Administración de Rentas</p>
 
           <div className="flex flex-row w-full justify-center items-center gap-2">
             <button
@@ -138,10 +141,11 @@ const LoginForm = () => {
           </div>
 
           <div className='flex flex-col gap-2 items-start w-full'>
-            <p className='text-slate-900 text-sm font-semibold!'>Correo electrónico</p>
+            <p className='text-slate-900 text-sm font-medium!'>Correo electrónico</p>
             <TextInput
               type="text"
               className="text-sm! w-full"
+              value={userEmail}
               placeholder="Correo electrónico"
               onChange={(e) => setUserEmail(e.target.value)}
               required
@@ -149,10 +153,11 @@ const LoginForm = () => {
           </div>
 
           <div className='flex flex-col gap-2 items-start w-full'>
-            <p className='text-slate-900 text-sm! font-semibold!'>Contraseña</p>
+            <p className='text-slate-900 text-sm! font-medium!'>Contraseña</p>
             <TextInput
               type="password"
               className="text-sm! w-full"
+              value={userPassowrd}
               placeholder="Contraseña"
               onChange={(e) => setUserPassword(e.target.value)}
               required
@@ -180,7 +185,7 @@ const LoginForm = () => {
           </div>
 
           <div className="w-full wrap-normal">
-            <p className='text-slate-600 text-sm!'>Al continuar, usted acepta los Términos de Sistema de Administración de Rentas y reconoce haber leído nuestra <span className="privacy-link" onClick={toggleModal}>Política de Privacidad</span>. Aviso de recopilación de información.
+            <p className='text-slate-600 text-sm! text-center'>Al continuar, usted acepta los Términos de Sistema de Administración de Rentas y reconoce haber leído nuestra <span className="privacy-link" onClick={toggleModal}>Política de Privacidad</span>. Aviso de recopilación de información.
             </p>
           </div>
         </form>
@@ -188,7 +193,7 @@ const LoginForm = () => {
 
       {isModalOpen && (
         <div className="modal-overlay2" onClick={toggleModal}>
-          <div className="modal-content2" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content2 text-center" onClick={(e) => e.stopPropagation()}>
             <button className="modal-close2" onClick={toggleModal}>&times;</button>
             <h2>Términos y Políticas de Privacidad</h2>
             <p><strong>1. Introducción</strong><br />
