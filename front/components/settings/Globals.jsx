@@ -9,10 +9,10 @@ export default function Globals({
     minMonths
 }) {
     // Divide the charge-fee in the 'type-value' format.
-    const initialChargeFee = chargeFee.split("-");
+    const initialChargeFee = chargeFee ? chargeFee.split("-") : "";
 
-    const [chargeType, setChargeType] = useState(initialChargeFee[0]);
-    const [chargeVal, setChargeVal] = useState(initialChargeFee[1]);
+    const [chargeType, setChargeType] = useState(chargeFee ? initialChargeFee[0] : "");
+    const [chargeVal, setChargeVal] = useState(chargeFee ? initialChargeFee[1] : "");
     const [minimumMonths, setMinimumMonths] = useState(minMonths);
 
     const loggedUserId = useUser((state) => state.loggedUser);

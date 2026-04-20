@@ -100,8 +100,11 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
                     state: guarantorState,
                     phone: guarantorPhone,
                 })
+                .select();
 
-            if (error) throw error;
+            if (guarantorError) throw guarantorError;
+
+            console.log(guarantorData);
 
             let newGuarantorId = guarantorData[0].id;
 
@@ -119,6 +122,7 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
                 });
 
             if (error) throw error;
+            onSaveContract();
 
             // Pending: update either the apartments table or tenants table to relate these elements.
         };
