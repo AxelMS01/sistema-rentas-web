@@ -94,7 +94,7 @@ const Incidencias = () => {
         const { data, error } = await supabase
           .from("maintenancerequests")
           .select()
-          .eq("owner_id", loggedUserId)
+          .eq("owner_id", loggedUserId);
 
         setIncidenciasData(data);
 

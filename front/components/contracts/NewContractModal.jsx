@@ -1,5 +1,5 @@
 
-import { Button, Label, Modal, ModalBody, ModalHeader, TextInput, Select } from "flowbite-react";
+import { Button, Label, Modal, ModalBody, ModalHeader, ModalFooter, TextInput, Select } from "flowbite-react";
 import { Datepicker } from "flowbite-react";
 import toast, { Toaster } from "react-hot-toast";
 import { useState, useEffect } from "react";
@@ -7,7 +7,7 @@ import useUser from "../../stores/user-store";
 import { supabase } from "../../config/supabase-client";
 import { UserRoundKey } from "lucide-react";
 
-export default function NewContractModal({ isModalOpen, onCloseModal, onSaveContract, isOnEditData }) {
+export default function NewContractModal({ isModalOpen, onCloseModal, onSaveContract, isOnEdit, isOnEditData }) {
     const loggedUserId = useUser((state) => state.loggedUser);
 
     // Inputs for the apartment selection.
@@ -84,7 +84,7 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
             return;
         };
 
-        async function insertGuarantorData() {
+        async function insertNewData() {
             const { data: guarantorData, error: guarantorError } = await supabase
                 .from("guarantors")
                 .insert({
@@ -119,17 +119,19 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
                 });
 
             if (error) throw error;
+
+            // Pending: update either the apartments table or tenants table to relate these elements.
         };
 
         // Promise chain.
-        insertGuarantorData();
+        insertNewData();
     };
 
     return (
         <>
             <Modal show={isModalOpen} size="xl" onClose={onCloseModal} popup>
                 <ModalHeader className="w-full p-4">
-                    <p className="text-2xl! tracking-tight font-semibold">Crear nuevo contrato</p>
+                    <p className="text-2xl! tracking-tight font-semibold">{!isOnEdit ? "Crear nuevo contrato" : "Editar contrato"}</p>
                 </ModalHeader>
                 <ModalBody>
                     <form onSubmit={onSubmitData} className='flex flex-col gap-4'>
@@ -297,17 +299,18 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
                                 />
                             </div>
                         </div>
-
-                        <div className="w-full flex sm:flex-row flex-col gap-2">
-                            <Button className="w-full text-sm! rounded-lg! px-4! py-2!" color={"alternative"} onClick={onCloseModal}>
-                                Cancelar
-                            </Button>
-                            <Button className="w-full text-sm! rounded-lg! bg-sky-600 hover:bg-sky-700! px-4! py-2!" onClick={onSubmitData}>
-                                Generar contrato
-                            </Button>
-                        </div>
                     </form>
                 </ModalBody>
+                <ModalFooter>
+                    <div className="w-full flex sm:flex-row flex-col gap-2">
+                        <Button className="w-full text-sm! rounded-lg! px-4! py-2!" color={"alternative"} onClick={onCloseModal}>
+                            Cancelar
+                        </Button>
+                        <Button className="w-full text-sm! rounded-lg! bg-sky-600 hover:bg-sky-700! px-4! py-2!" onClick={onSubmitData}>
+                            Generar contrato
+                        </Button>
+                    </div>
+                </ModalFooter>
             </Modal>
         </>
     );

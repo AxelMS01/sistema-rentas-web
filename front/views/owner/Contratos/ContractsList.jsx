@@ -11,7 +11,7 @@ import { LuPlus } from "react-icons/lu";
 
 export const token = localStorage.getItem("token");
 
-const Viviendas = () => {
+const Contracts = () => {
   const loggedUserId = useUser((state) => state.loggedUser);
 
   const [contratos, setContratos] = useState([]);
@@ -85,7 +85,7 @@ const Viviendas = () => {
   return (
     <div className="w-full h-screen flex flex-col gap-4! lg:px-20! sm:px-16! px-8! py-10">
       {showCreationModal && (
-        <NewContractModal isModalOpen={showCreationModal} onCloseModal={() => setShowCreationModal(false)} isOnEditData={editData} />
+        <NewContractModal isModalOpen={showCreationModal} onCloseModal={() => setShowCreationModal(false)} isOnEdit={true} isOnEditData={editData} />
       )}
 
       <div className="flex w-full md:flex-row flex-col justify-between md:items-center items-start gap-6">
@@ -132,4 +132,4 @@ const Viviendas = () => {
   );
 };
 
-export default Viviendas;
+export default Contracts;

@@ -10,10 +10,11 @@ import Incidencias from "../views/owner/Incidencias/Incidencias";
 import Contratos from "../views/owner/Contratos/ContractsList";
 import ContractDetails from "../views/owner/ContratoDetalle/ContractDetail";
 import ViviendaDetalle from "../views/owner/ViviendaDetalle/ViviendaDetalle";
+import TenantRequests from "../views/tenant/Incidencias/TenantRequests";
 import Reportes from "../views/owner/Reportes/Reportes";
 import ProtectedRoute from "../utils/ProtectedRoute";
 import Navbar from "../components/Navbar/Navbar";
-import Home from "../views/tenant/Home/Home";
+import Home from "../views/tenant/Home/NewHome";
 import WelcomeForm from "../views/tenant/WelcomeForm";
 import Settings from "../views/owner/Profile/Settings";
 
@@ -35,6 +36,7 @@ function App() {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="viviendas" element={<Viviendas />} />
               <Route path="incidencias" element={<Incidencias />} />
+              <Route path="mis-incidencias" element={<TenantRequests />} />
               <Route path="contratos" element={<Contratos />} />
               <Route path="home" element={<Home />} />
               <Route path="bienvenida" element={<WelcomeForm />} />

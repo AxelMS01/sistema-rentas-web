@@ -245,12 +245,6 @@ const Viviendas = () => {
         </div>
       </div>
 
-      {/*
-        <PDFViewer width={500} height={800}>
-          <DocumentoContrato />
-        </PDFViewer>
-        */}
-
       <ApartmentTable
         apartments={propiedadesPaginadas}
         onEditClick={handleSelect}
