@@ -8,7 +8,6 @@ import FormStep from '../../components/welcome-form/FormStep';
 import { CircleUser, Eraser, Grid2X2Check, House, TriangleAlert } from 'lucide-react';
 import { Button } from 'flowbite-react';
 import useUser from '../../stores/user-store';
-import SignatureCanvas from 'react-signature-canvas';
 import { supabase } from "../../config/supabase-client";
 import { useNavigate } from 'react-router-dom';
 import Signature from "@uiw/react-signature/canvas";
