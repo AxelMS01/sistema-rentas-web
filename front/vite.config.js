@@ -12,4 +12,5 @@ export default defineConfig({
     tailwindcss(),
     flowbiteReact(),
   ],
+  base: "/sistema-rentas-web",
 })
