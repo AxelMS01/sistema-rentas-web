@@ -19,7 +19,6 @@
   color-scheme: light dark;
   font-family: "Inter", sans-serif !important;
   color: var(--text);
-  background: var(--bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -56,4 +55,5 @@ p, h1 {
 
 #root {
   margin: 0 auto;
+  background-color: #f8fafc;
 }
