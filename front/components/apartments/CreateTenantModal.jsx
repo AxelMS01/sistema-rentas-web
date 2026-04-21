@@ -20,42 +20,29 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
     var newUserId;
 
     async function handleSaveData() {
-        const { data, error } = await supabase.auth.signUp({
-            email: email.trim(),
-            password: password.trim(),
-            options: {
-                data: {
-                    user_type: "tenant",
-                    name: name,
-                    father_surname: fatherSurname,
-                    mother_surname: motherSurname,
-                    phone: phoneNumber,
-                    email: email,
-                    role: "tenant",
-                    owner_id: ownerId,
-                    apartment_id: apartmentId,
-                }
-            },
-        });
-
-        newUserId = data.user.id;
-
-        if (error) throw error;
-
-        uploadGovIdImages();
-    };
-
-    const handleFileChange = (e) => {
-        const newFiles = [];
-        for (let i = 0; i < e.target.files.length; i++) {
-            newFiles.push(e.target.files[i]);
-        };
-
-        setGovIdImg(newFiles);
-    };
-
-    async function uploadGovIdImages() {
         try {
+            const { data: newUserData, error: newUserError } = await supabase.auth.signUp({
+                email: email.trim(),
+                password: password.trim(),
+                options: {
+                    data: {
+                        user_type: "tenant",
+                        name: name,
+                        father_surname: fatherSurname,
+                        mother_surname: motherSurname,
+                        phone: phoneNumber,
+                        email: email,
+                        role: "tenant",
+                        owner_id: ownerId,
+                        apartment_id: apartmentId,
+                    }
+                },
+            });
+
+            let newUserId = data.user.id;
+
+            if (error) throw error;
+
             // An array of promises that upload files to the gov_id_images file bucket.
             const fileUploadPromises = Array.from(govIdImg).map(async (image, id) => {
                 const { data, error } = await supabase
@@ -68,12 +55,23 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
 
             await Promise.all(fileUploadPromises);
 
-        } catch (error) {
             console.log("An error ocurred while uploading the files:", error)
+
+        } catch (error) {
+            console.log(error);
+        } finally {
+            onCreateSuccess();
+        };
+    };
+
+    const handleFileChange = (e) => {
+        const newFiles = [];
+        for (let i = 0; i < e.target.files.length; i++) {
+            newFiles.push(e.target.files[i]);
         };
 
-        onCreateSuccess();
-    }
+        setGovIdImg(newFiles);
+    };
 
     return (
         <>
