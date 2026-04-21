@@ -59,7 +59,7 @@ const Contracts = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [successfulAction]);
 
   const handleContractUpdated = (updatedContract) => {
     setEditingContractId(null);
@@ -93,7 +93,7 @@ const Contracts = () => {
   return (
     <div className="w-full h-screen flex flex-col gap-4! lg:px-20! sm:px-16! px-8! py-10">
       {showCreationModal && (
-        <NewContractModal isModalOpen={showCreationModal} onSaveContract={handleSuccessfulCreation} onCloseModal={() => setShowCreationModal(false)} isOnEdit={true} isOnEditData={editData} />
+        <NewContractModal isModalOpen={showCreationModal} onSaveContract={handleSuccessfulCreation} onCloseModal={() => setShowCreationModal(false)} isOnEdit={false} isOnEditData={editData} />
       )}
 
       <div className="flex w-full md:flex-row flex-col justify-between md:items-center items-start gap-6">

@@ -7,6 +7,7 @@ import { MapPinHouse } from "lucide-react";
 
 export default function HomeInfoCard() {
     const loggedTenantId = useUser((state) => state.loggedUser);
+    console.log("logged:", loggedTenantId)
     const [cardInfo, setCardInfo] = useState();
     const [isLoading, setIsLoading] = useState(true);
 

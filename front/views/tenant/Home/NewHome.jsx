@@ -16,10 +16,11 @@ export const token = localStorage.getItem("token");
 
 const Home = () => {
     const navigate = useNavigate();
-
     const [tenantInfo, setTenantInfo] = useState();
     const [isLoading, setIsLoading] = useState(true);
     const [contractDetailModal, setContractDetail] = useState(false);
+    const loggedUserId = useUser((state) => state.loggedUser);
+    console.log(loggedUserId);
 
     useEffect(() => {
         async function getTenantData() {
@@ -31,7 +32,13 @@ const Home = () => {
 
                 if (error) throw error;
 
-                setTenantInfo(data[0]);
+                console.log("data:", data)
+
+                if (data[0].is_first_time === true) {
+                    navigate("/bienvenida", { state: data[0] });
+                } else {
+                    setTenantInfo(data[0]);
+                }
             } catch (error) {
                 console.log(error);
             } finally {
@@ -41,10 +48,6 @@ const Home = () => {
 
         getTenantData();
     }, []);
-
-
-    const loggedUserId = useUser((state) => state.loggedUser);
-    console.log(loggedUserId);
 
     const todayDate = new Date();
 

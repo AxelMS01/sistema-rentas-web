@@ -15,7 +15,7 @@ export default function ContractsTable({
 }) {
     const navigate = useNavigate();
     const [apartmentNames, setApartmentNames] = useState([]);
-    const [tenantNames, setTenantNames] = useState([{}]);
+    const [tenantNames, setTenantNames] = useState([]);
     const [isTenantLoading, setIsTenantLoading] = useState(true);
     const [isApartmentLoading, setIsApartmentLoading] = useState(true);
 
@@ -29,8 +29,7 @@ export default function ContractsTable({
                         .eq("id", contract.apartmentid);
 
                     if (error) throw error;
-
-                    setApartmentNames(data);
+                    return data[0];
                 } catch (error) {
                     console.log(error);
                 } finally {
@@ -38,10 +37,12 @@ export default function ContractsTable({
                 }
             });
 
-            await Promise.all(apartmentNamesPromises);
+            const results = await Promise.all(apartmentNamesPromises);
+            setApartmentNames(results);
         };
 
         async function getTenantsNames() {
+            console.log(contracts);
             const tenantNamesPromises = Array.from(contracts).map(async (contract) => {
                 try {
                     const { data, error } = await supabase
@@ -51,15 +52,15 @@ export default function ContractsTable({
 
                     if (error) throw error;
 
-                    setTenantNames(data);
+                    return data[0];
                 } catch (error) {
                     console.log(error);
-                } finally {
-                    setIsTenantLoading(false);
-                }
+                };
             });
 
-            await Promise.all(tenantNamesPromises);
+            const results = await Promise.all(tenantNamesPromises);
+            setTenantNames(results);
+            setIsTenantLoading(false);
         };
 
         getApartmentsNames().then(getTenantsNames());
@@ -81,6 +82,7 @@ export default function ContractsTable({
                     </TableHead>
                     <TableBody className="divide-y! border-b-gray-200!">
                         {contracts.map((contract, id) => {
+                            console.log(tenantNames);
                             const tenantName = tenantNames[id].name + " " + tenantNames[id].father_surname + " " + tenantNames[id].mother_surname;
                             const apartmentName = apartmentNames[id].name;
                             return (
@@ -105,13 +107,15 @@ export default function ContractsTable({
                                                 Editar
                                             </Button>
 
-                                            <Button onClick={() => navigate("/contratos/" + contract.id + "/detalles", {state: {
-                                                tenantName: tenantName,
-                                                rentCost: contract.depositamount,
-                                                startDate: contract.startdate,
-                                                endDate: contract.enddate,
-                                                contractStatus: contract.status
-                                            }})} className="rounded-md! flex flex-row gap-1.5 text-nowrap text-[13px]!" size="xs" color="alternative">
+                                            <Button onClick={() => navigate("/contratos/" + contract.id + "/detalles", {
+                                                state: {
+                                                    tenantName: tenantName,
+                                                    rentCost: contract.depositamount,
+                                                    startDate: contract.startdate,
+                                                    endDate: contract.enddate,
+                                                    contractStatus: contract.status
+                                                }
+                                            })} className="rounded-md! flex flex-row gap-1.5 text-nowrap text-[13px]!" size="xs" color="alternative">
                                                 <Eye size={14} />
                                                 Ver detalles
                                             </Button>

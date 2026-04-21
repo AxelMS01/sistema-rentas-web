@@ -11,7 +11,7 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
     const loggedUserId = useUser((state) => state.loggedUser);
 
     // Inputs for the apartment selection.
-    const [apartmentId, setApartmentId] = useState(0);
+    const [apartmentId, setApartmentId] = useState(-1);
     const [tenantName, setTenantName] = useState("");
     const [tenantLastName, setTenantLastName] = useState("");
     const [apartmentOptions, setApartmentOptions] = useState([{}]);
@@ -29,6 +29,8 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
     const [guarantorCity, setGuarantorCity] = useState("");
     const [guarantorState, setGuarantorState] = useState("");
     const [guarantorPhone, setGuarantorPhone] = useState("");
+    const [isLinkLoading, setIsLinkLoading] = useState(true);
+    const [linkFound, setLinkFound] = useState(false);
 
     // Inputs for the contract.
     const [contractStart, setContractStart] = useState();
@@ -57,6 +59,9 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
 
     useEffect(() => {
         async function updateRelatedTenant() {
+            setIsLinkLoading(true);
+
+            console.log(apartmentId);
             try {
                 const { data, error } = await supabase
                     .from("tenants")
@@ -65,13 +70,20 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
 
                 if (error) throw error;
 
-                setSelectedTenantId(data[0].id);
-                setTenantName(data[0].name);
-                setTenantLastName(data[0].father_surname);
+                if (data.length === 0) {
+                    setLinkFound(false);
+                } else {
+                    setLinkFound(true);
+                    setSelectedTenantId(data[0].id);
+                    setTenantName(data[0].name);
+                    setTenantLastName(data[0].father_surname);
+                };
 
             } catch (error) {
                 console.log(error);
-            };
+            } finally {
+                setIsLinkLoading(false);
+            }
         };
 
         updateRelatedTenant();
@@ -141,18 +153,29 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
 
                         <div className='flex flex-col gap-2 items-start text-start'>
                             <p className='text-sm font-medium!'>Selecciona una de tus viviendas</p>
-                            <Select className="w-full" defaultValue="1" value={apartmentId} onChange={(e) => setApartmentId(e.target.value)}>
+                            <Select className="w-full" value={apartmentId} onChange={(e) => setApartmentId(e.target.value)}>
+                                <option value={-1}>Selecciona una opción</option>
                                 {apartmentOptions.map((apartment, id) => {
                                     return (
                                         <option key={id} value={apartment.id}>{apartment.name}</option>
                                     )
                                 })}
                             </Select>
-                            <div className="w-full text-sm! flex flex-row gap-1 px-3 py-2 bg-sky-50 items-center rounded border border-sky-400!">
-                                <UserRoundKey size={18} className="text-sky-800" />
-                                <p className="font-medium text-sky-800">Arrendatario enlazado:</p>
-                                <p className="font-medium text-slate-800">{tenantName} {tenantLastName}</p>
-                            </div>
+
+                            {!isLinkLoading && apartmentId != -1 && (
+                                <div className="w-full text-sm! flex flex-row gap-1 px-3 py-2 bg-sky-50 items-center rounded border border-sky-400!">
+                                    <UserRoundKey size={18} className="text-sky-800" />
+                                    {linkFound ? (
+                                        <>
+                                            <p className="font-medium text-sky-800">Arrendatario enlazado: {tenantName} {tenantLastName}</p>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <p className="font-medium text-sky-800">No se encontró un arrendatario enlazado.</p>
+                                        </>
+                                    )}
+                                </div>
+                            )}
                         </div>
 
                         <div className="flex flex-col gap-4">
@@ -198,8 +221,8 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
                                 />
                             </div>
 
-                            <div className="flex md:flex-row flex-col gap-4">
-                                <div className='flex flex-col gap-2 items-start'>
+                            <div className="flex md:flex-row flex-col gap-4 w-full">
+                                <div className='flex flex-col gap-2 items-start w-full'>
                                     <p className='text-sm font-medium! text-start'>Calle</p>
                                     <TextInput
                                         className='w-full text-sm'
@@ -209,7 +232,7 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
                                     />
                                 </div>
 
-                                <div className='flex flex-col gap-2 items-start'>
+                                <div className='flex flex-col gap-2 items-start w-full'>
                                     <p className='text-sm font-medium! text-start'>Número exterior</p>
                                     <TextInput
                                         className='w-full text-sm'
@@ -230,8 +253,8 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
                                 />
                             </div>
 
-                            <div className="flex md:flex-row flex-col gap-4">
-                                <div className='flex flex-col gap-2 items-start'>
+                            <div className="flex md:flex-row flex-col gap-4 w-full">
+                                <div className='flex flex-col gap-2 items-start w-full'>
                                     <p className='text-sm font-medium! text-start'>Ciudad</p>
                                     <TextInput
                                         className='w-full text-sm'
@@ -241,7 +264,7 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
                                     />
                                 </div>
 
-                                <div className='flex flex-col gap-2 items-start'>
+                                <div className='flex flex-col gap-2 items-start w-full'>
                                     <p className='text-sm font-medium! text-start'>Estado</p>
                                     <TextInput
                                         className='w-full text-sm'

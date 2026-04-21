@@ -85,17 +85,6 @@ export default function ApartmentTable({
                                 </TableCell>
                                 <TableCell>
                                     <div className="w-full flex flex-col gap-2">
-                                        {apartment.tenantName ? (
-                                            <Button onClick={() => navigate("/contratos" + apartment.id)} className="rounded-md! flex flex-row gap-1.5 text-nowrap text-[13px]!" size="xs" color="alternative">
-                                                <ScrollText size={14} />
-                                                Datos del contrato
-                                            </Button>
-                                        ) : (
-                                            <Button onClick={() => onAddContractClick(apartment.id, true)} className="rounded-md! flex flex-row gap-1.5 text-nowrap text-[13px]!" size="xs" color="alternative">
-                                                <ScrollText size={14} />
-                                                Añadir contrato
-                                            </Button>
-                                        )}
                                         <Button onClick={() => navigate("/viviendas/" + apartment.id + "/detalles")} className="rounded-md! flex flex-row gap-1.5 text-nowrap text-[13px]!" size="xs" color="alternative">
                                             <House size={14} />
                                             Ver detalles

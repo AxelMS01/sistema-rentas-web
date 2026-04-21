@@ -41,16 +41,17 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
 
             let newUserId = newUserData.user.id;
 
-            if (error) throw error;
+            if (newUserError) throw newUserError;
 
             const { data: tentantTableInfo, error: tenantError } = await supabase
                 .from("tenants")
                 .select("id")
-                .eq("authid", newUserId);
+                .eq("owner_id", ownerId);
 
             if (tenantError) throw tenantError;
 
-            let tableTenantId = tentantTableInfo[0].id;
+            const tableTenantId = tentantTableInfo[0].id;
+            console.log(tableTenantId);
 
             const { error: updateApartmentError } = await supabase
                 .from("apartments")
@@ -59,7 +60,7 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
                 })
                 .eq("id", apartmentId);
 
-            if (updateApartmentError) throw error;
+            if (updateApartmentError) throw updateApartmentError;
 
             // An array of promises that upload files to the gov_id_images file bucket.
             const fileUploadPromises = Array.from(govIdImg).map(async (image, id) => {
