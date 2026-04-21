@@ -47,7 +47,6 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
 
                 console.log(data);
                 setApartmentOptions(data);
-                setApartmentId(data[0].id);
             } catch (error) {
                 console.log(error);
             };
