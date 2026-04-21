@@ -39,7 +39,7 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
                 },
             });
 
-            let newUserId = data.user.id;
+            let newUserId = newUserData.user.id;
 
             if (error) throw error;
 
