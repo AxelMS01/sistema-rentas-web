@@ -16,11 +16,12 @@ export default function ContractsTable({
     const navigate = useNavigate();
     const [apartmentNames, setApartmentNames] = useState([]);
     const [tenantNames, setTenantNames] = useState([]);
-    const [isTenantLoading, setIsTenantLoading] = useState(true);
-    const [isApartmentLoading, setIsApartmentLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         async function getApartmentsNames() {
+            setIsLoading(true);
+
             const apartmentNamesPromises = Array.from(contracts).map(async (contract) => {
                 try {
                     const { data, error } = await supabase
@@ -32,17 +33,17 @@ export default function ContractsTable({
                     return data[0];
                 } catch (error) {
                     console.log(error);
-                } finally {
-                    setIsApartmentLoading(false);
-                }
+                };
             });
 
             const results = await Promise.all(apartmentNamesPromises);
             setApartmentNames(results);
+            setIsLoading(false);
         };
 
         async function getTenantsNames() {
-            console.log(contracts);
+            setIsLoading(true);
+
             const tenantNamesPromises = Array.from(contracts).map(async (contract) => {
                 try {
                     const { data, error } = await supabase
@@ -60,15 +61,16 @@ export default function ContractsTable({
 
             const results = await Promise.all(tenantNamesPromises);
             setTenantNames(results);
-            setIsTenantLoading(false);
+            setIsLoading(false);
         };
 
         getApartmentsNames().then(getTenantsNames());
+
     }, [contracts]);
 
     return (
         <div className="overflow-x-auto" >
-            {!isTenantLoading && !isApartmentLoading && (
+            {!isLoading && (
                 <Table>
                     <TableHead>
                         <TableRow>
@@ -82,7 +84,6 @@ export default function ContractsTable({
                     </TableHead>
                     <TableBody className="divide-y! border-b-gray-200!">
                         {contracts.map((contract, id) => {
-                            console.log(tenantNames);
                             const tenantName = tenantNames[id].name + " " + tenantNames[id].father_surname + " " + tenantNames[id].mother_surname;
                             const apartmentName = apartmentNames[id].name;
                             return (
