@@ -4,10 +4,11 @@ import { supabase } from "../config/supabase-client";
 /**
  * Fetches all the necessary data to render the contract's document, using the id of the related tenant.
  * @param {*} tenantId 
+ * @param {*} ownerId 
  * @returns An object containing the rental contract, owner, tenant, guarantor, and apartment information to pass it to the contract document.
  */
 
-export default function useContractData(relationUsed, id) {
+export default function useContractData(tenantId, ownerId) {
     // State variables to save the fetched data into.
     const [isLoading, setIsLoading] = useState(true);
     const [contractInfo, setContractInfo] = useState();
@@ -16,13 +17,17 @@ export default function useContractData(relationUsed, id) {
     const [guarantorInfo, setGuarantorInfo] = useState();
     const [apartmentInfo, setApartmentInfo] = useState();
 
+    var tenant = tenantId;
+    var owner = ownerId;
+
     const fetchData = useCallback(
         async () => {
             try {
                 const { data: contractData, error: contractError } = await supabase
                     .from("rentalcontracts")
                     .select()
-                    .eq(relationUsed === "tenants" ? "tenantid" : "owner_id", id);
+                    .eq("tenantid", tenant)
+                    .eq("owner_id", owner)
 
                 if (contractError) throw error;
                 setContractInfo(contractData[0]);

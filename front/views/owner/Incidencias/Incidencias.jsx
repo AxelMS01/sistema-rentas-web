@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import "./Incidencias.css";
+import LoadingStatus from "../../../components/LoadingStatus";
 import SearchBar from "../../../components/SearchBar";
-import { Button } from "flowbite-react";
+import { Button, Spinner } from "flowbite-react";
 import { CalendarArrowDown, CalendarArrowUp } from "lucide-react";
 import RequestsTable from "../../../components/requests/RequestsTable";
 import { supabase } from "../../../config/supabase-client";
@@ -58,7 +59,7 @@ const Incidencias = () => {
   const obtenerToken = () => localStorage.getItem("token") || "";
   const [incidenciasData, setIncidenciasData] = useState([]);
   const [filtroBusqueda, setFiltroBusqueda] = useState("");
-  const [filtroEstado, setFiltroEstado] = useState("todas");
+  const [filtroEstado, setFiltroEstado] = useState("all");
   const [orden, setOrden] = useState("recientes");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -91,13 +92,26 @@ const Incidencias = () => {
         setLoading(true);
         setError("");
 
-        const { data, error } = await supabase
-          .from("maintenancerequests")
-          .select()
-          .eq("owner_id", loggedUserId);
+        if (filtroEstado === "all") {
+          const { data, error } = await supabase
+            .from("maintenancerequests")
+            .select()
+            .eq("owner_id", loggedUserId);
 
-        setIncidenciasData(data);
+          if (error) throw error;
 
+          setIncidenciasData(data);
+        } else {
+          const { data, error } = await supabase
+            .from("maintenancerequests")
+            .select()
+            .eq("owner_id", loggedUserId)
+            .eq("status", filtroEstado);
+
+          if (error) throw error;
+
+          setIncidenciasData(data);
+        }
       } catch (err) {
         if (err.name === "AbortError") {
           return;
@@ -116,116 +130,81 @@ const Incidencias = () => {
     return () => {
       controller.abort();
     };
-  }, []);
-
-  const restablecerFiltros = () => {
-    setFiltroBusqueda("");
-    setFiltroEstado("todas");
-    setOrden("recientes");
-  };
-
-  const incidencias = useMemo(() => {
-    const texto = filtroBusqueda.trim().toLowerCase();
-
-    const filtradas = incidenciasData.filter((incidencia) => {
-      const ubicacion = String(incidencia.ubicacion || "").toLowerCase();
-      const arrendatario = String(incidencia.arrendatario || "").toLowerCase();
-      const descripcion = String(incidencia.descripcion || "").toLowerCase();
-
-      const coincideBusqueda =
-        ubicacion.includes(texto) ||
-        arrendatario.includes(texto) ||
-        descripcion.includes(texto);
-
-      const coincideEstado =
-        filtroEstado === "todas" ? true : incidencia.status === filtroEstado;
-
-      return coincideBusqueda && coincideEstado;
-    });
-
-    return [...filtradas].sort((a, b) => {
-      const fechaA = obtenerMarcaTiempo(a.fecha);
-      const fechaB = obtenerMarcaTiempo(b.fecha);
-      const idA = Number(a.id) || 0;
-      const idB = Number(b.id) || 0;
-
-      if (orden === "recientes") {
-        if (fechaB !== fechaA) {
-          return fechaB - fechaA;
-        }
-
-        return idB - idA;
-      }
-
-      if (fechaA !== fechaB) {
-        return fechaA - fechaB;
-      }
-
-      return idA - idB;
-    });
-  }, [filtroBusqueda, filtroEstado, incidenciasData, orden]);
+  }, [filtroEstado]);
 
   return (
-    <div className="w-full h-screen flex flex-col gap-4! lg:px-20! sm:px-16! px-8! py-10">
-      <div className="flex w-full md:flex-row flex-col justify-between md:items-center items-start gap-6">
-        <div className="header flex flex-col gap-2">
-          <h1 className="text-start font-light fw-semibold tracking-tight">Incidencias</h1>
-          <p className="text-base font-normal text-slate-500 text-start">Consulta aquí todas las incidencias reportadas en el sistema.</p>
+    <>
+      <div className="w-full h-screen flex flex-col gap-4! lg:px-20! sm:px-16! px-8! py-10">
+        <div className="flex w-full md:flex-row flex-col justify-between md:items-center items-start gap-6">
+          <div className="header flex flex-col gap-2">
+            <h1 className="text-start font-light fw-semibold tracking-tight">Incidencias</h1>
+            <p className="text-base font-normal text-slate-500 text-start">Consulta aquí todas las incidencias reportadas en el sistema.</p>
+          </div>
         </div>
-      </div>
 
-      <div className="incidencias-toolbar">
-        <SearchBar
-          placeholder="Buscar una incidencia..."
-          value={filtroBusqueda}
-          onChange={(e) => setFiltroBusqueda(e.target.value)}
-        />
+        <div className="incidencias-toolbar">
+          <SearchBar
+            placeholder="Buscar una incidencia..."
+            value={filtroBusqueda}
+            onChange={(e) => setFiltroBusqueda(e.target.value)}
+          />
 
-        <div className="flex flex-row gap-2 p-2.5 bg-white border border-slate-200 rounded-lg!">
+          <div className="flex flex-row gap-2 p-2.5 bg-white border border-slate-200 rounded-lg!">
+            <button
+              onClick={() => setOrden("recientes")}
+              className={`flex flex-row gap-2 px-4 py-2 items-center justify-center rounded-lg! text-sm! ${orden === "recientes" ? "bg-sky-600 text-white font-medium" : "bg-slate-100 border border-slate-200 text-slate-900"}`}
+            >
+              <CalendarArrowUp size={18} strokeWidth={2} />
+              Más recientes primero
+            </button>
+
+            <button
+              onClick={() => setOrden("antiguas")}
+              className={`flex flex-row gap-2 px-4 py-2 items-center justify-center rounded-lg! text-sm! ${orden === "antiguas" ? "bg-sky-600 text-white font-medium" : "bg-slate-100 border border-slate-200 text-slate-900"}`}
+            >
+              <CalendarArrowDown size={18} strokeWidth={2} />
+              Más antiguas primero
+            </button>
+          </div>
+        </div>
+
+        <div className="incidencias-filters">
           <button
-            onClick={() => setOrden("recientes")}
-            className={`flex flex-row gap-2 px-4 py-2 items-center justify-center rounded-lg! text-sm! ${orden === "recientes" ? "bg-sky-600 text-white font-medium" : "bg-slate-100 border border-slate-200 text-slate-900"}`}
+            type="button"
+            className={`incidencias-filter-btn ${filtroEstado === "all" ? "is-active" : ""}`}
+            onClick={() => setFiltroEstado("all")}
           >
-            <CalendarArrowUp size={18} strokeWidth={2} />
-            Más recientes primero
+            Todas
           </button>
-
           <button
-            onClick={() => setOrden("antiguas")}
-            className={`flex flex-row gap-2 px-4 py-2 items-center justify-center rounded-lg! text-sm! ${orden === "antiguas" ? "bg-sky-600 text-white font-medium" : "bg-slate-100 border border-slate-200 text-slate-900"}`}
+            type="button"
+            className={`incidencias-filter-btn ${filtroEstado === "solved" ? "is-active is-success" : ""}`}
+            onClick={() => setFiltroEstado("solved")}
           >
-            <CalendarArrowDown size={18} strokeWidth={2} />
-            Más antiguas primero
+            Resueltas
+          </button>
+          <button
+            type="button"
+            className={`incidencias-filter-btn ${filtroEstado === "pending" ? "is-active is-warning" : ""}`}
+            onClick={() => setFiltroEstado("pending")}
+          >
+            Pendientes
           </button>
         </div>
-      </div>
 
-      <div className="incidencias-filters">
-        <button
-          type="button"
-          className={`incidencias-filter-btn ${filtroEstado === "todas" ? "is-active" : ""}`}
-          onClick={restablecerFiltros}
-        >
-          Todas
-        </button>
-        <button
-          type="button"
-          className={`incidencias-filter-btn ${filtroEstado === "resuelta" ? "is-active is-success" : ""}`}
-          onClick={() => setFiltroEstado("resuelta")}
-        >
-          Resueltas
-        </button>
-        <button
-          type="button"
-          className={`incidencias-filter-btn ${filtroEstado === "pendiente" ? "is-active is-warning" : ""}`}
-          onClick={() => setFiltroEstado("pendiente")}
-        >
-          Pendientes
-        </button>
-      </div>
+        {loading && (
+              <div className="flex flex-row gap-2 self-center">
+                  <p className="text-base! font-medium text-slate-900">Cargando incidencias...</p>
+          
+                  <Spinner size="md"/>
+              </div>
+        )}
 
-      <RequestsTable requests={incidencias} obtainUrlMedia={obtenerUrlMedia} openEvidence={abrirEvidencia} />
-    </div>
+        {!loading && (
+          <RequestsTable searchValue={filtroBusqueda} requests={incidenciasData} obtainUrlMedia={obtenerUrlMedia} openEvidence={abrirEvidencia} />
+        )}
+      </div>
+    </>
   );
 };
 
