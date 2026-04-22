@@ -43,6 +43,8 @@ export default function HomeInfoCard() {
                     status: "pending",
                 };
 
+                console.log(apartmentData);
+
                 setCardInfo(collectedInfo);
             } catch (error) {
                 console.log(error);
