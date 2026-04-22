@@ -18,27 +18,35 @@ const Home = () => {
     const navigate = useNavigate();
     const [tenantInfo, setTenantInfo] = useState();
     const [isLoading, setIsLoading] = useState(true);
+    const [ownerId, setOwnerId] = useState();
     const [contractDetailModal, setContractDetail] = useState(false);
     const loggedUserId = useUser((state) => state.loggedUser);
     console.log(loggedUserId);
 
     useEffect(() => {
-        async function getTenantData() {
+        async function getOwnerAndTenant() {
             try {
-                const { data, error } = await supabase
+                const { data: tenantData, error: tenantError } = await supabase
                     .from("tenants")
                     .select()
                     .eq("id", loggedUserId);
 
-                if (error) throw error;
+                if (tenantError) throw tenantError;
 
-                console.log("data:", data)
-
-                if (data[0].is_first_time === true) {
-                    navigate("/bienvenida", { state: data[0] });
+                if (tenantData[0].is_first_time === true) {
+                    navigate("/bienvenida", { state: tenantData[0] });
                 } else {
-                    setTenantInfo(data[0]);
-                }
+                    setTenantInfo(tenantData[0]);
+                };
+
+                const { data: contractData, error: contractError } = await supabase
+                    .from("rentalcontracts")
+                    .select("owner_id")
+                    .eq("tenantid", loggedUserId);
+
+                if (contractError) throw contractError;
+
+                setOwnerId(contractData[0].owner_id);
             } catch (error) {
                 console.log(error);
             } finally {
@@ -46,14 +54,19 @@ const Home = () => {
             }
         };
 
-        getTenantData();
+        getOwnerAndTenant();
     }, []);
 
     const todayDate = new Date();
 
     return (
         <>
-            <ContractDetailsModal isModalOpen={contractDetailModal} onCloseModal={() => setContractDetail(false)} />
+            <ContractDetailsModal
+                isModalOpen={contractDetailModal}
+                onCloseModal={() => setContractDetail(false)}
+                ownerId={ownerId}
+                tenantId={loggedUserId}
+            />
 
             {!isLoading && (
                 <div className="w-full min-h-screen flex flex-col gap-4! lg:px-20! sm:px-16! px-8! py-10">

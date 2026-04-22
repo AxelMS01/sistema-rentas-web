@@ -1,4 +1,3 @@
-
 import { Button, Label, Modal, ModalBody, ModalHeader, ModalFooter, TextInput, FileInput, Datepicker, Textarea } from "flowbite-react";
 import toast, { Toaster } from "react-hot-toast";
 import { useState, useEffect } from "react";
@@ -11,8 +10,8 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import { DocumentoContrato } from "../pdf-documents/Machotes/Contrato/Contrato";
 import { CheckCircle, CircleCheck, Download } from "lucide-react";
 
-export default function ContractDetailsModal({ isModalOpen, onCloseModal }) {
-    const loggedUserId = useUser((state) => state.loggedUser);
+export default function ContractDetailsModal({ isModalOpen, onCloseModal, tenantId, ownerId }) {
+    const [isLoading, setIsLoading] = useState();
 
     const {
         isDataLoading,
@@ -21,7 +20,7 @@ export default function ContractDetailsModal({ isModalOpen, onCloseModal }) {
         tenantInfo,
         guarantorInfo,
         apartmentInfo
-    } = useContractData("tenants", loggedUserId);
+    } = useContractData(tenantId, ownerId);
 
     return (
         <>
@@ -29,7 +28,7 @@ export default function ContractDetailsModal({ isModalOpen, onCloseModal }) {
                 <Modal show={isModalOpen} size="xl" onClose={onCloseModal} popup>
                     <ModalHeader className="w-full p-4">
                         <p className="text-2xl! tracking-tight font-semibold mb-4">Detalles del contrato</p>
-                        
+
                         <PDFDownloadLink document={
                             <DocumentoContrato
                                 contractInfo={contractInfo}

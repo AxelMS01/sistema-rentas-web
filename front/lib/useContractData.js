@@ -29,7 +29,7 @@ export default function useContractData(tenantId, ownerId) {
                     .eq("tenantid", tenant)
                     .eq("owner_id", owner)
 
-                if (contractError) throw error;
+                if (contractError) throw contractError;
                 setContractInfo(contractData[0]);
 
                 // Variables for the rest of the tables.
@@ -43,7 +43,7 @@ export default function useContractData(tenantId, ownerId) {
                     .select()
                     .eq("id", ownerId);
 
-                if (ownerError) throw error;
+                if (ownerError) throw ownerError;
                 setOwnerInfo(ownerData[0]);
 
                 const { data: tenantData, error: tenantError } = await supabase
@@ -51,7 +51,7 @@ export default function useContractData(tenantId, ownerId) {
                     .select()
                     .eq("id", tenantId);
 
-                if (tenantError) throw error;
+                if (tenantError) throw tenantError;
                 setTenantInfo(tenantData[0]);
 
                 const { data: guarantorData, error: guarantorError } = await supabase
@@ -59,7 +59,7 @@ export default function useContractData(tenantId, ownerId) {
                     .select()
                     .eq("id", guarantorId);
 
-                if (guarantorError) throw error;
+                if (guarantorError) throw guarantorError;
                 setGuarantorInfo(guarantorData[0]);
 
                 const { data: apartmentData, error: apartmentError } = await supabase
@@ -67,7 +67,7 @@ export default function useContractData(tenantId, ownerId) {
                     .select()
                     .eq("id", apartmentId);
 
-                if (apartmentError) throw error;
+                if (apartmentError) throw apartmentError;
                 setApartmentInfo(apartmentData[0]);
             } catch (error) {
                 console.log(error);
