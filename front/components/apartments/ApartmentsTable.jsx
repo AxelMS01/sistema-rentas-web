@@ -1,6 +1,7 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from "flowbite-react";
 import StatusTag from "./StatusTag";
+import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Button } from "flowbite-react";
 import {
@@ -12,6 +13,7 @@ import {
     CircleDot,
     CircleCheck
 } from "lucide-react";
+import { supabase } from "../../config/supabase-client";
 
 export default function ApartmentTable({
     apartments,
@@ -23,6 +25,15 @@ export default function ApartmentTable({
     onAddContractClick,
 }) {
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState();
+
+    useEffect(() => {
+        function getTenantName() {
+            return 2;
+        };
+    }, [apartments])
+
+
     return (
         <div className="overflow-x-auto" >
             <Table>

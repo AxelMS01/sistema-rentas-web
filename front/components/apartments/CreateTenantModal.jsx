@@ -39,19 +39,18 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
                 },
             });
 
-            let newUserId = newUserData.user.id;
-
             if (newUserError) throw newUserError;
 
             const { data: tentantTableInfo, error: tenantError } = await supabase
                 .from("tenants")
                 .select("id")
-                .eq("owner_id", ownerId);
+                .eq("owner_id", ownerId)
+                .eq("apartment_id", apartmentId);
 
             if (tenantError) throw tenantError;
-
+            
             const tableTenantId = tentantTableInfo[0].id;
-            console.log(tableTenantId);
+            console.log("tenant table id:", tableTenantId);
 
             const { error: updateApartmentError } = await supabase
                 .from("apartments")
@@ -67,7 +66,7 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
                 const { data, error } = await supabase
                     .storage
                     .from("gov_id_images")
-                    .upload(`${newUserId}/govid${id}`, image);
+                    .upload(`${tableTenantId}/govid${id}`, image);
 
                 if (error) throw error;
             });
