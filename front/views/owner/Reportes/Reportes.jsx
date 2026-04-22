@@ -77,7 +77,7 @@ const Reportes = () => {
       setAvailableNum(availableApartments.length)
 
       const porcentajeOcupacion = getOccupationPercentage(allApartments.length, occupiedApartments.length);
-      setOcupacion(porcentajeOcupacion);
+      setOcupacion(porcentajeOcupacion.toFixed(2));
     } catch (error) {
       console.log(error);
     } finally {

@@ -19,9 +19,7 @@ export default function ContractsTable({
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        async function getApartmentsNames() {
-            setIsLoading(true);
-
+        async function getTableData() {
             const apartmentNamesPromises = Array.from(contracts).map(async (contract) => {
                 try {
                     const { data, error } = await supabase
@@ -36,13 +34,8 @@ export default function ContractsTable({
                 };
             });
 
-            const results = await Promise.all(apartmentNamesPromises);
-            setApartmentNames(results);
-            setIsLoading(false);
-        };
-
-        async function getTenantsNames() {
-            setIsLoading(true);
+            const apartmentResults = await Promise.all(apartmentNamesPromises);
+            setApartmentNames(apartmentResults);
 
             const tenantNamesPromises = Array.from(contracts).map(async (contract) => {
                 try {
@@ -59,12 +52,12 @@ export default function ContractsTable({
                 };
             });
 
-            const results = await Promise.all(tenantNamesPromises);
-            setTenantNames(results);
+            const tenantResults = await Promise.all(tenantNamesPromises);
+            setTenantNames(tenantResults);
             setIsLoading(false);
-        };
+        }
 
-        getApartmentsNames().then(getTenantsNames());
+        getTableData();
 
     }, [contracts]);
 
@@ -84,8 +77,16 @@ export default function ContractsTable({
                     </TableHead>
                     <TableBody className="divide-y! border-b-gray-200!">
                         {contracts.map((contract, id) => {
-                            const tenantName = tenantNames[id].name + " " + tenantNames[id].father_surname + " " + tenantNames[id].mother_surname;
-                            const apartmentName = apartmentNames[id].name;
+                            console.log(apartmentNames);
+                            let tenantName;
+
+                            if (tenantNames[id].name && tenantNames[id].father_surname && tenantNames[id].mother_surname) {
+                                tenantName = tenantNames[id].name + " " + tenantNames[id].father_surname + " " + tenantNames[id].mother_surname;
+                            } else {
+                                tenantName = "Cargando...";
+                            };
+
+                            const apartmentName = apartmentNames[id]?.name || "Cargando...";
                             return (
                                 <TableRow key={id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
                                     <TableCell>Contrato-{contract.id}</TableCell>
@@ -110,6 +111,7 @@ export default function ContractsTable({
 
                                             <Button onClick={() => navigate("/contratos/" + contract.id + "/detalles", {
                                                 state: {
+                                                    tenantId: contract.tenantid,
                                                     tenantName: tenantName,
                                                     rentCost: contract.depositamount,
                                                     startDate: contract.startdate,
