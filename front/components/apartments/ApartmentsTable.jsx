@@ -63,7 +63,7 @@ export default function ApartmentTable({
             .from("apartments")
             .delete()
             .eq("id", selectedApartmentId);
-        
+
         setDeleteModal(false);
         onApartmentDeletion();
     };
@@ -73,16 +73,15 @@ export default function ApartmentTable({
         setDeleteModal(true);
     };
 
-
     return (
         <>
-            <ConfirmationModal 
+            <ConfirmationModal
                 title="Eliminar la vivienda"
                 msg="¿Estás segur@ de que quieres eliminar esta vivienda? Toda su información se perderá permanentemente."
                 isModalOpen={deleteModal}
                 onCancel={() => setDeleteModal(false)}
                 onConfirm={handleDeleteApartment}
-                
+
             />
 
             {!isTenantLoading && (
@@ -155,7 +154,12 @@ export default function ApartmentTable({
                                         </TableCell>
                                         <TableCell>
                                             <div className="w-full flex flex-col gap-2">
-                                                <Button onClick={() => navigate("/viviendas/" + apartment.id + "/detalles")} className="rounded-md! flex flex-row gap-1.5 text-nowrap text-[13px]!" size="xs" color="alternative">
+                                                <Button onClick={() => navigate("/viviendas/" + apartment.id + "/detalles", {
+                                                    state: {
+                                                        tenantId: apartment.tenant_id
+                                                    }
+                                                })}
+                                                    className="rounded-md! flex flex-row gap-1.5 text-nowrap text-[13px]!" size="xs" color="alternative">
                                                     <House size={14} />
                                                     Ver detalles
                                                 </Button>
