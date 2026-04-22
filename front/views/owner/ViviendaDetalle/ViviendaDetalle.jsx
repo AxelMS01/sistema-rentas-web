@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { PDFDownloadLink } from "@react-pdf/renderer";
+import { lastDayOfMonth, format } from "date-fns";
+import { es } from "date-fns/locale";
 import { LuHand, LuHouse, LuInfo, LuSettings, LuArrowLeft, LuSquarePen, LuArchive, LuArchiveRestore, LuCircleCheck, LuCircleDot } from "react-icons/lu";
 import toast, { Toaster } from 'react-hot-toast';
 import CreateTenantModal from "../../../components/apartments/CreateTenantModal";
@@ -39,7 +41,6 @@ const statusClass = (status) => {
 export default function ViviendaDetalle() {
   const { id } = useParams();
   const { state } = useLocation();
-  console.log(state);
 
   const ownerId = useUser((state) => state.loggedUser);
 
@@ -58,6 +59,7 @@ export default function ViviendaDetalle() {
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState("");
+  const [tenantName, setTenantName] = useState("");
   const [tenantForm, setTenantForm] = useState(emptyTenantForm);
   const [tenantSaving, setTenantSaving] = useState(false);
   const [tenantMsg, setTenantMsg] = useState("");
@@ -90,6 +92,16 @@ export default function ViviendaDetalle() {
         if (error) throw error;
 
         setVivienda(data[0]);
+
+        const { data: tenantData, error: tenantError } = await supabase
+          .from("tenants")
+          .select("name, father_surname, mother_surname")
+          .eq("id", state.tenantId);
+
+        if (tenantError) throw tenantError;
+
+        const receivedTenantName = tenantData[0].name + " " + tenantData[0].father_surname + " " + tenantData[0].mother_surname;
+        setTenantName(receivedTenantName);
       } catch (err) {
         console.error(err);
         setError("No fue posible cargar los detalles de la vivienda.");
@@ -216,6 +228,10 @@ export default function ViviendaDetalle() {
   const isArchived = vivienda?.status === "ARCHIVED";
   const isOccupied = vivienda?.status === "OCCUPIED";
 
+  const currentDate = new Date();
+
+  const dueDate = lastDayOfMonth(currentDate);
+
   return (
     <div className="w-full h-full flex flex-col gap-6! lg:px-20! sm:px-14 px-8 py-10 items-start">
       <Link to="/viviendas" style={{ textDecoration: "none" }} className="flex flex-row gap-2 items-center justify-center w-auto self-start m-0 bg-white border border-slate-200 px-3 py-2 rounded-md">
@@ -281,19 +297,25 @@ export default function ViviendaDetalle() {
 
             <div className="flex md:flex-row gap-4 items-center w-full justify-between">
               <span className="info-key">Precio de renta</span>
-              <span className="info-value text-success fw-bold">
-                {vivienda?.depositamount ? `$${vivienda.depositamount.toLocaleString("en-US")}` : "-"}
-              </span>
+              {contractInfo.depositamount ? (
+                <span className="info-value text-emerald-500! fw-bold">
+                  ${contractInfo.depositamount}
+                </span>
+              ) : (
+                <span className="info-value text-slate-800 fw-bold">
+                  Por definir
+                </span>
+              )}
             </div>
 
             <div className="flex md:flex-row gap-4 items-center w-full justify-between">
               <span className="info-key">Arrendatario</span>
-              <span className="info-value">{vivienda?.tenant_name || "-"}</span>
+              <span className="info-value">{tenantName ? tenantName : "Por definir"}</span>
             </div>
 
             <div className="flex md:flex-row gap-4 items-center w-full justify-between">
               <span className="info-key">Fecha de pago</span>
-              <span className="info-value">{formatDate(vivienda?.latest_due_date)}</span>
+              <span className="info-value">{contractInfo ? format(dueDate, "PP", { locale: es }) : "Por definir"}</span>
             </div>
 
             <div className="flex md:flex-row gap-4 items-center w-full justify-between">
