@@ -50,6 +50,15 @@ export default function WelcomeForm({ firstName }) {
         apartmentInfo
     } = useContractData("tenants", location.id);
 
+    if (contractInfo.id === undefined) {
+        navigate("/", {
+            state: {
+                welcomeFormErr: "No hay un contrato creado",
+                welcomeFormErrDesc: "Tu arrendador no ha generado un contrato en su sistema aún. Por favor, espera a que lo haya creado."
+            }
+        })
+    };
+
     async function onSubmitData(e) {
         e.preventDefault;
 
