@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { TbContract } from "react-icons/tb";
 import { LuHouse, LuPlus } from "react-icons/lu";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import SearchBar from "../../../components/SearchBar";
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from "flowbite-react";
 import "./AparmentList.css";
@@ -38,6 +38,11 @@ const Viviendas = () => {
 
   const handleSelect = (apartment) => {
     setSelectedApartment(apartment);
+  };
+
+  function onApartmentDeleted() {
+    setActionCompleted(actionCompleted + 1);
+    toast.success("Vivienda eliminada correctamente");
   };
 
   useEffect(() => {
@@ -253,6 +258,7 @@ const Viviendas = () => {
         onOccupiedClick={cambiarEstado}
         onAvailableClick={cambiarEstado}
         onAddContractClick={onAddContract}
+        onApartmentDeletion={onApartmentDeleted}
       />
 
       {/* Pagination */}
