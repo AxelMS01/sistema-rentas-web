@@ -37,7 +37,12 @@ const statusClass = (status) => {
 };
 
 export default function ViviendaDetalle() {
+  const { id } = useParams();
+  const { state } = useLocation();
+  console.log(state);
+
   const ownerId = useUser((state) => state.loggedUser);
+
   const emptyTenantForm = {
     name: "",
     father_surname: "",
@@ -47,9 +52,6 @@ export default function ViviendaDetalle() {
     governmentid: "",
     password: ""
   };
-
-  const { id } = useParams();
-  const { state } = useLocation();
 
   const [vivienda, setVivienda] = useState(state?.propiedad || null);
   const [loading, setLoading] = useState(!state?.propiedad);
@@ -72,7 +74,7 @@ export default function ViviendaDetalle() {
     tenantInfo,
     guarantorInfo,
     apartmentInfo
-  } = useContractData("owners", ownerId);
+  } = useContractData(state.tenantId, ownerId);
 
   useEffect(() => {
     const fetchData = async () => {
