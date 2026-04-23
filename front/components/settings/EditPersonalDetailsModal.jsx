@@ -13,6 +13,7 @@ export default function EditPersonalDetails({ onCloseModal, isModalOpen, onEditS
     const [motherSurname, setMotherSurname] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [email, setEmail] = useState("");
+    const [curp, setCurp] = useState("");
 
     const loggedUserId = useUser((state) => state.loggedUser);
 
@@ -24,7 +25,8 @@ export default function EditPersonalDetails({ onCloseModal, isModalOpen, onEditS
                 father_surname: fatherSurname,
                 mother_surname: motherSurname,
                 phone: phoneNumber,
-                email: email
+                email: email,
+                governmentid: curp
             })
             .eq("id", loggedUserId);
 
@@ -106,6 +108,20 @@ export default function EditPersonalDetails({ onCloseModal, isModalOpen, onEditS
                                 placeholder="Correo electrónico"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <div className="mb-2 block">
+                                <Label htmlFor="password">CURP</Label>
+                            </div>
+                            <TextInput
+                                className="text-sm"
+                                type="text"
+                                placeholder="CURP a 18 dígitos"
+                                value={curp}
+                                onChange={(e) => setCurp(e.target.value)}
                                 required
                             />
                         </div>
