@@ -41,14 +41,23 @@ export default function WelcomeForm({ firstName }) {
     const navigate = useNavigate();
 
     // Fetch the necessary contract's data using the created hook.
-    const {
+    var {
         isDataLoading,
         contractInfo,
         ownerInfo,
         tenantInfo,
         guarantorInfo,
         apartmentInfo
-    } = useContractData("tenants", location.id);
+    } = useContractData(location.id, "");
+
+    if (!contractInfo) {
+        navigate("/", {
+            state: {
+                welcomeFormErr: "No hay un contrato creado",
+                welcomeFormErrDesc: "Tu arrendador no ha generado un contrato en su sistema aún. Por favor, espera a que lo haya creado."
+            }
+        })
+    };
 
     async function onSubmitData(e) {
         e.preventDefault;

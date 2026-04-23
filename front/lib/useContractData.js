@@ -17,8 +17,16 @@ export default function useContractData(tenantId, ownerId) {
     const [guarantorInfo, setGuarantorInfo] = useState();
     const [apartmentInfo, setApartmentInfo] = useState();
 
-    var tenant = tenantId;
-    var owner = ownerId;
+    if (!tenantId) {
+        return {
+            isDataLoading: false,
+            contractInfo: "",
+            ownerInfo: "",
+            tenantInfo: "",
+            guarantorInfo: "",
+            apartmentInfo: "",
+        };
+    };
 
     const fetchData = useCallback(
         async () => {
@@ -26,15 +34,13 @@ export default function useContractData(tenantId, ownerId) {
                 const { data: contractData, error: contractError } = await supabase
                     .from("rentalcontracts")
                     .select()
-                    .eq("tenantid", tenant)
-                    .eq("owner_id", owner)
+                    .eq("tenantid", tenantId)
 
                 if (contractError) throw contractError;
                 setContractInfo(contractData[0]);
 
                 // Variables for the rest of the tables.
                 const ownerId = contractData[0].owner_id;
-                const tenantId = contractData[0].tenantid;
                 const guarantorId = contractData[0].guarantorid;
                 const apartmentId = contractData[0].apartmentid;
 

@@ -69,7 +69,7 @@ export default function ViviendaDetalle() {
   const [isAccountCreated, setIsAccountCreated] = useState(false); // Indicates whether the tenant's system account has already been created or not.
 
   // Fetch the necessary contract's data using the created hook.
-  const {
+  let {
     isDataLoading,
     contractInfo,
     ownerInfo,
@@ -77,6 +77,14 @@ export default function ViviendaDetalle() {
     guarantorInfo,
     apartmentInfo
   } = useContractData(state.tenantId, ownerId);
+
+  if (contractInfo === undefined) {
+    contractInfo = "";
+    ownerInfo = "";
+    tenantInfo = "";
+    guarantorInfo = "";
+    apartmentInfo = "";
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -93,15 +101,17 @@ export default function ViviendaDetalle() {
 
         setVivienda(data[0]);
 
-        const { data: tenantData, error: tenantError } = await supabase
-          .from("tenants")
-          .select("name, father_surname, mother_surname")
-          .eq("id", state.tenantId);
+        if (state.tenantid) {
+          const { data: tenantData, error: tenantError } = await supabase
+            .from("tenants")
+            .select("name, father_surname, mother_surname")
+            .eq("id", state.tenantId);
 
-        if (tenantError) throw tenantError;
+          if (tenantError) throw tenantError;
 
-        const receivedTenantName = tenantData[0].name + " " + tenantData[0].father_surname + " " + tenantData[0].mother_surname;
-        setTenantName(receivedTenantName);
+          const receivedTenantName = tenantData[0].name + " " + tenantData[0].father_surname + " " + tenantData[0].mother_surname;
+          setTenantName(receivedTenantName);
+        }
       } catch (err) {
         console.error(err);
         setError("No fue posible cargar los detalles de la vivienda.");
@@ -297,7 +307,7 @@ export default function ViviendaDetalle() {
 
             <div className="flex md:flex-row gap-4 items-center w-full justify-between">
               <span className="info-key">Precio de renta</span>
-              {contractInfo.depositamount ? (
+              {contractInfo.depositamount != undefined ? (
                 <span className="info-value text-emerald-500! fw-bold">
                   ${contractInfo.depositamount}
                 </span>
