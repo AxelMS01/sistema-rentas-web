@@ -14,6 +14,7 @@ export default function Profile({
     street,
     extNum,
     division,
+    governmentid,
     city,
     state,
     onEditSuccess
@@ -31,13 +32,13 @@ export default function Profile({
     return (
         <div className="flex flex-col gap-4 w-full">
             {/*Modals*/}
-            <EditPersonalDetails 
+            <EditPersonalDetails
                 isModalOpen={profDetailsModal}
                 onCloseModal={() => setProfDetailsModal(false)}
                 onEditSuccess={() => handleSuccess("¡Ubicación guardada correctamente!")}
             />
 
-            <EditLocationModal 
+            <EditLocationModal
                 isModalOpen={locationModal}
                 onCloseModal={() => setLocationModal(false)}
                 onEditSuccess={() => handleSuccess("¡Datos guardados correctamente!")}
@@ -104,6 +105,13 @@ export default function Profile({
                         <Label className="text-sm text-slate-400 font-medium text-start!">Correo electrónico</Label>
                         <p className="text-base text-slate-900 font-medium">
                             {email}
+                        </p>
+                    </div>
+
+                    <div className="flex flex-col gap-2 items-start">
+                        <Label className="text-sm text-slate-400 font-medium text-start!">CURP</Label>
+                        <p className="text-base text-slate-900 font-medium">
+                            {governmentid}
                         </p>
                     </div>
                 </div>
