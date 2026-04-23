@@ -80,7 +80,7 @@ export default function useContractData(tenantId, ownerId) {
             } finally {
                 setIsLoading(false);
             }
-        }, []
+        }, [tenantId, ownerId]
     );
 
     useEffect(() => {

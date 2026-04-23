@@ -18,6 +18,7 @@ const LoginForm = () => {
   const [action, setAction] = useState('');
   const [faqOpenIndex, setFaqOpenIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const sessionToken = localStorage.getItem("token");
 
   const navigate = useNavigate();
   const location = useLocation();

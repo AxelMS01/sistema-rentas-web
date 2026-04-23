@@ -17,6 +17,7 @@ import ProtectedRoute from "../utils/ProtectedRoute";
 import Navbar from "../components/Navbar/Navbar";
 import Home from "../views/tenant/Home/NewHome";
 import WelcomeForm from "../views/tenant/WelcomeForm";
+import CheckAlreadyLogged from "../utils/CheckAlreadyLogged.jsx";
 import Settings from "../views/owner/Profile/Settings";
 
 // REMOVED: import Configuracion from "./Components/Forms/Configuracion";
@@ -26,8 +27,15 @@ function App() {
     <Router>
       <Routes>
         {/* Login: Sin Navbar */}
-        <Route path="/" element={<LoginForm />} />
-        <Route path="/signup" element={<RegisterPage />} />
+        <Route path="/" element={
+          <CheckAlreadyLogged>
+            <Routes>
+              <Route path="/" element={<LoginForm />} />
+              <Route path="/signup" element={<RegisterPage />} />
+            </Routes>
+          </CheckAlreadyLogged>
+        }>
+        </Route>
 
         {/* Rutas Privadas: Con Navbar */}
         <Route path="/*" element={
