@@ -19,20 +19,34 @@ export default function useStatisticCardCalculations(monthId) {
                 const { data: invoicesData, error: invoicesError } = await supabase
                     .from("invoices")
                     .select()
-                    .range(firstMonthDate, lastMonthDate);
-                
+                    .gte("created_at", firstMonthDate.toISOString())
+                    .lte("created_at", lastMonthDate.toISOString());
+
                 if (invoicesError) throw invoicesError;
-                
-                console.log("received data:", invoicesData);
+
+                let invoicesTotal = 0;
+
+                invoicesData.forEach((invoice) => {
+                    invoicesTotal += invoice.amount;
+                })
+
+                if (!invoicesData) setMonthlyEarnings(0);
+
+                setMonthlyEarnings(invoicesTotal);
             } catch (error) {
                 console.log("Error found in statistic card calculations:", error);
             } finally {
                 setIsLoading(false);
             };
-        }
+        }, [monthId]
     );
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [monthId]);
+
+    return {
+        isDataLoading: isLoading,
+        monthlyEarnings: monthlyEarnings,
+    }
 }

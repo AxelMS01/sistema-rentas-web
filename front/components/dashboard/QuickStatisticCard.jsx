@@ -32,7 +32,7 @@ export default function QuickStatisticCard({ name, number, comparisonNumber }) {
 
             <div className="flex flex-col gap-1.5">
                 <div className="flex flex-row gap-1.5 items-end">
-                    <p className="text-4xl! font-semibold text-slate-900">{number}</p>
+                    <p className="text-3xl! font-semibold text-slate-800">{number}</p>
                     {comparisonNumber != undefined && (
                         <>
                             <p className="text-base font-medium text-slate-500">/</p>
