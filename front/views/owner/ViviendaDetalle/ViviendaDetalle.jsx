@@ -101,15 +101,17 @@ export default function ViviendaDetalle() {
 
         setVivienda(data[0]);
 
-        const { data: tenantData, error: tenantError } = await supabase
-          .from("tenants")
-          .select("name, father_surname, mother_surname")
-          .eq("id", state.tenantId);
+        if (state.tenantid) {
+          const { data: tenantData, error: tenantError } = await supabase
+            .from("tenants")
+            .select("name, father_surname, mother_surname")
+            .eq("id", state.tenantId);
 
-        if (tenantError) throw tenantError;
+          if (tenantError) throw tenantError;
 
-        const receivedTenantName = tenantData[0].name + " " + tenantData[0].father_surname + " " + tenantData[0].mother_surname;
-        setTenantName(receivedTenantName);
+          const receivedTenantName = tenantData[0].name + " " + tenantData[0].father_surname + " " + tenantData[0].mother_surname;
+          setTenantName(receivedTenantName);
+        }
       } catch (err) {
         console.error(err);
         setError("No fue posible cargar los detalles de la vivienda.");

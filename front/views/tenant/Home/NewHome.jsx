@@ -46,6 +46,15 @@ const Home = () => {
 
                 if (contractError) throw contractError;
 
+                if (contractData.length === 0) {
+                    navigate("/", {
+                        state: {
+                            welcomeFormErr: "No hay un contrato creado",
+                            welcomeFormErrDesc: "Tu arrendador no ha generado un contrato en su sistema aún. Por favor, espera a que lo haya creado."
+                        }
+                    });
+                };
+
                 setOwnerId(contractData[0].owner_id);
             } catch (error) {
                 console.log(error);

@@ -41,16 +41,16 @@ export default function WelcomeForm({ firstName }) {
     const navigate = useNavigate();
 
     // Fetch the necessary contract's data using the created hook.
-    const {
+    var {
         isDataLoading,
         contractInfo,
         ownerInfo,
         tenantInfo,
         guarantorInfo,
         apartmentInfo
-    } = useContractData("tenants", location.id);
+    } = useContractData(location.id, "");
 
-    if (contractInfo.id === undefined) {
+    if (!contractInfo) {
         navigate("/", {
             state: {
                 welcomeFormErr: "No hay un contrato creado",
