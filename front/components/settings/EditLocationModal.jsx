@@ -39,7 +39,7 @@ export default function EditLocationModal({ onCloseModal, isModalOpen, onEditSuc
                 <ModalHeader />
                 <ModalBody>
                     <div className="space-y-6!">
-                        <h3 className="text-2xl! font-semibold! tracking-tight text-gray-900 dark:text-white">Editar detalles personales</h3>
+                        <h3 className="text-2xl! font-semibold! tracking-tight text-gray-900 dark:text-white">Editar detalles de dirección</h3>
                         <div>
                             <div className="mb-2 block">
                                 <Label>Calle</Label>

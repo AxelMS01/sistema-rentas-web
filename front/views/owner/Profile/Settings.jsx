@@ -44,6 +44,7 @@ function OwnerProfile() {
             if (error) throw error;
 
             const userData = data[0];
+            console.log(userData.state)
 
             setOwnerInfo({
                 name: userData.name,
@@ -60,7 +61,7 @@ function OwnerProfile() {
                 signatureUrl: userData.signature_url,
                 chargeFee: userData.charge_fee,
                 minimumContractDur: userData.minimum_duration,
-                curp: userData.governmentid,
+                governmentid: userData.governmentid,
                 card1: userData.card1,
 
             })
@@ -84,6 +85,7 @@ function OwnerProfile() {
                         email={ownerInfo.email}
                         phoneNumber={ownerInfo.phoneNumber}
                         street={ownerInfo.street}
+                        governmentid={ownerInfo.governmentid}
                         extNum={ownerInfo.extNum}
                         division={ownerInfo.division}
                         city={ownerInfo.city}
