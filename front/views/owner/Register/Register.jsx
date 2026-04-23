@@ -65,6 +65,7 @@ export default function RegisterPage() {
         // Guardando temporalmente el token de sesión en el local storage.
         // Nota: en futuras ediciones, modificar esto para guardarlo en las cookies.
         localStorage.setItem("token", accessSessionToken);
+        localStorage.setItem("role", "owner");
 
         // Finalmente, redirigimos al usuario a la página principal del sistema (viviendas).
         navigate("/viviendas");
