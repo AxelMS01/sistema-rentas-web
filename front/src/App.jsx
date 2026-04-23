@@ -27,15 +27,8 @@ function App() {
     <Router>
       <Routes>
         {/* Login: Sin Navbar */}
-        <Route path="/" element={
-          <CheckAlreadyLogged>
-            <Routes>
-              <Route path="/" element={<LoginForm />} />
-              <Route path="/signup" element={<RegisterPage />} />
-            </Routes>
-          </CheckAlreadyLogged>
-        }>
-        </Route>
+        <Route path="/" element={<LoginForm />} />
+        <Route path="/signup" element={<RegisterPage />} />
 
         {/* Rutas Privadas: Con Navbar */}
         <Route path="/*" element={
