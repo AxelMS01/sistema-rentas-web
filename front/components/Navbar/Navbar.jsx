@@ -11,7 +11,7 @@ import NotificationDropdownContent from "../notifications/Notifications";
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const isActive = (path) => (location.pathname === path ? "text-dark fw-bold" : "text-muted");
+  const isActive = (path) => (location.pathname === path ? "text-sky-600! font-semibold!" : "text-muted");
   const role = useUser((state) => state.role);
   const loggedUserId = useUser((state) => state.loggedUser);
   const isTenant = role === "tenant";
@@ -116,19 +116,19 @@ const Navbar = () => {
           {!isTenant && (
             <div className={`lg:flex hidden justify-content-center order-3 order-lg-2 w-lg-auto ${isNavOpen ? 'lg:hidden flex mt-4 pb-3' : ''}`}>
               <div className="flex! flex-row! align-items-center gap-3 gap-lg-4 mx-auto bg-light px-4 py-3 py-lg-2 rounded-4" style={{ borderRadius: isNavOpen ? '1rem' : '50rem' }}>
-                <Link to="/viviendas" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small fw-medium ${isActive("/viviendas")}`}>
+                <Link to="/viviendas" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small font-normal ${isActive("/viviendas")}`}>
                   Viviendas
                 </Link>
-                <Link to="/dashboard" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small fw-medium ${isActive("/dashboard")}`}>
+                <Link to="/dashboard" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small font-normal ${isActive("/dashboard")}`}>
                   Dashboard
                 </Link>
-                <Link to="/reportes" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small fw-medium ${isActive("/reportes")}`}>
+                <Link to="/reportes" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small font-normal ${isActive("/reportes")}`}>
                   Reportes
                 </Link>
-                <Link to="/incidencias" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small fw-medium ${isActive("/incidencias")}`}>
+                <Link to="/incidencias" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small font-normal ${isActive("/incidencias")}`}>
                   Incidencias
                 </Link>
-                <Link to="/contratos" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small fw-medium ${isActive("/contratos")}`}>
+                <Link to="/contratos" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small font-normal ${isActive("/contratos")}`}>
                   Contratos
                 </Link>
               </div>
