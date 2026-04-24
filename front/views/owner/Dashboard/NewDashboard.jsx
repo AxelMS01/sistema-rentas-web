@@ -12,8 +12,10 @@ export default function NewDashboard() {
     const {
         isDataLoading,
         monthlyEarnings,
+        occupiedHousings,
         totalHousings,
-        occupiedHousings
+        pendingCharge,
+        expiredBills
     } = useMainCards(selectedMonth);
 
     const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
@@ -43,13 +45,13 @@ export default function NewDashboard() {
 
                         <QuickStatisticCard
                             name="expiredBills"
-                            number={2}
+                            number={expiredBills}
                         />
 
 
                         <QuickStatisticCard
                             name="pendingCharge"
-                            number={`$${500}`}
+                            number={pendingCharge}
                         />
                     </div>
 
@@ -62,10 +64,10 @@ export default function NewDashboard() {
                             <div className="mb-2 block">
                                 <Label htmlFor="countries">Mostrando registros de:</Label>
                             </div>
-                            <Select className="bg-white!" value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)} id="countries" required>
+                            <Select size="sm" className="bg-white! text-sm!" value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)} id="countries" required>
                                 {monthNames.map((month, id) => {
                                     return (
-                                        <option className="bg-white!" id={id} value={id}>{monthNames[id]}</option>
+                                        <option className="bg-white!" key={id} value={id}>{monthNames[id]}</option>
                                     )
                                 })}
                             </Select>

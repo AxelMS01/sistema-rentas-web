@@ -9,10 +9,8 @@ export default function useMainCards(monthId) {
     const [occupiedHousings, setOccupiedHousings] = useState();
     const [totalHousings, setTotalHousings] = useState();
     const [expiredBills, setExpiredBills] = useState();
-    const [pendingChange, setPendingChange] = useState();
+    const [pendingCharge, setPendingCharge] = useState();
     const loggedUserId = useUser((state) => state.loggedUser);
-    console.log(loggedUserId);
-
     const currentDate = new Date();
     const firstMonthDate = new Date(currentDate.getFullYear(), monthId, 1);
     const lastMonthDate = lastDayOfMonth(new Date(currentDate.getFullYear(), monthId, 1));
@@ -44,27 +42,70 @@ export default function useMainCards(monthId) {
     async function getApartmentData() {
         setIsLoading(true);
 
-        const { data: apartmentsData, error: apartmentsError } = await supabase
-            .from("apartments")
-            .select()
-            .eq("ownerid", loggedUserId)
+        try {
+            const { data: apartmentsData, error: apartmentsError } = await supabase
+                .from("apartments")
+                .select()
+                .eq("ownerid", loggedUserId)
 
-        let occupiedNumber = 0;
+            let occupiedNumber = 0;
 
-        console.log(apartmentsData);
+            apartmentsData.forEach((apartment) => {
+                if (apartment.status === "OCCUPIED") {
+                    occupiedNumber += 1;
+                };
+            })
 
-        apartmentsData.forEach((apartment) => {
-            if (apartment.status === "OCCUPIED") {
-                occupiedNumber += 1;
-            };
-        })
+            if (apartmentsError) throw invoicesError;
 
-        if (apartmentsError) throw invoicesError;
+            setTotalHousings(apartmentsData.length);
+            setOccupiedHousings(occupiedNumber);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-        setTotalHousings(apartmentsData.length);
-        setOccupiedHousings(occupiedNumber);
+    async function getExpiredBills() {
+        setIsLoading(true);
+        const currentDate = new Date().toISOString();
 
-        setIsLoading(false);
+        try {
+            const { data, error } = await supabase
+                .from("invoices")
+                .select()
+                .lt("duedate", currentDate);
+
+            if (error) throw error;
+            setExpiredBills(data.length);
+
+            console.log(data);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    async function getPendingCharges() {
+        setIsLoading(true);
+        const currentDate = new Date().toISOString();
+
+        try {
+            const { data, error } = await supabase
+                .from("invoices")
+                .select()
+                .gte("duedate", currentDate);
+
+            if (error) throw error;
+
+            setPendingCharge(data.length);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsLoading(false);
+        };
     };
 
     const fetchData = useCallback(
@@ -72,6 +113,8 @@ export default function useMainCards(monthId) {
             try {
                 getInvoices();
                 getApartmentData();
+                getExpiredBills();
+                getPendingCharges();
             } catch (error) {
                 console.log("Error found in statistic card calculations:", error);
             };
@@ -87,5 +130,7 @@ export default function useMainCards(monthId) {
         monthlyEarnings: monthlyEarnings,
         totalHousings: totalHousings,
         occupiedHousings: occupiedHousings,
-    }
-}
+        expiredBills: expiredBills,
+        pendingCharge: pendingCharge,
+    };
+};
