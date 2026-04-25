@@ -10,6 +10,7 @@ import {
 } from "recharts";
 import { supabase } from "../../config/supabase-client";
 import { useState, useEffect } from "react";
+import useUser from "../../stores/user-store";
 
 const currentDate = new Date();
 const currentYear = currentDate.getFullYear();
@@ -19,6 +20,7 @@ const firstDateOfYear = new Date(currentYear, 0, 1).toISOString();
 export default function MonthlyIncomeChart() {
     const [chartData, setChartData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const loggedUserId = useUser((state) => state.loggedUser);
 
     function reduceIncomes(array) {
         const initialValue = 0;
@@ -37,7 +39,8 @@ export default function MonthlyIncomeChart() {
                 .from("invoices")
                 .select()
                 .lte("created_at", lastDateOfYear)
-                .gte("created_at", firstDateOfYear);
+                .gte("created_at", firstDateOfYear)
+                .eq("owner_id", loggedUserId);
 
             if (error) throw error;
 
@@ -87,8 +90,6 @@ export default function MonthlyIncomeChart() {
 
     return (
         <>
-            {console.log(chartData)}
-
             {!isLoading && (
                 <ResponsiveContainer className="mt-4" width={"100%"} height={300}>
                     <LineChart
