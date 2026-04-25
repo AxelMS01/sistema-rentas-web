@@ -4,6 +4,7 @@ import ChartCard from "../../../components/dashboard/ChartCard";
 import useMainCards from "../../../utils/dashboard/useMainCards";
 import QuickStatisticCard from "../../../components/dashboard/QuickStatisticCard";
 import MonthlyIncomeChart from "../../../components/dashboard/MonthlyIncomeChart";
+import RequestsPieChart from "../../../components/dashboard/RequestsPieChart";
 
 export default function NewDashboard() {
     const currentDate = new Date();
@@ -80,6 +81,12 @@ export default function NewDashboard() {
                         <div className="lg:col-span-3 sm:col-span-2 w-full">
                             <ChartCard title="Ingreso mensual">
                                 <MonthlyIncomeChart />
+                            </ChartCard>
+                        </div>
+
+                        <div className="lg:col-span-1 sm:col-span-4 w-full">
+                            <ChartCard title="Incidencias">
+                                <RequestsPieChart />
                             </ChartCard>
                         </div>
                     </div>
