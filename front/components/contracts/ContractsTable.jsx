@@ -77,7 +77,6 @@ export default function ContractsTable({
                     </TableHead>
                     <TableBody className="divide-y! border-b-gray-200!">
                         {contracts.map((contract, id) => {
-                            console.log(apartmentNames);
                             let tenantName;
 
                             if (tenantNames[id].name && tenantNames[id].father_surname && tenantNames[id].mother_surname) {

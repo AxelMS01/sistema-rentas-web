@@ -44,6 +44,8 @@ const Home = () => {
                     .select("owner_id")
                     .eq("tenantid", loggedUserId);
 
+                    console.log(loggedUserId);
+
                 if (contractError) throw contractError;
 
                 console.log(contractData.length);

@@ -47,12 +47,16 @@ export default function NewDashboard() {
                             comparisonNumber={totalHousings}
                         />
 
+                        {/* Poner el costo como tal */}
                         <QuickStatisticCard
                             name="expiredBills"
                             number={expiredBills}
                         />
 
-
+                        {/* Cantidad del cobro pendiente (en dinero) de todas las viviendas, 
+                            en base a la cantidad de meses que ya han transcurrido.
+                            E.j. de 60,000 pesos, ya cobré 10,000, entonces me faltan 50,000 (de una vivienda).
+                        */}
                         <QuickStatisticCard
                             name="pendingCharge"
                             number={pendingCharge}

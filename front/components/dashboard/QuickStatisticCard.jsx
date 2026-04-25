@@ -15,7 +15,7 @@ export default function QuickStatisticCard({ name, number, comparisonNumber }) {
         expiredBills: {
             iconBgColor: "bg-[rgb(240,176,0,0.1)]",
             icon: <Receipt className="text-amber-500" size={24} />,
-            title: "Facturas vencidas",
+            title: "Rentas vencidas",
         },
         pendingCharge: {
             iconBgColor: "bg-[rgb(0,183,219,0.1)]",
