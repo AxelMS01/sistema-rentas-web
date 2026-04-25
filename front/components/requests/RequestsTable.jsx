@@ -1,4 +1,3 @@
-
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from "flowbite-react";
 import { useNavigate } from 'react-router-dom';
 import "../../views/owner/Incidencias/Incidencias.css";

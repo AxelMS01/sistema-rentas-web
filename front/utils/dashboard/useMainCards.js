@@ -79,8 +79,6 @@ export default function useMainCards(monthId) {
 
             if (error) throw error;
             setExpiredBills(data.length);
-
-            console.log(data);
         } catch (error) {
             console.log(error);
         } finally {

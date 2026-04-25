@@ -25,7 +25,7 @@ export default function QuickStatisticCard({ name, number, comparisonNumber }) {
     };
 
     return (
-        <div className="w-full bg-white border items-center gap-4 flex sm:flex-row rounded-xl flex-col border-slate-200 p-6">
+        <div className="w-full bg-white border items-center gap-4 flex flex-row rounded-xl border-slate-200 p-6">
             <div className={`card-icon p-2.5 rounded-full items-center ${cardStyles[name].iconBgColor}`}>
                 {cardStyles[name].icon}
             </div>
