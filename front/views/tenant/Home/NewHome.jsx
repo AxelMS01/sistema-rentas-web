@@ -48,9 +48,7 @@ const Home = () => {
 
                 if (contractError) throw contractError;
 
-                console.log(contractData.length);
-
-                if (contractData.length === 0) {
+                if (!contractData) {
                     navigate("/", {
                         state: {
                             welcomeFormErr: "No hay un contrato creado",
