@@ -33,31 +33,35 @@ const Home = () => {
 
                 if (tenantError) throw tenantError;
 
-                if (tenantData[0].is_first_time === true) {
-                    navigate("/bienvenida", { state: tenantData[0] });
-                } else {
-                    setTenantInfo(tenantData[0]);
-                };
+                console.log(tenantData);
 
                 const { data: contractData, error: contractError } = await supabase
                     .from("rentalcontracts")
-                    .select("owner_id")
+                    .select("owner_id, status")
                     .eq("tenantid", loggedUserId);
-
-                    console.log(loggedUserId);
 
                 if (contractError) throw contractError;
 
-                if (!contractData) {
-                    navigate("/", {
-                        state: {
-                            welcomeFormErr: "No hay un contrato creado",
-                            welcomeFormErrDesc: "Tu arrendador no ha generado un contrato en su sistema aún. Por favor, espera a que lo haya creado."
-                        }
-                    });
-                };
+                console.log(contractData);
 
-                setOwnerId(contractData[0].owner_id);
+                if (tenantData[0].is_first_time === true) {
+                    if (contractData.length === 0) {
+                        navigate("/", {
+                            state: {
+                                welcomeFormErr: "No hay un contrato creado",
+                                welcomeFormErrDesc: "Tu arrendador no ha generado un contrato en su sistema aún. Por favor, espera a que lo haya creado."
+                            }
+                        });
+                        return;
+                    } else {
+                        navigate("/bienvenida", { state: tenantData[0] });
+                        console.log("second condition true");
+                        return;
+                    };
+                } else {
+                    setTenantInfo(tenantData[0]);
+                    setOwnerId(contractData[0].owner_id);
+                };
             } catch (error) {
                 console.log(error);
             } finally {

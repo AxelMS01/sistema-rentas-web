@@ -140,10 +140,9 @@ const Viviendas = () => {
     setPropiedades(prev => [...prev, nueva]);
   };
 
-  const handleApartmentCreated = (newApartment) => {
+  const handleApartmentCreated = () => {
     mensajeExito("¡Vivienda creada correctamente!");
     setCreateApartmentModal(false);
-    agregarPropiedad(newApartment);
     // Update this state variable to refetch the data in the main useEffect.
     setActionCompleted(actionCompleted + 1);
   };
