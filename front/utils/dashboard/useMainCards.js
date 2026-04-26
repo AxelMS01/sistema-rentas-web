@@ -3,6 +3,12 @@ import { supabase } from "../../config/supabase-client";
 import { lastDayOfMonth } from "date-fns";
 import useUser from "../../stores/user-store";
 
+/**
+ * Fetches all the necessary data to render the main four cards in the Dashboard.
+ * @param {*} monthId 
+ * @returns An object containing the values that will be shown in the Dashboard's main four cards.
+ */
+
 export default function useMainCards(monthId) {
     const [isLoading, setIsLoading] = useState(true);
     const [monthlyEarnings, setMonthlyEarnings] = useState();

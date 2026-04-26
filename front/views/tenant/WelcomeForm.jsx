@@ -17,7 +17,7 @@ import { PDFViewer } from '@react-pdf/renderer';
 import StepOneContent from '../../components/welcome-form/StepOneContent';
 import StepTwoContent from '../../components/welcome-form/StepTwoContent';
 import IncorrectDataModal from '../../components/welcome-form/IncorrectDataModal';
-import useContractData from '../../utils/useContractData';
+import useContractData from '../../utils/contracts/useContractData';
 
 export default function WelcomeForm({ firstName }) {
     const location = useLocation().state;

@@ -6,12 +6,16 @@ import QuickStatisticCard from "../../../components/dashboard/QuickStatisticCard
 import MonthlyIncomeChart from "../../../components/dashboard/MonthlyIncomeChart";
 import RequestsPieChart from "../../../components/dashboard/RequestsPieChart";
 import InvoicesTable from "../../../components/dashboard/InvoicesTable";
+import { supabase } from "../../../config/supabase-client";
+import useLoggedUser from "../../../utils/useLoggedUser";
 
 export default function NewDashboard() {
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+    const [tenantsInfo, setTenantsInfo] = useState();
+    const loggedUser = useLoggedUser();
 
     const {
         isDataLoading,
@@ -24,9 +28,30 @@ export default function NewDashboard() {
 
     const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
+    useEffect(() => {
+        async function getTenantsFromOwner() {
+            try {
+                const { data, error } = await supabase
+                    .from("tenants")
+                    .select()
+                    .eq("owner_id", loggedUser);
+
+                if (error) throw error;
+
+                setTenantsInfo(data);
+            } catch (error) {
+                console.log(error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        getTenantsFromOwner();
+    }, []);
+
     return (
         <>
-            {!isDataLoading && (
+            {!isDataLoading && !isLoading && (
                 <div className="w-full min-h-screen flex flex-col gap-8! lg:px-20! sm:px-16! px-8! py-10">
                     <div className="flex w-full md:flex-row flex-col justify-between md:items-center items-start gap-6">
                         <div className="header flex flex-col gap-2">
@@ -83,7 +108,7 @@ export default function NewDashboard() {
                     </div>
 
                     <div className="w-full grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-6">
-                        <div className="lg:col-span-3 sm:col-span-2 w-full">
+                        <div className="lg:col-span-3 sm:col-span-4 w-full!">
                             <ChartCard title="Ingreso mensual">
                                 <MonthlyIncomeChart />
                             </ChartCard>
@@ -97,7 +122,7 @@ export default function NewDashboard() {
                     </div>
 
                     <ChartCard title="Tabla general">
-                        <InvoicesTable />
+                        <InvoicesTable tenantList={tenantsInfo} />
                     </ChartCard>
                 </div>
             )}

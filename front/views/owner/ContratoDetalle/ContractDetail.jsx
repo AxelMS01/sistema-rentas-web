@@ -11,7 +11,7 @@ import ContractBadge from "../../../components/contracts/ContractBadge";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import useUser from "../../../stores/user-store";
 import { DocumentoContrato } from "../../../components/pdf-documents/Machotes/Contrato/Contrato";
-import useContractData from "../../../utils/useContractData";
+import useContractData from "../../../utils/contracts/useContractData";
 import { Spinner } from "flowbite-react";
 export const token = localStorage.getItem("token");
 
