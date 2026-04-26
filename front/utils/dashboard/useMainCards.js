@@ -84,7 +84,14 @@ export default function useMainCards(monthId) {
                 .lt("duedate", currentDate);
 
             if (error) throw error;
-            setExpiredBills(data.length);
+
+            let totalExpired = 0;
+
+            data.forEach((invoice) => {
+                totalExpired += invoice.amount;
+            });
+
+            setExpiredBills(totalExpired);
         } catch (error) {
             console.log(error);
         } finally {
@@ -104,7 +111,13 @@ export default function useMainCards(monthId) {
 
             if (error) throw error;
 
-            setPendingCharge(data.length);
+            let totalPending = 0;
+
+            data.forEach((invoice) => {
+                totalPending += invoice.amount;
+            });
+
+            setPendingCharge(totalPending);
         } catch (error) {
             console.log(error);
         } finally {

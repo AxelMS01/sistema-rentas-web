@@ -75,7 +75,7 @@ export default function NewDashboard() {
                         {/* Poner el costo como tal */}
                         <QuickStatisticCard
                             name="expiredBills"
-                            number={expiredBills}
+                            number={`$${expiredBills}`}
                         />
 
                         {/* Cantidad del cobro pendiente (en dinero) de todas las viviendas, 
@@ -84,7 +84,7 @@ export default function NewDashboard() {
                         */}
                         <QuickStatisticCard
                             name="pendingCharge"
-                            number={pendingCharge}
+                            number={`$${pendingCharge}`}
                         />
                     </div>
 
