@@ -60,7 +60,7 @@ export default function useMainCards(monthId) {
                 if (apartment.status === "OCCUPIED") {
                     occupiedNumber += 1;
                 };
-            })
+            });
 
             if (apartmentsError) throw invoicesError;
 
