@@ -133,9 +133,9 @@ const Reportes = () => {
             <div className="col-lg-4">
               <div className="reportes-card h-100">
                 <div className="d-flex justify-content-between align-items-center mb-3">
-                  <div>
-                    <p className="m-0 reportes-kicker text-start">Ocupacion general</p>
-                    <h3 className="m-0 reportes-metric text-start">{ocupacion}%</h3>
+                  <div className="flex flex-col gap-2">
+                    <p className="m-0 font-semibold! text-xs! text-slate-400 text-start uppercase">Ocupación general</p>
+                    <h3 className="m-0 font-semibold! text-start">{ocupacion}%</h3>
                   </div>
                   <span className="bg-sky-100 text-sky-600 text-xs font-semibold rounded-lg px-2 py-1">En unidades</span>
                 </div>
@@ -165,9 +165,9 @@ const Reportes = () => {
             <div className="col-lg-8">
               <div className="reportes-card h-100">
                 <div className="d-flex justify-content-between align-items-center mb-3">
-                  <div>
+                  <div className="flex flex-col gap-2">
                     <p className="m-0 reportes-kicker text-start">Totales por arrendatario</p>
-                    <h4 className="m-0 reportes-section-title">Resumen de pagos</h4>
+                    <h4 className="m-0 text-2xl! font-semibold!">Resumen de pagos</h4>
                   </div>
                   <span className="reportes-meta">{arrendatariosEntries.length} registros</span>
                 </div>
@@ -210,9 +210,9 @@ const Reportes = () => {
             <div className="col-lg-6">
               <div className="reportes-card h-100">
                 <div className="d-flex justify-content-between align-items-center mb-3">
-                  <div>
+                  <div className="flex flex-col gap-2">
                     <p className="m-0 reportes-kicker text-start">Contratos</p>
-                    <h4 className="m-0 reportes-section-title">Detalle por contrato</h4>
+                    <h4 className="m-0 font-semibold!">Detalle por contrato</h4>
                   </div>
                   <span className="reportes-meta">{contratos.length} contratos</span>
                 </div>
@@ -242,9 +242,9 @@ const Reportes = () => {
             <div className="col-lg-6">
               <div className="reportes-card h-100">
                 <div className="d-flex justify-content-between align-items-center mb-3">
-                  <div>
+                  <div className="flex flex-col gap-2">
                     <p className="m-0 reportes-kicker text-start">Propiedades</p>
-                    <h4 className="m-0 reportes-section-title">Ingresos por propiedad</h4>
+                    <h4 className="m-0 font-semibold!">Ingresos por propiedad</h4>
                   </div>
                   <span className="reportes-meta">{propiedadesEntries.length} propiedades</span>
                 </div>

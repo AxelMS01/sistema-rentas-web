@@ -14,6 +14,7 @@ import ContractWizardModal from "../Forms/ContratoWizardform";
 import { Modal } from 'bootstrap';
 import { PDFViewer, Page, Document, Text, View } from '@react-pdf/renderer';
 import useUser from "../../../stores/user-store";
+import NewApartmentModal from "../../../components/apartments/NewApartmentModal";
 import Button from "../../../components/Button";
 import mensajeExito from "../../../utils/mensaje-exito";
 import StatusButton from "../../../components/apartments/ApartmentStatusBtn";
@@ -24,20 +25,24 @@ import { supabase } from "../../../config/supabase-client";
 const Viviendas = () => {
   const [signUrl, setSignUrl] = useState();
   const [propiedades, setPropiedades] = useState([]);
-  const [showPropiertiesModal, setShowPropiertiesModal] = useState(false);
+  const [showPropertiesModal, setShowPropertiesModal] = useState(false);
   const [showContractModal, setShowContractModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [actionCompleted, setActionCompleted] = useState(0);
   const loggedUserId = useUser((state) => state.loggedUser);
+  const [createApartmentModal, setCreateApartmentModal] = useState(false);
 
   const [filtroStatus, setFiltroStatus] = useState("todos");
   const [filtroBusqueda, setFiltroBusqueda] = useState("");
   const [selectedApartment, setSelectedApartment] = useState(null);
   const [contractApartmentId, setContractApartmentId] = useState(null);
+  const [isEdition, setIsEdition] = useState(false);
 
   const handleSelect = (apartment) => {
     setSelectedApartment(apartment);
+    setIsEdition(true);
+    setCreateApartmentModal(true);
   };
 
   function onApartmentDeleted() {
@@ -137,10 +142,16 @@ const Viviendas = () => {
 
   const handleApartmentCreated = (newApartment) => {
     mensajeExito("¡Vivienda creada correctamente!");
+    setCreateApartmentModal(false);
     agregarPropiedad(newApartment);
-    setShowPropiertiesModal(false);
-
     // Update this state variable to refetch the data in the main useEffect.
+    setActionCompleted(actionCompleted + 1);
+  };
+
+  const handleApartmentEdited = () => {
+    mensajeExito("¡Vivienda creada correctamente!");
+    setCreateApartmentModal(false);
+    setIsEdition(false);
     setActionCompleted(actionCompleted + 1);
   };
 
@@ -198,11 +209,12 @@ const Viviendas = () => {
         <Button
           text="Nueva vivienda"
           icon={<LuPlus size={18} />}
-          onClick={() => setShowPropiertiesModal(true)}
+          onClick={() => setCreateApartmentModal(true)}
         />
       </div>
 
       {/*Modales */}
+
       <Toaster toastOptions={{
         style: {
           display: "flex",
@@ -211,26 +223,25 @@ const Viviendas = () => {
         }
       }} />
 
-      <ViviendaForm
-        show={showPropiertiesModal}
-        onClose={() => setShowPropiertiesModal(false)}
-        onCreated={handleApartmentCreated}
+      <NewApartmentModal
+        isModalOpen={createApartmentModal}
+        onCloseModal={() => setCreateApartmentModal(false)}
+        ownerId={loggedUserId}
+        isOnEdit={false}
+        onCreateSuccess={handleApartmentCreated}
       />
 
       {selectedApartment && (
-        <EditApartmentModal
-          apartment={selectedApartment}
-          onClose={() => setSelectedApartment(null)}
-          onUpdated={(updated) => {
-            setPropiedades(prev =>
-              prev.map(a => a.id === updated.id ? updated : a)
-            );
-            setSelectedApartment(null);
-            setActionCompleted(actionCompleted + 1);
-            mensajeExito("¡Vivienda actualizada!");
-          }}
+        <NewApartmentModal
+          isModalOpen={createApartmentModal}
+          onCloseModal={() => setCreateApartmentModal(false)}
+          ownerId={loggedUserId}
+          onCreateSuccess={handleApartmentEdited}
+          onEditData={selectedApartment}
+          isOnEdit={true}
         />
       )}
+
       <ContractWizardModal
         show={showContractModal}
         onClose={() => setShowContractModal(false)}

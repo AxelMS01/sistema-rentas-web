@@ -5,7 +5,7 @@ import useUser from "../../stores/user-store";
 import { supabase } from "../../config/supabase-client";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import useContractData from "../../lib/useContractData";
+import useContractData from "../../utils/contracts/useContractData";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { DocumentoContrato } from "../pdf-documents/Machotes/Contrato/Contrato";
 import { CheckCircle, CircleCheck, Download } from "lucide-react";
