@@ -12,7 +12,7 @@ import { Button } from "flowbite-react";
 import "./ViviendaDetalle.css";
 import { supabase } from "../../../config/supabase-client";
 import useUser from "../../../stores/user-store";
-import useContractData from "../../../lib/useContractData";
+import useContractData from "../../../utils/contracts/useContractData";
 import { Download } from "lucide-react";
 import { DocumentoContrato } from "../../../components/pdf-documents/Machotes/Contrato/Contrato";
 import { DocumentoPagare } from "../../../components/pdf-documents/Machotes/Pagares/Pagare";

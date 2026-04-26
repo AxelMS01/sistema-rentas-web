@@ -1,4 +1,3 @@
-
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from "flowbite-react";
 import { useNavigate } from 'react-router-dom';
 import "../../views/owner/Incidencias/Incidencias.css";
@@ -131,12 +130,15 @@ export default function RequestsTable({
                                             */}
                                             Imagen
                                         </TableCell>
+
                                         <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                                             {locationData[id].street} {locationData[id].ext_num}, {locationData[id].division}
                                         </TableCell>
+
                                         <TableCell>
                                             {tenantNames[0].name} {tenantNames[0].father_surname} {tenantNames[0].mother_surname}
                                         </TableCell>
+
                                         <TableCell>
                                             <div className="w-full flex flex-col gap-2">
                                                 <div className="w-full h-auto p-4 text-nowrap bg-slate-100 border border-slate-200 rounded-lg">
@@ -144,7 +146,8 @@ export default function RequestsTable({
                                                 </div>
                                             </div>
                                         </TableCell>
-                                        <TableCell>
+
+                                        <TableCell className="flex self-start">
                                             <RequestStatusBtn status={request.status} />
                                         </TableCell>
                                     </TableRow>

@@ -106,7 +106,7 @@ const LoginForm = () => {
 
     } catch (error) {
       console.error(error);
-      alert("Server error");
+      toast.error("Credenciales inválidas.");
     }
   };
 

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { supabase } from "../config/supabase-client";
+import { supabase } from "../../config/supabase-client";
 
 /**
  * Fetches all the necessary data to render the contract's document, using the id of the related tenant.
