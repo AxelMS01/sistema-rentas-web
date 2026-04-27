@@ -187,7 +187,7 @@ export default function NewApartmentModal({
                                 <TextInput
                                     className="text-sm"
                                     type="text"
-                                    placeholder="###"
+                                    placeholder="Ciudad"
                                     value={city}
                                     onChange={(e) => setCity(e.target.value)}
                                     required
@@ -201,7 +201,7 @@ export default function NewApartmentModal({
                                 <TextInput
                                     className="text-sm"
                                     type="text"
-                                    placeholder="###"
+                                    placeholder="Estado"
                                     value={state}
                                     onChange={(e) => setState(e.target.value)}
                                     required
