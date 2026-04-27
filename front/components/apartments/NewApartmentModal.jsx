@@ -172,7 +172,7 @@ export default function NewApartmentModal({
                             <TextInput
                                 className="text-sm"
                                 type="text"
-                                placeholder="Colonia o Fraccionamiento"
+                                placeholder="Código postal"
                                 value={postalCode}
                                 onChange={(e) => setPostalCode(e.target.value)}
                                 required
