@@ -96,6 +96,8 @@ const Contracts = () => {
         <NewContractModal isModalOpen={showCreationModal} onSaveContract={handleSuccessfulCreation} onCloseModal={() => setShowCreationModal(false)} isOnEdit={false} isOnEditData={editData} />
       )}
 
+      <Toaster />
+
       <div className="flex w-full md:flex-row flex-col justify-between md:items-center items-start gap-6">
         <div className="header flex flex-col gap-2">
           <h1 className="text-start font-light fw-semibold tracking-tight">Contratos</h1>
