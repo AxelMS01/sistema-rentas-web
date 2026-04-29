@@ -46,7 +46,7 @@ const Home = () => {
 
                 if (tenantData[0].is_first_time === true) {
                     if (contractData.length === 0) {
-                        navigate("/", {
+                        navigate("/login", {
                             state: {
                                 welcomeFormErr: "No hay un contrato creado",
                                 welcomeFormErrDesc: "Tu arrendador no ha generado un contrato en su sistema aún. Por favor, espera a que lo haya creado."
@@ -54,7 +54,7 @@ const Home = () => {
                         });
                         return;
                     } else {
-                        navigate("/bienvenida", { state: tenantData[0] });
+                        navigate("/system/bienvenida", { state: tenantData[0] });
                         console.log("second condition true");
                         return;
                     };
