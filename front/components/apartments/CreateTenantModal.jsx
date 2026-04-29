@@ -13,13 +13,19 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
     const [motherSurname, setMotherSurname] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [email, setEmail] = useState("");
-    const [govIdImg, setGovIdImg] = useState([]);
+    const [ineFront, setIneFront] = useState(null);
+    const [ineBack, setIneBack] = useState(null);
     const [password, setPassword] = useState("");
 
     const loggedUserId = useUser((state) => state.loggedUser);
     var newUserId;
 
     async function handleSaveData() {
+        if (!ineFront || !ineBack) {
+            alert("Por favor, sube la foto del frente y del reverso de la identificación.");
+            return;
+        }
+
         try {
             const { data: newUserData, error: newUserError } = await supabase.auth.signUp({
                 email: email.trim(),
@@ -62,7 +68,8 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
             if (updateApartmentError) throw updateApartmentError;
 
             // An array of promises that upload files to the gov_id_images file bucket.
-            const fileUploadPromises = Array.from(govIdImg).map(async (image, id) => {
+            const imagesToUpload = [ineFront, ineBack];
+            const fileUploadPromises = imagesToUpload.map(async (image, id) => {
                 const { data, error } = await supabase
                     .storage
                     .from("gov_id_images")
@@ -79,13 +86,20 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
         };
     };
 
-    const handleFileChange = (e) => {
-        const newFiles = [];
-        for (let i = 0; i < e.target.files.length; i++) {
-            newFiles.push(e.target.files[i]);
-        };
+    const handleIneFrontChange = (e) => {
+        if (e.target.files.length > 0) {
+            setIneFront(e.target.files[0]);
+        } else {
+            setIneFront(null);
+        }
+    };
 
-        setGovIdImg(newFiles);
+    const handleIneBackChange = (e) => {
+        if (e.target.files.length > 0) {
+            setIneBack(e.target.files[0]);
+        } else {
+            setIneBack(null);
+        }
     };
 
     return (
@@ -181,17 +195,28 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
 
                         <div>
                             <div className="mb-2 block">
-                                <Label htmlFor="file-input">Identificación oficial/Credencial de estudiante</Label>
+                                <Label htmlFor="file-input-front">Identificación oficial/Credencial de estudiante - Frente</Label>
                             </div>
                             <FileInput
-                                id="file-input"
+                                id="file-input-front"
                                 className="text-sm!"
-                                placeholder="Subir archivos..."
-                                onChange={handleFileChange}
+                                onChange={handleIneFrontChange}
                                 required
-                                max={2}
                                 size="xs"
-                                multiple
+                                accept="image/png, image/jpeg"
+                            />
+                        </div>
+
+                        <div>
+                            <div className="mb-2 block">
+                                <Label htmlFor="file-input-back">Identificación oficial - Reverso</Label>
+                            </div>
+                            <FileInput
+                                id="file-input-back"
+                                className="text-sm!"
+                                onChange={handleIneBackChange}
+                                required
+                                size="xs"
                                 accept="image/png, image/jpeg"
                             />
                         </div>

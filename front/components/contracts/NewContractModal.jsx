@@ -187,7 +187,7 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
                         </div>
 
                         <div className="flex flex-col gap-4">
-                            <p className='text-lg font-semibold text-start'>Datos del aval</p>
+                            <p className='text-lg font-semibold text-start'>Datos del Fiador</p>
 
                             <div className='flex flex-col gap-2 items-start text-start'>
                                 <p className='text-sm font-medium!'>Nombre(s)</p>
