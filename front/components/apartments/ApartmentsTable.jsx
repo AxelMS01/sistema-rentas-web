@@ -154,9 +154,10 @@ export default function ApartmentTable({
                                         </TableCell>
                                         <TableCell>
                                             <div className="w-full flex flex-col gap-2">
-                                                <Button onClick={() => navigate("/viviendas/" + apartment.id + "/detalles", {
+                                                <Button onClick={() => navigate("/system/viviendas/" + apartment.id + "/detalles", {
                                                     state: {
-                                                        tenantId: apartment.tenant_id
+                                                        tenantId: apartment.tenant_id,
+                                                        tenantName: tenantName,
                                                     }
                                                 })}
                                                     className="rounded-md! flex flex-row gap-1.5 text-nowrap text-[13px]!" size="xs" color="alternative">

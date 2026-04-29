@@ -7,7 +7,7 @@ import useUser from "../../stores/user-store";
 import { supabase } from "../../config/supabase-client";
 import { UserRoundKey } from "lucide-react";
 
-export default function NewContractModal({ isModalOpen, onCloseModal, onSaveContract, isOnEdit, isOnEditData }) {
+export default function NewContractModal({ isModalOpen, onCloseModal, onSaveContract, isOnEdit, onEditData }) {
     const loggedUserId = useUser((state) => state.loggedUser);
 
     // Inputs for the apartment selection.
@@ -19,7 +19,7 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
     const [selectedTenantId, setSelectedTenantId] = useState();
 
     // Inputs for the guarantor.
-    const [guarantorName, setGuarantorName] = useState(isOnEditData ? isOnEditData.guarantorName : "");
+    const [guarantorName, setGuarantorName] = useState(onEditData ? onEditData.guarantorName : "");
     const [guarantorFatSurn, setGuarantorFatSurn] = useState("");
     const [guarantorMotSurn, setGuarantorMotSurn] = useState("");
     const [guarantorNation, setGuarantorNation] = useState("");
@@ -36,6 +36,14 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
     const [contractStart, setContractStart] = useState();
     const [contractEnd, setContractEnd] = useState();
     const [rentalPrice, setRentalPrice] = useState();
+
+    useEffect(() => {
+        if (isOnEdit) {
+            console.log(onEditData);
+            setGuarantorName(onEditData.guarantorName);
+        };
+
+    }, [onEditData]);
 
     useEffect(() => {
         async function getApartmentsOptions() {

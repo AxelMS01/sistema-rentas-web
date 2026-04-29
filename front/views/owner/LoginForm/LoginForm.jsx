@@ -8,7 +8,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import useUser from '../../../stores/user-store';
 import { supabase } from '../../../config/supabase-client';
 import { ShieldUser, UserRoundKey } from 'lucide-react';
-import Button from '../../../components/Button';
+import { Button } from 'flowbite-react';
+import NormalButton from '../../../components/Button';
 
 const LoginForm = () => {
 
@@ -102,7 +103,7 @@ const LoginForm = () => {
       updateUserRole(role);
 
       // Finalmente, redirigimos al usuario a la página principal del sistema (viviendas).
-      navigate(role === "owner" ? "/viviendas" : "/home");
+      navigate(role === "owner" ? "/system/viviendas" : "/system/home");
 
     } catch (error) {
       console.error(error);
@@ -125,7 +126,7 @@ const LoginForm = () => {
             <button
               type="button"
               onClick={() => setRole("owner")}
-              className={`flex flex-row gap-2 px-4 py-2 items-center text-nowrap justify-center rounded-lg! text-sm! ${role === "owner" ? "bg-sky-600 text-white font-medium" : "bg-slate-100 border border-slate-200 text-slate-900"}`}
+              className={`flex flex-row gap-2 px-4 py-2 items-center text-nowrap justify-center rounded-lg! text-sm! ${role === "owner" ? "bg-sky-600 text-white font-medium" : "bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-900"}`}
             >
               <ShieldUser size={18} strokeWidth={2} />
               Soy un propietario
@@ -134,7 +135,7 @@ const LoginForm = () => {
             <button
               type="button"
               onClick={() => setRole("tenant")}
-              className={`flex flex-row gap-2 px-4 py-2 items-center text-nowrap justify-center rounded-lg! text-sm! ${role === "tenant" ? "bg-sky-600 text-white font-medium" : "bg-slate-100 border border-slate-200 text-slate-900"}`}
+              className={`flex flex-row gap-2 px-4 py-2 items-center text-nowrap justify-center rounded-lg! text-sm! ${role === "tenant" ? "bg-sky-600 text-white font-medium" : "bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-900"}`}
             >
               <UserRoundKey size={18} strokeWidth={2} />
               Soy un inquilino
@@ -167,7 +168,7 @@ const LoginForm = () => {
 
           <div className='flex flex-col gap-2'>
             <div className="w-full flex flex-col">
-              <Button onClick={handleLogin} type="submit" text="Iniciar sesión" />
+              <NormalButton onClick={handleLogin} type="submit" text="Iniciar sesión" />
             </div>
 
             {role === "owner" && (
@@ -186,33 +187,44 @@ const LoginForm = () => {
           </div>
 
           <div className="w-full wrap-normal">
-            <p className='text-slate-600 text-sm! text-center'>Al continuar, usted acepta los Términos de Sistema de Administración de Rentas y reconoce haber leído nuestra <span className="privacy-link" onClick={toggleModal}>Política de Privacidad</span>. Aviso de recopilación de información.
+            <p className='text-slate-600 text-sm! text-center'>Al continuar, usted acepta los Términos de Sistema de Administración de Rentas y reconoce haber leído nuestra <span className="font-semibold text-sky-500 cursor-pointer" onClick={toggleModal}>Política de Privacidad</span>. Aviso de recopilación de información.
             </p>
           </div>
         </form>
       </div>
 
       {isModalOpen && (
-        <div className="modal-overlay2" onClick={toggleModal}>
-          <div className="modal-content2 text-center" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close2" onClick={toggleModal}>&times;</button>
-            <h2>Términos y Políticas de Privacidad</h2>
-            <p><strong>1. Introducción</strong><br />
+        <div className="z-999 bg-[rgb(0,0,0,0.5)] absolute w-full min-h-screen h-auto flex items-center justify-center">
+          <div className="flex flex-col gap-2 md:max-w-2xl w-auto bg-white p-6 rounded-xl!">
+            <h2 className='text-2xl! tracking-tight font-semibold!'>Términos y Políticas de Privacidad</h2>
+            <p className='text-slate-600'><span className='text-slate-900 font-semibold'>1. Introducción</span><br />
               Bienvenido a Administración de Rentas. Valoramos su privacidad y estamos comprometidos a proteger sus datos personales. Esta política le informará cómo cuidamos sus datos personales y sus derechos.
             </p>
-            <p><strong>2. Los datos que recopilamos</strong><br />
+
+            <p className='text-slate-600'><span className='text-slate-900 font-semibold'>2. Los datos que recopilamos</span><br />
               Podemos recopilar, usar, almacenar y transferir diferentes tipos de datos personales sobre usted: Datos de identidad, datos de contacto, datos financieros y datos de transacciones.
             </p>
-            <p><strong>3. Cómo usamos sus datos</strong><br />
+
+            <p className='text-slate-600'><span className='text-slate-900 font-semibold'>3. Cómo usamos sus datos</span><br />
               Solo utilizaremos sus datos personales cuando la ley nos lo permita. Lo más común es utilizarlos para formalizar y cumplir contratos con usted o respaldar nuestros intereses legítimos.
             </p>
-            <p><strong>4. Seguridad</strong><br />
+
+            <p className='text-slate-600'><span className='text-slate-900 font-semibold'>4. Seguridad</span><br />
               Hemos implementado medidas de seguridad apropiadas para evitar que sus datos personales se pierdan, utilicen o accedan accidentalmente de manera no autorizada.
             </p>
-            <p><strong>5. Sus derechos</strong><br />
+
+            <p className='text-slate-600'><span className='text-slate-900 font-semibold'>5. Sus derechos.</span><br />
               En ciertas circunstancias, usted tiene derechos según las leyes de protección de datos con respecto a sus datos personales (solicitar acceso, corrección, eliminación, restricción, etc.).
             </p>
-            <button className="btn btn-dark w-100" style={{ marginTop: "15px" }} onClick={toggleModal}>Cerrar / Entendido</button>
+
+            <Button
+              color="default"
+              size="sm"
+              className="bg-sky-600 text-white rounded-md! w-auto self-start mt-2 text-sm!"
+              onClick={() => setIsModalOpen(false)}
+            >
+              Cerrar/Entendido
+            </Button>
           </div>
         </div>
       )}

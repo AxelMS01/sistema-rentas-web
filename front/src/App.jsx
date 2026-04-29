@@ -26,16 +26,24 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Login: Sin Navbar */}
-        <Route path="/" element={<LoginForm />} />
-        <Route path="/signup" element={<RegisterPage />} />
+        {/* Login */}
+        <Route path="/*" element={
+          <CheckAlreadyLogged>
+            <Routes>
+              <Route path="/login" element={<LoginForm />} />
+              <Route path="/signup" element={<RegisterPage />} />
+              <Route path="*" element={<Navigate to="/login" />} />
+            </Routes>
+          </CheckAlreadyLogged>
+        }>
+        </Route>
 
         {/* Rutas Privadas: Con Navbar */}
-        <Route path="/*" element={
+        <Route path="/system/*" element={
           <ProtectedRoute>
             <Navbar />
             <Routes>
-              <Route path="dashboard" element={<Dashboard />} />
+              <Route index path="dashboard" element={<Dashboard />} />
               <Route path="viviendas" element={<Viviendas />} />
               <Route path="incidencias" element={<Incidencias />} />
               <Route path="mis-incidencias" element={<TenantRequests />} />
@@ -48,7 +56,7 @@ function App() {
               <Route path="configuracion" element={<Settings />} />
 
               {/* Redirección por defecto si no encuentra la ruta (SIEMPRE AL FINAL) */}
-              <Route path="*" element={<Navigate to="/viviendas" />} />
+              <Route path="*" element={<Navigate to="/system/viviendas" />} />
             </Routes>
           </ProtectedRoute>
         } />

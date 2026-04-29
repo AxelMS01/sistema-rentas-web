@@ -81,7 +81,7 @@ const Navbar = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
     setShowUserMenu(false);
-    navigate("/");
+    navigate("/login");
   };
 
   function actualizarFirma() {
@@ -116,19 +116,19 @@ const Navbar = () => {
           {!isTenant && (
             <div className={`lg:flex hidden justify-content-center order-3 order-lg-2 w-lg-auto ${isNavOpen ? 'lg:hidden flex mt-4 pb-3' : ''}`}>
               <div className="flex! flex-row! align-items-center gap-3 gap-lg-4 mx-auto bg-light px-4 py-3 py-lg-2 rounded-4" style={{ borderRadius: isNavOpen ? '1rem' : '50rem' }}>
-                <Link to="/viviendas" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small font-normal ${isActive("/viviendas")}`}>
+                <Link to="/system/viviendas" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small font-normal ${isActive("/system/viviendas")}`}>
                   Viviendas
                 </Link>
-                <Link to="/dashboard" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small font-normal ${isActive("/dashboard")}`}>
+                <Link to="/system/dashboard" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small font-normal ${isActive("/system/dashboard")}`}>
                   Dashboard
                 </Link>
-                <Link to="/reportes" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small font-normal ${isActive("/reportes")}`}>
+                <Link to="/system/reportes" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small font-normal ${isActive("/system/reportes")}`}>
                   Reportes
                 </Link>
-                <Link to="/incidencias" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small font-normal ${isActive("/incidencias")}`}>
+                <Link to="/system/incidencias" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small font-normal ${isActive("/system/incidencias")}`}>
                   Incidencias
                 </Link>
-                <Link to="/contratos" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small font-normal ${isActive("/contratos")}`}>
+                <Link to="/system/contratos" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small font-normal ${isActive("/system/contratos")}`}>
                   Contratos
                 </Link>
               </div>
@@ -177,7 +177,7 @@ const Navbar = () => {
                   <button
                     type="button"
                     className="btn btn-link hover:bg-slate-100! flex! flex-row gap-1.5 items-center! text-decoration-none text-dark w-100 text-start px-3 py-2"
-                    onClick={!isTenant ? () => navigate("/configuracion") : ""}
+                    onClick={!isTenant ? () => navigate("/system/configuracion") : ""}
                   >
                     <Settings size={18} />
                     Configuración
