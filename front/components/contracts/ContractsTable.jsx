@@ -108,7 +108,7 @@ export default function ContractsTable({
                                                 Editar
                                             </Button>
 
-                                            <Button onClick={() => navigate("/contratos/" + contract.id + "/detalles", {
+                                            <Button onClick={() => navigate("/system/contratos/" + contract.id + "/detalles", {
                                                 state: {
                                                     tenantId: contract.tenantid,
                                                     tenantName: tenantName,

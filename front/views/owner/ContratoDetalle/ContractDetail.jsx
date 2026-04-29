@@ -91,7 +91,7 @@ export default function ContractDetails() {
 
             {!isDataLoading && (
                 <div className="w-full min-h-screen flex flex-col gap-6! lg:px-20! sm:px-14 px-8 py-10 items-start">
-                    <Link to="/contratos" style={{ textDecoration: "none" }} className="flex flex-row gap-2 items-center justify-center w-auto self-start m-0 bg-white border border-slate-200 px-3 py-2 rounded-md">
+                    <Link to="/system/contratos" style={{ textDecoration: "none" }} className="flex flex-row gap-2 items-center justify-center w-auto self-start m-0 bg-white border border-slate-200 px-3 py-2 rounded-md">
                         <ArrowLeft className="text-sky-600" size={18} />
 
                         <p className="text-start font-semibold text-sky-600 m-0! text-sm">

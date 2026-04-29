@@ -20,7 +20,7 @@ export default function NewApartmentModal({
     const [postalCode, setPostalCode] = useState(isOnEdit ? onEditData.postal_code : "");
     const [city, setCity] = useState(isOnEdit ? onEditData.city : "");
     const [state, setState] = useState(isOnEdit ? onEditData.state : "");
-
+    
     useEffect(() => {
         if (isOnEdit) {
             setApartmentName(onEditData.name);

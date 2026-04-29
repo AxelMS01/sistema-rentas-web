@@ -80,11 +80,12 @@ const Contracts = () => {
     setShowCreationModal(true);
   };
 
-  function handleSuccessfulCreation() {
+  function handleSuccess(successMsg) {
     setShowCreationModal(false);
-    toast.success("¡Contrato creado correctamente!");
+    toast.success(successMsg);
     setSuccessfulAction(successfulAction + 1);
-  }
+  };
+
 
   // ------------------------------
   //  NORMAL RENDER
@@ -92,8 +93,10 @@ const Contracts = () => {
 
   return (
     <div className="w-full h-screen flex flex-col gap-4! lg:px-20! sm:px-16! px-8! py-10">
-      {showCreationModal && (
-        <NewContractModal isModalOpen={showCreationModal} onSaveContract={handleSuccessfulCreation} onCloseModal={() => setShowCreationModal(false)} isOnEdit={false} isOnEditData={editData} />
+      <NewContractModal isModalOpen={showCreationModal} onSaveContract={() => handleSuccess("¡Contrato creado correctamente!")} onCloseModal={() => setShowCreationModal(false)} isOnEdit={false} />
+
+      {editData && (
+        <NewContractModal isModalOpen={showCreationModal} onSaveContract={() => handleSuccess("¡Contrato editado correctamente!")} onCloseModal={() => setShowCreationModal(false)} onEditData={editData}  isOnEdit={true} />
       )}
 
       <Toaster />
