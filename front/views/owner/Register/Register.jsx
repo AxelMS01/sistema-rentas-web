@@ -167,12 +167,13 @@ export default function RegisterPage() {
                         </div>
                     </form>
                 </ModalBody>
+                
                 <ModalFooter className='flex flex-col gap-4'>
                     <p className='text-sm text-slate-600'>
                         Al continuar, usted acepta los Términos de Sistema de Administración de Rentas y reconoce haber leído nuestra <span className="cursor-pointer text-sky-600" onClick={() => setIsModalOpen(true)}>Política de Privacidad</span>. Aviso de recopilación de información.
                     </p>
 
-                    <div className='flex flex-col gap-4 w-full'>
+                    <div className='flex flex-col gap-2.5 w-full'>
                         <Button
                             type="submit"
                             form="registration-form"
@@ -186,9 +187,9 @@ export default function RegisterPage() {
                             type="button"
                             color="alternative"
                             className="rounded-md! w-full"
-                            onClick={() => navigate("/")}
+                            onClick={() => navigate("/login")}
                         >
-                            Iniciar sesión
+                            Ya tengo una cuenta
                         </Button>
                     </div>
                 </ModalFooter>
@@ -220,7 +221,8 @@ export default function RegisterPage() {
 
                         <Button
                             color="default"
-                            className="bg-sky-600 text-white rounded-md! w-auto self-start mt-2"
+                            size="sm"
+                            className="bg-sky-600 text-white rounded-md! w-auto self-start mt-2 text-sm!"
                             onClick={() => setIsModalOpen(false)}
                         >
                             Cerrar/Entendido
