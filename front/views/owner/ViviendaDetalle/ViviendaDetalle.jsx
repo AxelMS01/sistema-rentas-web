@@ -8,7 +8,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import CreateTenantModal from "../../../components/apartments/CreateTenantModal";
 import mensajeExito from "../../../utils/mensaje-exito";
 import EditarForm from "../Forms/Editarform";
-import { Button } from "flowbite-react";
+import { Button, Spinner } from "flowbite-react";
 import "./ViviendaDetalle.css";
 import { supabase } from "../../../config/supabase-client";
 import useUser from "../../../stores/user-store";
@@ -16,6 +16,8 @@ import useContractData from "../../../utils/contracts/useContractData";
 import { Download } from "lucide-react";
 import { DocumentoContrato } from "../../../components/pdf-documents/Machotes/Contrato/Contrato";
 import { DocumentoPagare } from "../../../components/pdf-documents/Machotes/Pagares/Pagare";
+import NewApartmentModal from "../../../components/apartments/NewApartmentModal";
+import LoadingStatus from "../../../components/LoadingStatus";
 
 const token = localStorage.getItem("token");
 
@@ -123,7 +125,14 @@ export default function ViviendaDetalle() {
     fetchData();
   }, [id, successfulAction]);
 
-  if (loading) return <div className="text-center py-5">Cargando detalles...</div>;
+  if (loading) return (
+    <div className="flex flex-row gap-2 self-center w-full items-center justify-center my-20">
+      <p className="text-base! font-medium text-slate-900">Cargando detalles...</p>
+
+      <Spinner size="md" />
+    </div>
+  );
+
   if (error) return <div className="text-center py-5 text-danger">{error}</div>;
 
   function onCreateTenant() {
@@ -228,7 +237,7 @@ export default function ViviendaDetalle() {
   function finishUpdate(updatedHousing) {
     setIsOnEdit(false);
     mensajeExito("¡Vivienda actualizada!");
-    setVivienda(updatedHousing);
+    setSuccessfulAction(successfulAction + 1);
   };
 
   const mainImage =
@@ -243,238 +252,244 @@ export default function ViviendaDetalle() {
   const dueDate = lastDayOfMonth(currentDate);
 
   return (
-    <div className="w-full h-full flex flex-col gap-6! lg:px-20! sm:px-14 px-8 py-10 items-start">
-      <Link to="/system/viviendas" style={{ textDecoration: "none" }} className="flex flex-row gap-2 items-center justify-center w-auto self-start m-0 bg-white border border-slate-200 px-3 py-2 rounded-md">
-        <LuArrowLeft className="text-sky-600" size={18} />
+    <>
+      {!loading && (
+        <div className="w-full h-full flex flex-col gap-6! lg:px-20! sm:px-14 px-8 py-10 items-start">
+          <Link to="/system/viviendas" style={{ textDecoration: "none" }} className="flex flex-row gap-2 items-center justify-center w-auto self-start m-0 bg-white border border-slate-200 px-3 py-2 rounded-md">
+            <LuArrowLeft className="text-sky-600" size={18} />
 
-        <p className="text-start font-semibold text-sky-600 m-0! text-sm">
-          Regresar a todas las viviendas
-        </p>
-      </Link>
+            <p className="text-start font-semibold text-sky-600 m-0! text-sm">
+              Regresar a todas las viviendas
+            </p>
+          </Link>
 
-      <div className="flex w-full lg:flex-row flex-col justify-between! lg:items-center! items-start gap-6">
-        <div className="flex flex-col items-start gap-2">
-          <h1 className="text-start font-light fw-semibold tracking-tight">Viviendas</h1>
-          <p className="text-base font-medium text-slate-500 text-start">Visualiza las viviendas registradas en el sistema fácil y rápidamente.</p>
-        </div>
+          <div className="flex w-full lg:flex-row flex-col justify-between! lg:items-center! items-start gap-6">
+            <div className="flex flex-col items-start gap-2">
+              <h1 className="text-start font-light fw-semibold tracking-tight">Viviendas</h1>
+              <p className="text-base font-medium text-slate-500 text-start">Visualiza las viviendas registradas en el sistema fácil y rápidamente.</p>
+            </div>
 
-        <button
-          type="button"
-          className="bg-sky-600 flex flex-row gap-2 px-3 py-2 rounded-md! items-center justify-center text-sm! text-white font-medium"
-          data-bs-toggle="modal"
-          data-bs-target="#tenantAccountModal"
-          onClick={() => setTenantCreation(true)}
-        >
-          <LuSettings size={18} />
-          Gestionar cuenta de arrendatario
-        </button>
-      </div>
-
-      <Toaster />
-
-      <div className="w-full grid grid-cols-3 gap-4">
-        <div className="general-detail lg:col-span-2 col-span-3 w-full bg-white border border-slate-200 p-4 rounded-xl flex flex-col gap-4 justify-start">
-          <div className="card-header flex flex-row gap-2 items-center justify-start w-full">
-            <LuHouse size={21} strokeWidth={2.5} />
-
-            <h1 className="text-2xl! m-0! font-semibold! text-start text-wrap">
-              Datos Generales
-            </h1>
+            <button
+              type="button"
+              className="bg-sky-600 flex flex-row gap-2 px-3 py-2 rounded-md! items-center justify-center text-sm! text-white font-medium"
+              data-bs-toggle="modal"
+              data-bs-target="#tenantAccountModal"
+              onClick={() => setTenantCreation(true)}
+            >
+              <LuSettings size={18} />
+              Gestionar cuenta de arrendatario
+            </button>
           </div>
 
-          <div className="flex flex-col gap-2 w-full justify-start">
-            <p className="text-base font-medium! w-auto text-start text-slate-500">Dirección:</p>
-            <p className="text-base font-medium! w-auto text-start text-slate-950">{vivienda ? `${vivienda.street || ''} ${vivienda.int_num || ''}, ${vivienda.division || ''} C.P. ${vivienda.postal_code || ''}`.trim() : "-"}</p>
-          </div>
+          <Toaster />
 
-          <div className="flex flex-col gap-4 w-full justify-start">
-            <p className="text-base font-medium! w-auto text-start text-slate-500">Imagen principal:</p>
-            <div className="main-image-wrap">
-              <img src={mainImage} alt="Vivienda" className="main-image" />
-            </div>
-          </div>
-        </div>
+          <div className="w-full grid grid-cols-3 gap-4">
+            <div className="general-detail lg:col-span-2 col-span-3 w-full bg-white border border-slate-200 p-4 rounded-xl flex flex-col gap-4 justify-start">
+              <div className="card-header flex flex-row gap-2 items-center justify-start w-full">
+                <LuHouse size={21} strokeWidth={2.5} />
 
-        <div className="w-full flex flex-col gap-4 lg:col-span-1 col-span-3">
-          <div className="general-detail w-full bg-white border border-slate-200 p-4 rounded-xl flex flex-col gap-4 justify-start">
-            <div className="card-header flex flex-row gap-2 items-center justify-start w-full">
-              <LuInfo size={21} strokeWidth={2.5} />
+                <h1 className="text-2xl! m-0! font-semibold! text-start text-wrap">
+                  Datos Generales
+                </h1>
+              </div>
 
-              <h1 className="text-2xl! m-0! font-semibold!">
-                Información
-              </h1>
-            </div>
+              <div className="flex flex-col gap-2 w-full justify-start">
+                <p className="text-base font-medium! w-auto text-start text-slate-500">Dirección:</p>
+                <p className="text-base font-medium! w-auto text-start text-slate-950">{vivienda ? `${vivienda.street || ''} #${vivienda.ext_num || ''}, ${vivienda.division || ''}, C.P. ${vivienda.postal_code || ''}`.trim() : "-"}</p>
+              </div>
 
-            <div className="flex md:flex-row gap-4 items-center w-full justify-between">
-              <span className="info-key">Precio de renta</span>
-              {contractInfo.depositamount != undefined ? (
-                <span className="info-value text-emerald-500! fw-bold">
-                  ${contractInfo.depositamount}
-                </span>
-              ) : (
-                <span className="info-value text-slate-800 fw-bold">
-                  Por definir
-                </span>
-              )}
-            </div>
-
-            <div className="flex md:flex-row gap-4 items-center w-full justify-between">
-              <span className="info-key">Arrendatario</span>
-              <span className="info-value">{tenantName ? tenantName : "Por definir"}</span>
-            </div>
-
-            <div className="flex md:flex-row gap-4 items-center w-full justify-between">
-              <span className="info-key">Fecha de pago</span>
-              <span className="info-value">{contractInfo ? format(dueDate, "PP", { locale: es }) : "Por definir"}</span>
-            </div>
-
-            <div className="flex md:flex-row gap-4 items-center w-full justify-between">
-              <span className="info-key">Estado</span>
-              <span className={`status-pill ${statusClass(vivienda?.status)}`}>
-                <span className="status-solid-dot"></span>
-                {statusLabel(vivienda?.status)}
-              </span>
-            </div>
-
-            {vivienda.status === "OCCUPIED" && !isDataLoading && (
-              <div className="flex flex-col gap-4 justify-start">
-                <div className="flex md:flex-row gap-4 items-center w-full justify-between">
-                  <span className="info-key">Contrato</span>
-
-                  <PDFDownloadLink document={
-                    <DocumentoContrato
-                      contractInfo={contractInfo}
-                      ownerInfo={ownerInfo}
-                      tenantInfo={tenantInfo}
-                      guarantorInfo={guarantorInfo}
-                      apartmentInfo={apartmentInfo}
-                      isActive={true}
-                    />
-                  } className="no-underline!" fileName={`Contrato-${contractInfo.id}`}>
-                    <Button
-                      type="button"
-                      color="alternative"
-                      className="flex flex-row gap-2 px-3! py-2!  rounded-md! items-center justify-center text-sm! font-medium"
-                    >
-                      <Download size={18} />
-                      Descargar en PDF
-                    </Button>
-                  </PDFDownloadLink>
-                </div>
-
-                <div className="flex md:flex-row gap-4 items-center w-full justify-between">
-                  <span className="info-key">Pagarés</span>
-
-                  <PDFDownloadLink document={
-                    <DocumentoPagare
-                      pagareInfo={contractInfo}
-                      ownerInfo={ownerInfo}
-                      tenantInfo={tenantInfo}
-                      guarantorInfo={guarantorInfo}
-                      apartmentInfo={apartmentInfo}
-                    />
-                  } className="no-underline!" fileName={`Pagares-Contrato-${contractInfo.id}`}>
-                    <Button
-                      type="button"
-                      color="alternative"
-                      className="flex flex-row gap-2 px-3! py-2!  rounded-md! items-center justify-center text-sm! font-medium"
-                    >
-                      <Download size={18} />
-                      Descargar en PDF
-                    </Button>
-                  </PDFDownloadLink>
+              <div className="flex flex-col gap-4 w-full justify-start">
+                <p className="text-base font-medium! w-auto text-start text-slate-500">Imagen principal:</p>
+                <div className="main-image-wrap">
+                  <img src={mainImage} alt="Vivienda" className="main-image" />
                 </div>
               </div>
-            )}
+            </div>
+
+            <div className="w-full flex flex-col gap-4 lg:col-span-1 col-span-3">
+              <div className="general-detail w-full bg-white border border-slate-200 p-4 rounded-xl flex flex-col gap-4 justify-start">
+                <div className="card-header flex flex-row gap-2 items-center justify-start w-full">
+                  <LuInfo size={21} strokeWidth={2.5} />
+
+                  <h1 className="text-2xl! m-0! font-semibold!">
+                    Información
+                  </h1>
+                </div>
+
+                <div className="flex md:flex-row gap-4 items-center w-full justify-between">
+                  <span className="font-medium! text-slate-500">Precio de renta</span>
+                  {contractInfo.depositamount != undefined ? (
+                    <span className="info-value text-emerald-500! fw-bold">
+                      ${contractInfo.depositamount}
+                    </span>
+                  ) : (
+                    <span className="info-value text-slate-800 fw-bold">
+                      Por definir
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex md:flex-row gap-4 items-center w-full justify-between">
+                  <span className="font-medium! text-slate-500">Arrendatario</span>
+                  <span className="info-value">{state.tenantName ? state.tenantName : "Por definir"}</span>
+                </div>
+
+                <div className="flex md:flex-row gap-4 items-center w-full justify-between">
+                  <span className="font-medium! text-slate-500">Fecha de pago</span>
+                  <span className="info-value">{contractInfo ? format(dueDate, "PP", { locale: es }) : "Por definir"}</span>
+                </div>
+
+                <div className="flex md:flex-row gap-4 items-center w-full justify-between">
+                  <span className="font-medium! text-slate-500">Estado</span>
+                  <span className={`status-pill ${statusClass(vivienda?.status)}`}>
+                    <span className="status-solid-dot"></span>
+                    {statusLabel(vivienda?.status)}
+                  </span>
+                </div>
+
+                {vivienda.status === "OCCUPIED" && !isDataLoading && (
+                  <div className="flex flex-col gap-4 justify-start">
+                    <div className="flex md:flex-row gap-4 items-center w-full justify-between">
+                      <span className="info-key">Contrato</span>
+
+                      <PDFDownloadLink document={
+                        <DocumentoContrato
+                          contractInfo={contractInfo}
+                          ownerInfo={ownerInfo}
+                          tenantInfo={tenantInfo}
+                          guarantorInfo={guarantorInfo}
+                          apartmentInfo={apartmentInfo}
+                          isActive={true}
+                        />
+                      } className="no-underline!" fileName={`Contrato-${contractInfo.id}`}>
+                        <Button
+                          type="button"
+                          color="alternative"
+                          className="flex flex-row gap-2 px-3! py-2!  rounded-md! items-center justify-center text-sm! font-medium"
+                        >
+                          <Download size={18} />
+                          Descargar en PDF
+                        </Button>
+                      </PDFDownloadLink>
+                    </div>
+
+                    <div className="flex md:flex-row gap-4 items-center w-full justify-between">
+                      <span className="info-key">Pagarés</span>
+
+                      <PDFDownloadLink document={
+                        <DocumentoPagare
+                          pagareInfo={contractInfo}
+                          ownerInfo={ownerInfo}
+                          tenantInfo={tenantInfo}
+                          guarantorInfo={guarantorInfo}
+                          apartmentInfo={apartmentInfo}
+                        />
+                      } className="no-underline!" fileName={`Pagares-Contrato-${contractInfo.id}`}>
+                        <Button
+                          type="button"
+                          color="alternative"
+                          className="flex flex-row gap-2 px-3! py-2!  rounded-md! items-center justify-center text-sm! font-medium"
+                        >
+                          <Download size={18} />
+                          Descargar en PDF
+                        </Button>
+                      </PDFDownloadLink>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="general-detail w-full bg-white border border-slate-200 p-4 rounded-xl flex flex-col gap-4 justify-start">
+                <div className="card-header flex flex-row gap-2 items-center justify-start w-full">
+                  <LuHand size={20} strokeWidth={2.5} />
+
+                  <h1 className="text-2xl! m-0! font-semibold!">
+                    Acciones
+                  </h1>
+                </div>
+
+                <div className="actions-row">
+                  <button
+                    type="button"
+                    className="small-action-btn"
+                    data-bs-target="#editModal"
+                    onClick={() => setIsOnEdit(true)}
+                  >
+                    <LuSquarePen size={18} />
+                    Editar
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`small-action-btn status-action-btn ${vivienda?.status === "ARCHIVED" ? "is-active archived" : ""}`}
+                    onClick={archivarVivienda}
+                  >
+                    {vivienda?.status === "ARCHIVED" ? (
+                      <>
+                        <LuArchiveRestore size={18} />
+                        <p>Desarchivar</p>
+                      </>
+                    ) : (
+                      <>
+                        <LuArchive size={18} />
+                        <p>Archivar</p>
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`small-action-btn status-action-btn ${isArchived ? "is-active archived" : isOccupied ? "is-active occupied" : "is-active available"
+                      }`}
+                    onClick={() => {
+                      if (isArchived) return;
+                      cambiarEstado();
+                    }}
+                    disabled={isArchived}
+                  >
+                    {isArchived && (
+                      <>
+                        <LuArchive size={18} />
+                        <p>Archivada</p>
+                      </>
+                    )}
+
+                    {isOccupied && (
+                      <>
+                        <LuCircleDot size={18} />
+                        <p>Ocupada</p>
+                      </>
+                    )}
+
+                    {!isArchived && !isOccupied && (
+                      <>
+                        <LuCircleCheck size={18} />
+                        <p>Disponible</p>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <div>
+                  <Button color="default" className="text-white! rounded-md! px-3 py-1.5 bg-sky-600 text-sm!" size="sm" onClick={guardarStatus} >Guardar estatus</Button>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="general-detail w-full bg-white border border-slate-200 p-4 rounded-xl flex flex-col gap-4 justify-start">
-            <div className="card-header flex flex-row gap-2 items-center justify-start w-full">
-              <LuHand size={20} strokeWidth={2.5} />
+          <NewApartmentModal
+            isModalOpen={isOnEdit}
+            onCloseModal={() => setIsOnEdit(false)}
+            ownerId={ownerId}
+            onCreateSuccess={finishUpdate}
+            onEditData={vivienda}
+            isOnEdit={true}
+          />
 
-              <h1 className="text-2xl! m-0! font-semibold!">
-                Acciones
-              </h1>
-            </div>
-
-            <div className="actions-row">
-              <button
-                type="button"
-                className="small-action-btn"
-                data-bs-target="#editModal"
-                onClick={() => setIsOnEdit(true)}
-              >
-                <LuSquarePen size={18} />
-                Editar
-              </button>
-
-              <button
-                type="button"
-                className={`small-action-btn status-action-btn ${vivienda?.status === "ARCHIVED" ? "is-active archived" : ""}`}
-                onClick={archivarVivienda}
-              >
-                {vivienda?.status === "ARCHIVED" ? (
-                  <>
-                    <LuArchiveRestore size={18} />
-                    <p>Desarchivar</p>
-                  </>
-                ) : (
-                  <>
-                    <LuArchive size={18} />
-                    <p>Archivar</p>
-                  </>
-                )}
-              </button>
-
-              <button
-                type="button"
-                className={`small-action-btn status-action-btn ${isArchived ? "is-active archived" : isOccupied ? "is-active occupied" : "is-active available"
-                  }`}
-                onClick={() => {
-                  if (isArchived) return;
-                  cambiarEstado();
-                }}
-                disabled={isArchived}
-              >
-                {isArchived && (
-                  <>
-                    <LuArchive size={18} />
-                    <p>Archivada</p>
-                  </>
-                )}
-
-                {isOccupied && (
-                  <>
-                    <LuCircleDot size={18} />
-                    <p>Ocupada</p>
-                  </>
-                )}
-
-                {!isArchived && !isOccupied && (
-                  <>
-                    <LuCircleCheck size={18} />
-                    <p>Disponible</p>
-                  </>
-                )}
-              </button>
-            </div>
-
-            <div>
-              <Button color="default" className="text-white! rounded-md! px-3 py-1.5 bg-sky-600 text-sm!" size="sm" onClick={guardarStatus} >Guardar estatus</Button>
-            </div>
-          </div>
+          <CreateTenantModal isModalOpen={tenantCreation} apartmentId={id} ownerId={ownerId} onCreateSuccess={onCreateTenant} onCloseModal={() => setTenantCreation(false)} />
         </div>
-      </div>
-
-      {isOnEdit && (
-        <EditarForm
-          apartment={vivienda}
-          onClose={() => setIsOnEdit(false)}
-          onUpdated={finishUpdate}
-        />
       )}
+    </>
 
-      <CreateTenantModal isModalOpen={tenantCreation} apartmentId={id} ownerId={ownerId} onCreateSuccess={onCreateTenant} onCloseModal={() => setTenantCreation(false)} />
-    </div>
   );
 }
