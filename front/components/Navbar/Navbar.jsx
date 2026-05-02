@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Settings, Bell, X, Eraser, LogOut } from "lucide-react";
+import { Settings, Bell, X, Eraser, LogOut, Menu } from "lucide-react";
 import { supabase } from "../../config/supabase-client";
 import useUser from "../../stores/user-store";
 import toast, { Toaster } from "react-hot-toast";
 import casaLogo from "../../src/assets/casa.png";
-import { Button } from "flowbite-react";
-import NotificationDropdownContent from "../notifications/Notifications";
+import NotificationBox from "../notifications/Notifications";
+import { Button, Popover } from "flowbite-react";
+import { Dropdown, DropdownItem } from "flowbite-react";
+import Notifications from "../notifications/Notifications";
 
 const Navbar = () => {
   const location = useLocation();
@@ -22,6 +24,7 @@ const Navbar = () => {
   const [firmaURL, setFirmaURL] = useState("");
   const [minimumMonths, setMinimumMonths] = useState("");
   const [notifications, setNotifications] = useState();
+  const [loadingNotifs, setLoadingNotifs] = useState(true);
 
   const [activeTab, setActiveTab] = useState("pagos");
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -41,6 +44,28 @@ const Navbar = () => {
   const [moraSettings, setMoraSettings] = useState({ tipo: "percentage", valor: 10 });
 
   useEffect(() => {
+    async function getNotifs() {
+      try {
+        const { data, error } = await supabase
+          .from("notifications")
+          .select()
+          .eq("seen", false)
+          .eq("ownerid", loggedUserId);
+
+        if (error) throw error;
+
+        console.log("Data:", data);
+
+        setNotifications(data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoadingNotifs(false);
+      }
+    };
+
+    getNotifs();
+
     const handleClickOutside = (event) => {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
         setShowUserMenu(false);
@@ -95,12 +120,12 @@ const Navbar = () => {
     <>
       <Toaster />
       <nav
-        className="navbar navbar-expand-lg bg-white border-bottom py-2 px-3 px-md-4 sticky-top shadow-sm flex-wrap"
+        className="flex bg-white border-bottom py-2 px-3 px-md-4 sticky-top shadow-sm items-center! justify-between! z-9 min-h-20 w-full"
         style={{ zIndex: 9, minHeight: "80px" }}
       >
-        <div className="container-fluid p-0 d-flex flex-wrap align-items-center">
+        <div className="w-full flex flex-row items-center justify-between">
           {/* Logo */}
-          <div className="d-flex align-items-center order-1">
+          <div className="d-flex align-items-center">
             <img
               src={casaLogo}
               alt="Logo"
@@ -114,7 +139,7 @@ const Navbar = () => {
 
           {/* Links Collapse */}
           {!isTenant && (
-            <div className={`lg:flex hidden justify-content-center order-3 order-lg-2 w-lg-auto ${isNavOpen ? 'lg:hidden flex mt-4 pb-3' : ''}`}>
+            <div className={`lg:flex hidden justify-content-center w-lg-auto ${isNavOpen ? 'lg:hidden flex mt-4 pb-3' : ''}`}>
               <div className="flex! flex-row! align-items-center gap-3 gap-lg-4 mx-auto bg-light px-4 py-3 py-lg-2 rounded-4" style={{ borderRadius: isNavOpen ? '1rem' : '50rem' }}>
                 <Link to="/system/viviendas" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small font-normal ${isActive("/system/viviendas")}`}>
                   Viviendas
@@ -136,42 +161,23 @@ const Navbar = () => {
           )}
 
           {/* Actions & Toggler */}
-          <div className="position-relative d-flex align-items-center gap-2 gap-md-3 order-2 order-lg-3 ms-auto ms-lg-0">
-            {!isTenant && (
-              <>
-                <button
-                  className="btn btn-light bg-white border rounded-circle p-2 shadow-sm d-flex align-items-center justify-content-center position-relative"
-                  style={{ width: "40px", height: "40px" }}
-                >
-                  <Bell size={20} className="text-secondary" />
-                  <span
-                    className="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
-                    style={{ width: "10px", height: "10px" }}
-                  />
-                </button>
-
-                {/*NotificationDropdownContent isOpen={showNotifs} />*/}
-              </>
+          <div className="flex! items-center! justify-center! gap-3">
+            {!loadingNotifs && (
+              <Notifications notificationList={notifications} />
             )}
 
-            <div className="position-relative" ref={userMenuRef}>
+            <div className="mt-2" ref={userMenuRef}>
               <button
                 type="button"
                 onClick={() => setShowUserMenu((prev) => !prev)}
-                className="d-flex align-items-center gap-2 bg-white border rounded-pill ps-1 pe-3 py-1 shadow-sm"
-                style={{ cursor: "pointer" }}
+                className="cursor-pointer"
               >
-                <div
-                  className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold"
-                  style={{ width: "32px", height: "32px", fontSize: "14px" }}
-                >
-                  {isTenant ? "AR" : "AD"}
-                </div>
+                <Menu size={22} className="text-slate-700 hover:text-sky-600" />
               </button>
 
               {showUserMenu && (
                 <div
-                  className="position-absolute end-0 mt-2 bg-white border rounded shadow-sm"
+                  className="position-absolute inset-e-0 mt-2 bg-white border rounded shadow-sm"
                   style={{ minWidth: "150px", zIndex: 1100 }}
                 >
                   <button
