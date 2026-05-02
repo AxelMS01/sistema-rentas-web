@@ -7,13 +7,13 @@ import { supabase } from "../../config/supabase-client";
  * Represents an edition modal for the Setting's profile section.
  */
 
-export default function EditPersonalDetails({ onCloseModal, isModalOpen, onEditSuccess }) {
-    const [name, setName] = useState("");
-    const [fatherSurname, setFatherSurname] = useState("");
-    const [motherSurname, setMotherSurname] = useState("");
-    const [phoneNumber, setPhoneNumber] = useState("");
-    const [email, setEmail] = useState("");
-    const [curp, setCurp] = useState("");
+export default function EditPersonalDetails({ onCloseModal, isModalOpen, onEditSuccess, editionData }) {
+    const [name, setName] = useState(editionData.name);
+    const [fatherSurname, setFatherSurname] = useState(editionData.fatherSurname);
+    const [motherSurname, setMotherSurname] = useState(editionData.motherSurname);
+    const [phoneNumber, setPhoneNumber] = useState(editionData.phoneNumber);
+    const [email, setEmail] = useState(editionData.email);
+    const [curp, setCurp] = useState(editionData.governmentid);
 
     const loggedUserId = useUser((state) => state.loggedUser);
 
@@ -58,20 +58,6 @@ export default function EditPersonalDetails({ onCloseModal, isModalOpen, onEditS
 
                         <div>
                             <div className="mb-2 block">
-                                <Label htmlFor="password">Apellido materno</Label>
-                            </div>
-                            <TextInput
-                                className="text-sm"
-                                type="text"
-                                placeholder="Apellido materno"
-                                value={motherSurname}
-                                onChange={(e) => setMotherSurname(e.target.value)}
-                                required
-                            />
-                        </div>
-
-                        <div>
-                            <div className="mb-2 block">
                                 <Label htmlFor="password">Apellido paterno</Label>
                             </div>
                             <TextInput
@@ -80,6 +66,20 @@ export default function EditPersonalDetails({ onCloseModal, isModalOpen, onEditS
                                 placeholder="Apellido paterno"
                                 value={fatherSurname}
                                 onChange={(e) => setFatherSurname(e.target.value)}
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <div className="mb-2 block">
+                                <Label htmlFor="password">Apellido materno</Label>
+                            </div>
+                            <TextInput
+                                className="text-sm"
+                                type="text"
+                                placeholder="Apellido materno"
+                                value={motherSurname}
+                                onChange={(e) => setMotherSurname(e.target.value)}
                                 required
                             />
                         </div>
