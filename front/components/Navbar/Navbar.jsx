@@ -6,6 +6,7 @@ import useUser from "../../stores/user-store";
 import toast, { Toaster } from "react-hot-toast";
 import casaLogo from "../../src/assets/casa.png";
 import NotificationBox from "../notifications/Notifications";
+import useNewNotifications from "../../utils/notifications/useNewNotifications";
 import { Button, Popover } from "flowbite-react";
 import { Dropdown, DropdownItem } from "flowbite-react";
 import Notifications from "../notifications/Notifications";
@@ -25,8 +26,6 @@ const Navbar = () => {
   const [firmaURL, setFirmaURL] = useState("");
   const [minimumMonths, setMinimumMonths] = useState("");
   const [notifications, setNotifications] = useState();
-  const [loadingNotifs, setLoadingNotifs] = useState(true);
-
   const [activeTab, setActiveTab] = useState("pagos");
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifs, setShowNotifs] = useState(false);
@@ -44,27 +43,10 @@ const Navbar = () => {
 
   const [moraSettings, setMoraSettings] = useState({ tipo: "percentage", valor: 10 });
 
-  useEffect(() => {
-    async function getNotifs() {
-      try {
-        const { data, error } = await supabase
-          .from("notifications")
-          .select()
-          .eq("seen", false)
-          .eq("ownerid", loggedUserId);
-
-        if (error) throw error;
-
-        setNotifications(data);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoadingNotifs(false);
-      }
-    };
-
-    getNotifs();
-  }, []);
+  const {
+    loadingNotifs,
+    newNotifs
+  } = useNewNotifications("owner", loggedUserId);
 
   const handlePaymentChange = (e) => {
     setPaymentKeys({ ...paymentKeys, [e.target.name]: e.target.value });
@@ -154,7 +136,7 @@ const Navbar = () => {
           {/* Actions & Toggler */}
           <div className="flex! items-center! justify-center! gap-3">
             {!loadingNotifs && (
-              <Notifications notificationList={notifications} />
+              <Notifications notificationList={newNotifs} />
             )}
 
             <div className="mt-2" ref={userMenuRef}>

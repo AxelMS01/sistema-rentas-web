@@ -1,5 +1,5 @@
 import { Dropdown, DropdownDivider, DropdownItem, Popover } from "flowbite-react";
-import { ScrollText, Bell } from "lucide-react";
+import { ScrollText, Bell, HandCoins } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import useLoggedUser from "../../utils/useLoggedUser";
@@ -13,14 +13,18 @@ export function NotificationBox({
 }) {
     const stylesPerType = {
         rental_contracts: {
-            bgColor: "bg-sky-50 border border-sky-300!",
-            icon: <Bell size={18} strokeWidth={2} className="text-sky-500" />
+            bgColor: "bg-sky-500!",
+            icon: <Bell size={14} strokeWidth={2} fill="white" className="text-white" />
+        },
+        invoices: {
+            bgColor: "bg-green-50 border border-green-500!",
+            icon: <HandCoins size={15} strokeWidth={2} className="text-emerald-500"/>
         }
     };
 
     return (
         <div className={`w-full! h-full! p-2 flex items-start cursor-pointer rounded-md flex-row gap-3! ${isSeen ? "bg-slate-50" : "bg-white hover:bg-slate-100!"}`}>
-            <div className={`flex p-2.5! rounded-md ${stylesPerType[type].bgColor}`}>
+            <div className={`flex p-1.5! rounded-full ${stylesPerType[type].bgColor}`}>
                 {stylesPerType[type].icon}
             </div>
 

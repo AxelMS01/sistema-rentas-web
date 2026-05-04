@@ -116,7 +116,7 @@ export default function useNotifications(role, userId) {
     }, []);
 
     return {
-        isDataLoading: isLoading,
+        loadingNotifs: isLoading,
         newNotifs: newNotifs,
         weekNotifs: weekNotifs,
         monthNotifs: monthNotifs,
