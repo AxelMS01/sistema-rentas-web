@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Settings, Bell, X, Eraser, LogOut, Menu } from "lucide-react";
+import { Settings, Bell, X, Eraser, LogOut, Menu, House, LayoutDashboard, ClipboardCheck, MessageCircleWarning, FileUser } from "lucide-react";
 import { supabase } from "../../config/supabase-client";
 import useUser from "../../stores/user-store";
 import toast, { Toaster } from "react-hot-toast";
@@ -9,6 +9,7 @@ import NotificationBox from "../notifications/Notifications";
 import { Button, Popover } from "flowbite-react";
 import { Dropdown, DropdownItem } from "flowbite-react";
 import Notifications from "../notifications/Notifications";
+import NavbarMobileLink from "./NavbarMobileLink";
 
 const Navbar = () => {
   const location = useLocation();
@@ -65,15 +66,6 @@ const Navbar = () => {
     };
 
     getNotifs();
-
-    const handleClickOutside = (event) => {
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
-        setShowUserMenu(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handlePaymentChange = (e) => {
@@ -120,9 +112,10 @@ const Navbar = () => {
     <>
       <Toaster />
       <nav
-        className="flex bg-white border-bottom py-2 px-3 px-md-4 sticky-top shadow-sm items-center! justify-between! z-9 min-h-20 w-full"
+        className="flex flex-col gap-3 items-center! justify-center! bg-white border-bottom sm:py-2 py-3 px-4 sticky-top shadow-sm z-9 min-h-20 w-full"
         style={{ zIndex: 9, minHeight: "80px" }}
       >
+
         <div className="w-full flex flex-row items-center justify-between">
           {/* Logo */}
           <div className="d-flex align-items-center">
@@ -139,7 +132,7 @@ const Navbar = () => {
 
           {/* Links Collapse */}
           {!isTenant && (
-            <div className={`lg:flex hidden justify-content-center w-lg-auto ${isNavOpen ? 'lg:hidden flex mt-4 pb-3' : ''}`}>
+            <div className={`md:flex hidden justify-content-center w-lg-auto ${isNavOpen ? 'lg:hidden flex mt-4 pb-3' : ''}`}>
               <div className="flex! flex-row! align-items-center gap-3 gap-lg-4 mx-auto bg-light px-4 py-3 py-lg-2 rounded-4" style={{ borderRadius: isNavOpen ? '1rem' : '50rem' }}>
                 <Link to="/system/viviendas" onClick={() => setIsNavOpen(false)} className={`text-decoration-none small font-normal ${isActive("/system/viviendas")}`}>
                   Viviendas
@@ -177,7 +170,7 @@ const Navbar = () => {
 
               {showUserMenu && (
                 <div
-                  className="position-absolute inset-e-0 mt-2 bg-white border rounded shadow-sm"
+                  className="md:flex hidden flex-col position-absolute inset-e-0 mt-2 mr-2 bg-white border rounded shadow-sm"
                   style={{ minWidth: "150px", zIndex: 1100 }}
                 >
                   <button
@@ -200,20 +193,29 @@ const Navbar = () => {
                 </div>
               )}
             </div>
-
-            {/* Mobile Toggler */}
-            {!isTenant && (
-              <button
-                className="navbar-toggler border-0 px-1 ms-1 d-lg-none"
-                type="button"
-                onClick={() => setIsNavOpen(!isNavOpen)}
-                style={{ boxShadow: "none" }}
-              >
-                {isNavOpen ? <X size={28} className="text-dark" /> : <span className="navbar-toggler-icon"></span>}
-              </button>
-            )}
           </div>
         </div>
+
+        {/* Route links for small screen sizes */}
+        {showUserMenu && (
+          <div className="md:hidden flex flex-col border border-slate-200 w-full align-items-center gap-3 gap-lg-4 mx-auto bg-light px-4 py-3 py-lg-2 rounded-4" style={{ borderRadius: isNavOpen ? '1rem' : '50rem' }}>
+            <NavbarMobileLink route="/system/viviendas" label="Viviendas" onClick={() => setShowUserMenu(false)} isActive={isActive("/system/viviendas")} icon={<House size={20} />} />
+
+            <NavbarMobileLink route="/system/dashboard" label="Dashboard" onClick={() => setShowUserMenu(false)} isActive={isActive("/system/dashboard")} icon={<LayoutDashboard size={20} />} />
+
+            <NavbarMobileLink route="/system/reportes" label="Reportes" onClick={() => setShowUserMenu(false)} isActive={isActive("/system/reportes")} icon={<ClipboardCheck size={20} />} />
+
+            <NavbarMobileLink route="/system/incidencias" label="Incidencias" onClick={() => setShowUserMenu(false)} isActive={isActive("/system/incidencias")} icon={<MessageCircleWarning size={20} />} />
+
+            <NavbarMobileLink route="/system/contratos" label="Contratos" onClick={() => setShowUserMenu(false)} isActive={isActive("/system/contratos")} icon={<FileUser size={20} />} />
+
+            <div className="w-full h-px bg-slate-300"></div>
+
+            <NavbarMobileLink route="/system/configuracion" label="Configuración" onClick={() => setShowUserMenu(false)} isActive={isActive("/system/configuracion")} icon={<Settings size={20} />} />
+
+            <NavbarMobileLink route="/login" label="Cerrar sesión" onClick={handleLogout} isActive={isActive("/")} icon={<LogOut size={20} />} />
+          </div>
+        )}
       </nav>
     </>
   );
