@@ -91,8 +91,14 @@ export function DocumentoPagare({ pagareInfo, ownerInfo, tenantInfo, guarantorIn
                                         <Text style={estilos.cuerpo}>
                                             Debe(mos) y pagare(mos) incondicionalmente por este Pagare a la orden de:
                                             <Text style={estilos.textoChicoGrueso}> {ownerInfo.name} {ownerInfo.father_surname} {ownerInfo.mother_surname}</Text>,
-                                            el dia: <Text style={estilos.textoChicoGrueso}> {fechaEscrita}</Text>,
+                                            el dia: <Text style={estilos.textoChicoGrueso}> {fechaEscrita}</Text>.
+                                        </Text>
+
+                                        <Text style={estilos.cuerpo}>
                                             C. {apartmentInfo.street} #{apartmentInfo.ext_num}, {apartmentInfo.division}, {apartmentInfo.city}.
+                                        </Text>
+
+                                        <Text style={estilos.cuerpo}>
                                             La cantidad de: <Text style={{ fontSize: 7, fontWeight: 600, textDecoration: "underline" }}>{numeroEscrito(pagareInfo.monthlyamount)} pesos 00/100 MXN</Text>,
                                             valor recibido a mi (nuestra) entera satisfaccion. Este Pagare forma parte de una serie numerada del
                                             <Text style={estilos.textoChicoGrueso}>1</Text> al <Text style={estilos.textoChicoGrueso}>{contractDuration} </Text>
