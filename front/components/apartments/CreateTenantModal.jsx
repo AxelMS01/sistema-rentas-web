@@ -1,6 +1,6 @@
-import { Button, FileInput, Label, Modal, ModalBody, ModalHeader, TextInput } from "flowbite-react";
+import { Button, Modal, ModalBody, ModalHeader } from "flowbite-react";
 import { useState } from "react";
-import useUser from "../../stores/user-store";
+import toast from "react-hot-toast";
 import { supabase } from "../../config/supabase-client";
 
 /**
@@ -13,25 +13,38 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
     const [motherSurname, setMotherSurname] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [email, setEmail] = useState("");
-    const [govIdImg, setGovIdImg] = useState([]);
+    const [ineFront, setIneFront] = useState(null);
+    const [ineBack, setIneBack] = useState(null);
     const [password, setPassword] = useState("");
 
-    const loggedUserId = useUser((state) => state.loggedUser);
-    var newUserId;
-
     async function handleSaveData() {
+        if (!name.trim() || !fatherSurname.trim() || !motherSurname.trim() || !phoneNumber.trim() || !email.trim() || !password.trim()) {
+            toast.error("Completa todos los campos obligatorios.");
+            return;
+        }
+
+        if (password.trim().length < 6) {
+            toast.error("La contraseña debe tener al menos 6 caracteres.");
+            return;
+        }
+
+        if (!ineFront || !ineBack) {
+            toast.error("Por favor, sube la foto del frente y del reverso de la identificación.");
+            return;
+        }
+
         try {
-            const { data: newUserData, error: newUserError } = await supabase.auth.signUp({
+            const { error: newUserError } = await supabase.auth.signUp({
                 email: email.trim(),
                 password: password.trim(),
                 options: {
                     data: {
                         user_type: "tenant",
-                        name: name,
-                        father_surname: fatherSurname,
-                        mother_surname: motherSurname,
-                        phone: phoneNumber,
-                        email: email,
+                        name: name.trim(),
+                        father_surname: fatherSurname.trim(),
+                        mother_surname: motherSurname.trim(),
+                        phone: phoneNumber.trim(),
+                        email: email.trim(),
                         role: "tenant",
                         owner_id: ownerId,
                         apartment_id: apartmentId,
@@ -48,9 +61,11 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
                 .eq("apartment_id", apartmentId);
 
             if (tenantError) throw tenantError;
-            
-            const tableTenantId = tentantTableInfo[0].id;
-            console.log("tenant table id:", tableTenantId);
+
+            const tableTenantId = tentantTableInfo?.[0]?.id;
+            if (!tableTenantId) {
+                throw new Error("No se pudo encontrar el arrendatario recien creado.");
+            }
 
             const { error: updateApartmentError } = await supabase
                 .from("apartments")
@@ -61,9 +76,9 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
 
             if (updateApartmentError) throw updateApartmentError;
 
-            // An array of promises that upload files to the gov_id_images file bucket.
-            const fileUploadPromises = Array.from(govIdImg).map(async (image, id) => {
-                const { data, error } = await supabase
+            const imagesToUpload = [ineFront, ineBack];
+            const fileUploadPromises = imagesToUpload.map(async (image, id) => {
+                const { error } = await supabase
                     .storage
                     .from("gov_id_images")
                     .upload(`${tableTenantId}/govid${id}`, image);
@@ -72,20 +87,27 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
             });
 
             await Promise.all(fileUploadPromises);
+            onCreateSuccess();
         } catch (error) {
             console.log(error);
-        } finally {
-            onCreateSuccess();
-        };
+            toast.error(error.message || "No fue posible crear la cuenta del arrendatario.");
+        }
     };
 
-    const handleFileChange = (e) => {
-        const newFiles = [];
-        for (let i = 0; i < e.target.files.length; i++) {
-            newFiles.push(e.target.files[i]);
-        };
+    const handleIneFrontChange = (e) => {
+        if (e.target.files.length > 0) {
+            setIneFront(e.target.files[0]);
+        } else {
+            setIneFront(null);
+        }
+    };
 
-        setGovIdImg(newFiles);
+    const handleIneBackChange = (e) => {
+        if (e.target.files.length > 0) {
+            setIneBack(e.target.files[0]);
+        } else {
+            setIneBack(null);
+        }
     };
 
     return (
@@ -94,13 +116,15 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
                 <ModalHeader />
                 <ModalBody>
                     <div className="space-y-6!">
-                        <h3 className="text-2xl! font-semibold! tracking-tight text-gray-900 dark:text-white">Nueva cuenta para el arrendatario</h3>
+                        <h3 className="text-2xl! font-semibold! tracking-tight text-slate-900">Nueva cuenta para el arrendatario</h3>
+
                         <div>
                             <div className="mb-2 block">
-                                <Label htmlFor="email">Nombre(s)</Label>
+                                <label htmlFor="tenant-name" className="form-label fw-semibold text-dark">Nombre(s)</label>
                             </div>
-                            <TextInput
-                                className="text-sm"
+                            <input
+                                id="tenant-name"
+                                className="form-control"
                                 type="text"
                                 placeholder="Nombre(s)"
                                 value={name}
@@ -111,10 +135,11 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
 
                         <div>
                             <div className="mb-2 block">
-                                <Label htmlFor="password">Apellido paterno</Label>
+                                <label htmlFor="tenant-father-surname" className="form-label fw-semibold text-dark">Apellido Paterno</label>
                             </div>
-                            <TextInput
-                                className="text-sm"
+                            <input
+                                id="tenant-father-surname"
+                                className="form-control"
                                 type="text"
                                 placeholder="Apellido paterno"
                                 value={fatherSurname}
@@ -125,10 +150,11 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
 
                         <div>
                             <div className="mb-2 block">
-                                <Label htmlFor="password">Apellido materno</Label>
+                                <label htmlFor="tenant-mother-surname" className="form-label fw-semibold text-dark">Apellido Materno</label>
                             </div>
-                            <TextInput
-                                className="text-sm"
+                            <input
+                                id="tenant-mother-surname"
+                                className="form-control"
                                 type="text"
                                 placeholder="Apellido materno"
                                 value={motherSurname}
@@ -139,12 +165,13 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
 
                         <div>
                             <div className="mb-2 block">
-                                <Label htmlFor="password">Número de teléfono</Label>
+                                <label htmlFor="tenant-phone" className="form-label fw-semibold text-dark">Número de Teléfono</label>
                             </div>
-                            <TextInput
-                                className="text-sm"
+                            <input
+                                id="tenant-phone"
+                                className="form-control"
                                 type="tel"
-                                placeholder="Número de teléfono"
+                                placeholder="Numero de telefono"
                                 value={phoneNumber}
                                 onChange={(e) => setPhoneNumber(e.target.value)}
                                 required
@@ -153,12 +180,13 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
 
                         <div>
                             <div className="mb-2 block">
-                                <Label htmlFor="password">Correo electrónico</Label>
+                                <label htmlFor="tenant-email" className="form-label fw-semibold text-dark">Correo Electrónico</label>
                             </div>
-                            <TextInput
-                                className="text-sm"
+                            <input
+                                id="tenant-email"
+                                className="form-control"
                                 type="text"
-                                placeholder="Correo electrónico"
+                                placeholder="Correo electronico"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
@@ -167,12 +195,13 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
 
                         <div>
                             <div className="mb-2 block">
-                                <Label htmlFor="">Contraseña</Label>
+                                <label htmlFor="tenant-password" className="form-label fw-semibold text-dark">Contraseña</label>
                             </div>
-                            <TextInput
-                                className="text-sm"
-                                type="text"
-                                placeholder="Contraseña"
+                            <input
+                                id="tenant-password"
+                                className="form-control"
+                                type="password"
+                                placeholder="Contrasena"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
@@ -181,17 +210,28 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
 
                         <div>
                             <div className="mb-2 block">
-                                <Label htmlFor="file-input">Identificación oficial/Credencial de estudiante</Label>
+                                <label htmlFor="file-input-front" className="form-label fw-semibold text-dark">Identificación Oficial/Credencial de Estudiante - Frente</label>
                             </div>
-                            <FileInput
-                                id="file-input"
-                                className="text-sm!"
-                                placeholder="Subir archivos..."
-                                onChange={handleFileChange}
+                            <input
+                                id="file-input-front"
+                                className="form-control"
+                                type="file"
+                                onChange={handleIneFrontChange}
                                 required
-                                max={2}
-                                size="xs"
-                                multiple
+                                accept="image/png, image/jpeg"
+                            />
+                        </div>
+
+                        <div>
+                            <div className="mb-2 block">
+                                <label htmlFor="file-input-back" className="form-label fw-semibold text-dark">Identificación Oficial/Credencial de Estudiante - Reverso</label>
+                            </div>
+                            <input
+                                id="file-input-back"
+                                className="form-control"
+                                type="file"
+                                onChange={handleIneBackChange}
+                                required
                                 accept="image/png, image/jpeg"
                             />
                         </div>

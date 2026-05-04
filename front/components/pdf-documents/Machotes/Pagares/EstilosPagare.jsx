@@ -64,13 +64,18 @@ const estilos = StyleSheet.create({
         flexDirection: "row",
         gap: 5,
         justifyContent: "flex-end",
-        justifySelf: "flex-end",
+        alignSelf: "stretch",
+    },
+    cuerpoContenedor: {
+        alignSelf: "stretch",
+        gap: 2,
+        paddingRight: 6,
     },
     cuerpo: {
         fontSize: 8,
         lineHeight: "150%",
-        flexWrap: "wrap",
-        textOverflow: "ellipsis",
+        textAlign: "justify",
+        flexShrink: 1,
     },
     parteInferior: {
         display: "flex",
