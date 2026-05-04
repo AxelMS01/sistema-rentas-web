@@ -11,7 +11,6 @@ import { DocumentoContrato } from "../../../components/pdf-documents/Machotes/Co
 import ViviendaForm from "../Forms/Viviendaform";
 import EditApartmentModal from "../Forms/Editarform";
 import ContractWizardModal from "../Forms/ContratoWizardform";
-import { Modal } from 'bootstrap';
 import { PDFViewer, Page, Document, Text, View } from '@react-pdf/renderer';
 import useUser from "../../../stores/user-store";
 import NewApartmentModal from "../../../components/apartments/NewApartmentModal";
@@ -49,16 +48,6 @@ const Viviendas = () => {
     setActionCompleted(actionCompleted + 1);
     toast.success("Vivienda eliminada correctamente");
   };
-
-  useEffect(() => {
-    if (!selectedApartment) return;
-
-    const modalEl = document.getElementById('editModal');
-    if (!modalEl) return;
-
-    const modal = new Modal(modalEl);
-    modal.show();
-  }, [selectedApartment]);
 
   useEffect(() => {
     setPaginaActual(1); // Reset to first page on filter change

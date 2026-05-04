@@ -45,7 +45,7 @@ export function DecimaClausula({
                     <Text style={estilos.textoBold}>EL ARRENDADOR</Text>
 
                     <View style={estilos.contenedorFirmaImg}>
-                        {isActive && (
+                        {isActive && signatureOwner && (
                             <Image src={signatureOwner} />
                         )}
                     </View>
@@ -59,7 +59,7 @@ export function DecimaClausula({
                     <Text style={estilos.textoBold}>EL ARRENDATARIO</Text>
 
                     <View style={estilos.contenedorFirmaImg}>
-                        {isActive && (
+                        {isActive && signatureTenant && (
                             <Image src={signatureTenant} />
                         )}
                     </View>
