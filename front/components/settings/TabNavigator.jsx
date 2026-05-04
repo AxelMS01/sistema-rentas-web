@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ProfileTab from "./ProfileTab";
-import { CreditCard, HandCoins, Settings, Signature, UserRound } from "lucide-react";
+import { Bell, CreditCard, HandCoins, Settings, Signature, UserRound } from "lucide-react";
 
 export default function TabNavigator({ onTabChange }) {
     const [activeTab, setActiveTab] = useState("profile");
@@ -38,6 +38,13 @@ export default function TabNavigator({ onTabChange }) {
                 isActive={activeTab === "signature"}
                 icon={<Signature size={18} strokeWidth={activeTab === "signature" ? 2.5 : 2} />}
                 onClick={() => handleTabChange("signature")}
+            />
+
+            <ProfileTab
+                tabName="Todas mis notificaciones"
+                isActive={activeTab === "notifications"}
+                icon={<Bell size={18} strokeWidth={activeTab === "signature" ? 2.5 : 2} />}
+                onClick={() => handleTabChange("notifications")}
             />
         </div>
     )

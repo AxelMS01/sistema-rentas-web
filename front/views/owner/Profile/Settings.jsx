@@ -8,10 +8,14 @@ import PaymentIntegration from "../../../components/settings/PaymentIntegration"
 import ProfileTab from "../../../components/settings/ProfileTab";
 import { Button, Label, Spinner } from "flowbite-react";
 import SignatureSection from "../../../components/settings/Signature";
+import NotificationsSection from "../../../components/settings/NotificationsSection";
 import LoadingStatus from "../../../components/LoadingStatus";
+import { useLocation } from "react-router-dom";
 
 function OwnerProfile() {
-    const [activeTab, setActiveTab] = useState("profile");
+    const location = useLocation();
+
+    const [activeTab, setActiveTab] = useState(location.state ? location.state.openTab : "profile");
     const [successfulAction, setSuccessfulAction] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -127,6 +131,12 @@ function OwnerProfile() {
                         <SignatureSection
                             defaultSignUrl={ownerInfo.signatureUrl}
                             onUpdateSuccess={() => setSuccessfulAction(successfulAction + 1)}
+                        />
+                    )}
+
+                    {activeTab === "notifications" && (
+                        <NotificationsSection
+
                         />
                     )}
                 </div>

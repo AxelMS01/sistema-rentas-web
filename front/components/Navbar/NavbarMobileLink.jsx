@@ -1,8 +1,6 @@
 import { Link } from "react-router-dom";
 
 function NavbarMobileLink({ route, icon, label, isActive, onClick }) {
-    console.log(isActive);
-
     return (
         <div className={`flex w-full flex-row gap-2 items-center ${isActive}`}>
             {icon}

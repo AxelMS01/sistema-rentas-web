@@ -55,8 +55,6 @@ const Navbar = () => {
 
         if (error) throw error;
 
-        console.log("Data:", data);
-
         setNotifications(data);
       } catch (error) {
         console.log(error);
