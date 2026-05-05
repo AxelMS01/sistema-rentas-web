@@ -23,8 +23,6 @@ export default function useNewNotifications(role, userId) {
 
                 if (error) throw error;
 
-                console.log(data);
-
                 setNewNotifs(data);
             } catch (error) {
                 console.log(error);

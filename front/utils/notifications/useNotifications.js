@@ -16,7 +16,7 @@ export default function useNotifications(role, userId) {
     const lastMonday = previousMonday(currentDate).toISOString();
 
     // Create a date for the first day of the month.
-    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString();
 
     // Stateful variables to save the fetched notifications from the database.
     const [newNotifs, setNewNotifs] = useState([]);
@@ -34,7 +34,7 @@ export default function useNotifications(role, userId) {
                 .from("notifications")
                 .select()
                 .eq("seen", false)
-                .eq(role === "owner" ? ownerid : tenantid, userId);
+                .eq(role === "owner" ? "ownerid" : "tenantid", userId);
 
             if (error) throw error;
 
@@ -49,7 +49,7 @@ export default function useNotifications(role, userId) {
             const { data, error } = await supabase
                 .from("notifications")
                 .select()
-                .eq(role === "owner" ? ownerid : tenantid, userId)
+                .eq(role === "owner" ? "ownerid" : "tenantid", userId)
                 .gte("created_at", lastMonday);
 
             if (error) throw error;
@@ -66,7 +66,7 @@ export default function useNotifications(role, userId) {
             const { data, error } = await supabase
                 .from("notifications")
                 .select()
-                .eq(role === "owner" ? ownerid : tenantid, userId)
+                .eq(role === "owner" ? "ownerid" : "tenantid", userId)
                 .gte("created_at", firstDayOfMonth)
                 .lt("created_at", lastMonday);
 
@@ -84,8 +84,10 @@ export default function useNotifications(role, userId) {
             const { data, error } = await supabase
                 .from("notifications")
                 .select()
-                .eq(role === "owner" ? ownerid : tenantid, userId)
-                .lt("created_at", firstDayOfMonth);
+                .eq(role === "owner" ? "ownerid" : "tenantid", userId)
+                .eq("seen", true)
+                .lt("created_at", firstDayOfMonth)
+                .limit(10);
 
             if (error) throw error;
 
