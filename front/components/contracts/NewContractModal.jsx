@@ -55,7 +55,6 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
 
                 if (error) throw error;
 
-                console.log(data);
                 setApartmentOptions(data);
             } catch (error) {
                 console.log(error);

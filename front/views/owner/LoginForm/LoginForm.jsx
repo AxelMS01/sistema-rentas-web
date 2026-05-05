@@ -112,21 +112,21 @@ const LoginForm = () => {
   };
 
   return (
-    <div className='flex w-full min-h-screen bg-[url("/src/assets/fondo01.png")] bg-no-repeat bg-cover items-center justify-center'>
+    <div className='flex w-full min-h-screen bg-[url("/src/assets/fondo01.png")] bg-no-repeat bg-cover px-8! items-center justify-center'>
       <Toaster />
 
-      <div className={`absolute bg-sky-950 opacity-80 w-full h-screen`}>
+      <div className={`absolute bg-sky-950 opacity-80 w-full h-screen px-8! flex items-center justify-center`}>
       </div>
 
-      <div className={`flex flex-col z-10 gap-2 bg-white max-w-md px-8 py-8 rounded-2xl`}>
+      <div className={`flex flex-col z-10 gap-2 bg-white max-w-md px-8 py-8 rounded-2xl w-full`}>
         <form onSubmit={handleLogin} className='w-auto! flex flex-col gap-4'>
           <p className="text-2xl! font-semibold! text-center">Administración de Rentas</p>
 
-          <div className="flex flex-row w-full justify-center items-center gap-2">
+          <div className="flex sm:flex-row flex-col w-full justify-center items-center gap-2">
             <button
               type="button"
               onClick={() => setRole("owner")}
-              className={`flex flex-row gap-2 px-4 py-2 items-center text-nowrap justify-center rounded-lg! text-sm! ${role === "owner" ? "bg-sky-600 text-white font-medium" : "bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-900"}`}
+              className={`flex flex-row gap-2 w-full px-4 py-2 items-center text-nowrap justify-center rounded-lg! text-sm! ${role === "owner" ? "bg-sky-600 text-white font-medium" : "bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-900"}`}
             >
               <ShieldUser size={18} strokeWidth={2} />
               Soy un propietario
@@ -135,7 +135,7 @@ const LoginForm = () => {
             <button
               type="button"
               onClick={() => setRole("tenant")}
-              className={`flex flex-row gap-2 px-4 py-2 items-center text-nowrap justify-center rounded-lg! text-sm! ${role === "tenant" ? "bg-sky-600 text-white font-medium" : "bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-900"}`}
+              className={`flex flex-row gap-2 px-4 w-full py-2 items-center text-nowrap justify-center rounded-lg! text-sm! ${role === "tenant" ? "bg-sky-600 text-white font-medium" : "bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-900"}`}
             >
               <UserRoundKey size={18} strokeWidth={2} />
               Soy un inquilino

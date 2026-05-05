@@ -6,12 +6,18 @@ import Globals from "../../../components/settings/Globals";
 import Profile from "../../../components/settings/Profile";
 import PaymentIntegration from "../../../components/settings/PaymentIntegration";
 import ProfileTab from "../../../components/settings/ProfileTab";
-import { Button, Label } from "flowbite-react";
+import { Button, Label, Spinner } from "flowbite-react";
 import SignatureSection from "../../../components/settings/Signature";
+import NotificationsSection from "../../../components/settings/NotificationsSection";
+import LoadingStatus from "../../../components/LoadingStatus";
+import { useLocation } from "react-router-dom";
 
 function OwnerProfile() {
-    const [activeTab, setActiveTab] = useState("profile");
+    const location = useLocation();
+
+    const [activeTab, setActiveTab] = useState(location.state ? location.state.openTab : "profile");
     const [successfulAction, setSuccessfulAction] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
 
     const [ownerInfo, setOwnerInfo] = useState({
         name: "",
@@ -36,35 +42,40 @@ function OwnerProfile() {
 
     useEffect(() => {
         const fetchProfileData = async () => {
-            const { data, error } = await supabase
-                .from("owners")
-                .select()
-                .eq("id", loggedUserId);
+            try {
+                const { data, error } = await supabase
+                    .from("owners")
+                    .select()
+                    .eq("id", loggedUserId);
 
-            if (error) throw error;
+                if (error) throw error;
 
-            const userData = data[0];
-            console.log(userData.state)
+                const userData = data[0];
 
-            setOwnerInfo({
-                name: userData.name,
-                fatherSurname: userData.father_surname,
-                motherSurname: userData.mother_surname,
-                email: userData.email,
-                phoneNumber: userData.phone,
-                street: userData.street,
-                division: userData.division,
-                postalCode: userData.postal_code,
-                extNum: userData.ext_num,
-                city: userData.city,
-                state: userData.state,
-                signatureUrl: userData.signature_url,
-                chargeFee: userData.charge_fee,
-                minimumContractDur: userData.minimum_duration,
-                governmentid: userData.governmentid,
-                card1: userData.card1,
+                setOwnerInfo({
+                    name: userData.name,
+                    fatherSurname: userData.father_surname,
+                    motherSurname: userData.mother_surname,
+                    email: userData.email,
+                    phoneNumber: userData.phone,
+                    street: userData.street,
+                    division: userData.division,
+                    postalCode: userData.postal_code,
+                    extNum: userData.ext_num,
+                    city: userData.city,
+                    state: userData.state,
+                    signatureUrl: userData.signature_url,
+                    chargeFee: userData.charge_fee,
+                    minimumContractDur: userData.minimum_duration,
+                    governmentid: userData.governmentid,
+                    card1: userData.card1,
 
-            })
+                })
+            } catch (error) {
+                console.log(error);
+            } finally {
+                setIsLoading(false);
+            }
         };
 
         fetchProfileData();
@@ -74,46 +85,62 @@ function OwnerProfile() {
         <div className="w-full min-h-screen flex flex-col gap-8! lg:px-20! sm:px-16! px-8! py-10!">
             <h1 className="text-start font-semibold! tracking-tight">Configuración</h1>
 
-            <div className="flex lg:flex-row flex-col gap-8 bg-white border border-slate-200 p-6! rounded-2xl">
-                <TabNavigator onTabChange={setActiveTab} />
+            {isLoading && (
+                <div className="w-full my-10 items-center justify-center flex flex-row gap-2 self-center">
+                    <p className="text-base! font-medium text-slate-900">Cargando información...</p>
 
-                {activeTab === "profile" && (
-                    <Profile
-                        name={ownerInfo.name}
-                        fatherSurname={ownerInfo.fatherSurname}
-                        motherSurname={ownerInfo.motherSurname}
-                        email={ownerInfo.email}
-                        phoneNumber={ownerInfo.phoneNumber}
-                        street={ownerInfo.street}
-                        governmentid={ownerInfo.governmentid}
-                        extNum={ownerInfo.extNum}
-                        division={ownerInfo.division}
-                        city={ownerInfo.city}
-                        state={ownerInfo.state}
-                        onEditSuccess={() => setSuccessfulAction(successfulAction + 1)}
-                    />
-                )}
+                    <Spinner size="md" />
+                </div>
+            )}
 
-                {activeTab === "payments" && (
-                    <PaymentIntegration
-                        card1={ownerInfo.card1}
-                    />
-                )}
+            {!isLoading && (
+                <div className="flex lg:flex-row flex-col gap-8 bg-white border border-slate-200 p-6! rounded-2xl">
+                    <TabNavigator onTabChange={setActiveTab} />
 
-                {activeTab === "globals" && (
-                    <Globals
-                        chargeFee={ownerInfo.chargeFee}
-                        minMonths={ownerInfo.minimumContractDur}
-                    />
-                )}
+                    {activeTab === "profile" && (
+                        <Profile
+                            name={ownerInfo.name}
+                            fatherSurname={ownerInfo.fatherSurname}
+                            motherSurname={ownerInfo.motherSurname}
+                            email={ownerInfo.email}
+                            phoneNumber={ownerInfo.phoneNumber}
+                            street={ownerInfo.street}
+                            governmentid={ownerInfo.governmentid}
+                            extNum={ownerInfo.extNum}
+                            division={ownerInfo.division}
+                            city={ownerInfo.city}
+                            state={ownerInfo.state}
+                            onEditSuccess={() => setSuccessfulAction(successfulAction + 1)}
+                        />
+                    )}
 
-                {activeTab === "signature" && (
-                    <SignatureSection
-                        defaultSignUrl={ownerInfo.signatureUrl}
-                        onUpdateSuccess={() => setSuccessfulAction(successfulAction + 1)}
-                    />
-                )}
-            </div>
+                    {activeTab === "payments" && (
+                        <PaymentIntegration
+                            card1={ownerInfo.card1}
+                        />
+                    )}
+
+                    {activeTab === "globals" && (
+                        <Globals
+                            chargeFee={ownerInfo.chargeFee}
+                            minMonths={ownerInfo.minimumContractDur}
+                        />
+                    )}
+
+                    {activeTab === "signature" && (
+                        <SignatureSection
+                            defaultSignUrl={ownerInfo.signatureUrl}
+                            onUpdateSuccess={() => setSuccessfulAction(successfulAction + 1)}
+                        />
+                    )}
+
+                    {activeTab === "notifications" && (
+                        <NotificationsSection
+
+                        />
+                    )}
+                </div>
+            )}
         </div>
     );
 };
