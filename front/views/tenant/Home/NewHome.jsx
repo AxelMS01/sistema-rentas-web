@@ -90,11 +90,11 @@ const Home = () => {
                     <div className="w-full min-h-screen flex flex-col gap-4! lg:px-20! sm:px-16! px-8! py-10">
                         <div className="flex w-full md:flex-row flex-col justify-between md:items-center items-start gap-6">
                             <div className="header flex flex-col gap-2">
-                                <h1 className="text-start font-light fw-semibold tracking-tight">¡Bienvenido, {tenantInfo.name}!</h1>
+                                <h1 className="text-start font-light fw-semibold text-3xl! tracking-tight">¡Bienvenido, {tenantInfo.name}!</h1>
                                 <p className="text-base font-normal text-slate-500 text-start">¿Qué deseas hacer hoy?</p>
                             </div>
 
-                            <div className="flex flex-row gap-2 items-center justify-center px-3 py-2 bg-sky-600 border border-sky-700 text-white rounded-md self-start text-sm! font-medium">
+                            <div className="flex flex-row gap-2 items-center justify-center px-3 py-2 bg-sky-100 border-[1.5px] border-sky-500! text-sky-600 rounded-md self-start text-sm! font-medium">
                                 <Sun strokeWidth={2} size={18} />
                                 Hoy es {format(todayDate, "PPP", { locale: es })}
                             </div>

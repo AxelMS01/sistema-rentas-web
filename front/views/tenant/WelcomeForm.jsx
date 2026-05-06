@@ -125,7 +125,7 @@ export default function WelcomeForm({ firstName }) {
 
                     <div className="form-content flex flex-col max-w-xl w-auto bg-white rounded-xl gap-8">
                         <div className="welcome-message flex flex-col gap-1 items-start p-8 border-b border-b-slate-200">
-                            <h1 className="text-2xl! font-semibold!">¡Bienvenido, {firstName}</h1>
+                            <h1 className="text-2xl! font-semibold!">¡Bienvenido, {location.name}!</h1>
                             <p className="text-slate-600 text-start">Para empezar a usar el sistema, por favor, completa el siguiente formulario para terminar de generar tu contrato.</p>
                         </div>
 
