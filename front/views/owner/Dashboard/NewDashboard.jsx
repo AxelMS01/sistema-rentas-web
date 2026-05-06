@@ -109,7 +109,7 @@ export default function NewDashboard() {
 
                     <div className="w-full grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-6">
                         <div className="lg:col-span-3 sm:col-span-4 w-full!">
-                            <ChartCard title="Ingreso mensual">
+                            <ChartCard title="Gráfica de ingresos mensuales">
                                 <MonthlyIncomeChart />
                             </ChartCard>
                         </div>
