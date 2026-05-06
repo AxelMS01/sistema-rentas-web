@@ -139,7 +139,27 @@ const Navbar = () => {
               <Notifications notificationList={newNotifs} />
             )}
 
-            <div className="mt-2" ref={userMenuRef}>
+            <Popover className="max-w-80 rounded-md border p-2 border-slate-200 shadow-xl bg-white" content={
+              <div className="flex flex-col! gap-1 items-start">
+                <button
+                  type="button"
+                  className="btn btn-link hover:bg-slate-100! flex! flex-row gap-1.5 items-center! text-sm! text-decoration-none text-dark w-100 text-start px-2 py-1"
+                  onClick={!isTenant ? () => navigate("/system/configuracion") : ""}
+                >
+                  <Settings size={16} />
+                  Configuración
+                </button>
+
+                <button
+                  type="button"
+                  className="btn btn-link hover:bg-slate-100! flex! flex-row gap-1.5 text-sm! items-center! text-decoration-none text-dark w-100 text-start px-2 py-1"
+                  onClick={handleLogout}
+                >
+                  <LogOut size={16} />
+                  Cerrar sesion
+                </button>
+              </div>
+            }>
               <button
                 type="button"
                 onClick={() => setShowUserMenu((prev) => !prev)}
@@ -147,32 +167,7 @@ const Navbar = () => {
               >
                 <Menu size={22} className="text-slate-700 hover:text-sky-600" />
               </button>
-
-              {showUserMenu && (
-                <div
-                  className="md:flex hidden flex-col position-absolute inset-e-0 mt-2 mr-2 bg-white border rounded shadow-sm"
-                  style={{ minWidth: "150px", zIndex: 1100 }}
-                >
-                  <button
-                    type="button"
-                    className="btn btn-link hover:bg-slate-100! flex! flex-row gap-1.5 items-center! text-decoration-none text-dark w-100 text-start px-3 py-2"
-                    onClick={!isTenant ? () => navigate("/system/configuracion") : ""}
-                  >
-                    <Settings size={18} />
-                    Configuración
-                  </button>
-
-                  <button
-                    type="button"
-                    className="btn btn-link hover:bg-slate-100! flex! flex-row gap-1.5 items-center! text-decoration-none text-dark w-100 text-start px-3 py-2"
-                    onClick={handleLogout}
-                  >
-                    <LogOut size={18} />
-                    Cerrar sesion
-                  </button>
-                </div>
-              )}
-            </div>
+            </Popover>
           </div>
         </div>
 
