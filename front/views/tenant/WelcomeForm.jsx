@@ -115,30 +115,17 @@ export default function WelcomeForm({ firstName }) {
         };
     };
 
-    async function handleIncorrectData() {
-        const { error } = await supabase
-            .from("notifications")
-            .insert({
-                type: "rentalcontracts",
-                tenantid: location.id,
-                ownerid: ownerInfo.id,
-                title: "Información marcada como incorrecta",
-                description: `El arrendador ${location.name} ${location.father_surname} marcó como incorrecta la información `
-            })
-        navigate("/home", { state: { welcomeFormErr: "Le notificaremos al arrendador que hubo un error. ¡Gracias!" } })
-    };
-
     return (
         <>
             {!isDataLoading && (
                 <div className="w-full min-h-screen h-auto flex flex-col items-center justify-center gap-4! lg:px-20! sm:px-16! px-8! py-10 bg-sky-600">
                     <Toaster />
 
-                    <IncorrectDataModal isModalOpen={incorrectDataModal} onCloseModal={() => setIncorrectDataModal(false)} ownerId={ownerInfo.id} tenantId={tenantInfo.id} />
+                    <IncorrectDataModal isModalOpen={incorrectDataModal} onCloseModal={() => setIncorrectDataModal(false)} ownerId={ownerInfo.id} tenantId={tenantInfo.id} tenantName={`${location.name} ${location.father_surname}`} />
 
                     <div className="form-content flex flex-col max-w-xl w-auto bg-white rounded-xl gap-8">
                         <div className="welcome-message flex flex-col gap-1 items-start p-8 border-b border-b-slate-200">
-                            <h1 className="text-2xl! font-semibold!">¡Bienvenido, {firstName}</h1>
+                            <h1 className="text-2xl! font-semibold!">¡Bienvenido, {location.name}!</h1>
                             <p className="text-slate-600 text-start">Para empezar a usar el sistema, por favor, completa el siguiente formulario para terminar de generar tu contrato.</p>
                         </div>
 
@@ -256,7 +243,7 @@ export default function WelcomeForm({ firstName }) {
                                 )}
 
                                 <Button disabled={currentStep === 4 && !signAuthorization} type="button" onClick={currentStep === 2 ? (e) => onSubmitData(e) : (currentStep === 4 ? handleFinishForm : () => setCurrentStep(currentStep + 1))} className='text-sm! w-full text-nowrap rounded-md! py-0! bg-sky-600 hover:bg-sky-700!' color="default">
-                                    {currentStep === 3 ? "Pasar a firmar" : (currentStep === 4 ? "Terminar" : "Avanzar al siguiente paso")}
+                                    {currentStep === 3 ? "Proceder a firmar" : (currentStep === 4 ? "Terminar" : "Avanzar al siguiente paso")}
                                 </Button>
                             </div>
 

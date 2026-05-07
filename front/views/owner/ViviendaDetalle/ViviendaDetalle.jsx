@@ -246,6 +246,14 @@ export default function ViviendaDetalle() {
     "https://th.bing.com/th/id/OIP.6XIv3DVREt05mi0sSNtUDgHaE8?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3";
   const isArchived = vivienda?.status === "ARCHIVED";
   const isOccupied = vivienda?.status === "OCCUPIED";
+  const canRenderContractDocuments =
+    Boolean(contractInfo?.id) &&
+    Boolean(contractInfo?.startdate) &&
+    Boolean(contractInfo?.enddate) &&
+    Boolean(ownerInfo?.name) &&
+    Boolean(tenantInfo?.name) &&
+    Boolean(guarantorInfo?.name) &&
+    Boolean(apartmentInfo?.street);
 
   const currentDate = new Date();
 
@@ -272,8 +280,6 @@ export default function ViviendaDetalle() {
             <button
               type="button"
               className="bg-sky-600 flex flex-row gap-2 px-3 py-2 rounded-md! items-center justify-center text-sm! text-white font-medium"
-              data-bs-toggle="modal"
-              data-bs-target="#tenantAccountModal"
               onClick={() => setTenantCreation(true)}
             >
               <LuSettings size={18} />
@@ -347,7 +353,7 @@ export default function ViviendaDetalle() {
                   </span>
                 </div>
 
-                {vivienda.status === "OCCUPIED" && !isDataLoading && (
+                {vivienda.status === "OCCUPIED" && !isDataLoading && canRenderContractDocuments && (
                   <div className="flex flex-col gap-4 justify-start">
                     <div className="flex md:flex-row gap-4 items-center w-full justify-between">
                       <span className="info-key">Contrato</span>

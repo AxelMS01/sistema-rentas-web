@@ -6,7 +6,7 @@ import useUser from "../../stores/user-store";
 import { supabase } from "../../config/supabase-client";
 import { AlertTriangle } from "lucide-react";
 
-export default function IncorrectDataModal({ isModalOpen, onCloseModal, contractId, tenantId, ownerId }) {
+export default function IncorrectDataModal({ isModalOpen, onCloseModal, contractId, tenantId, tenantName, ownerId }) {
     const [errDesc, setErrDesc] = useState("");
     const navigate = useNavigate();
 
@@ -18,16 +18,18 @@ export default function IncorrectDataModal({ isModalOpen, onCloseModal, contract
                 ownerid: ownerId,
                 type: "rentalcontracts",
                 title: "Solicitud de corrección de datos",
-                description: `El arrendatario solicitó una corrección de sus datos en el contrato ${contractId}`,
+                description: `El arrendatario ${tenantName} solicitó una corrección de sus datos en el contrato ${contractId}`,
                 additional_details: errDesc
             });
 
         if (error) throw error;
 
-        navigate("/", {state: {
-            welcomeFormErr: "¡Se notificó al arrendatario de la corrección!",
-            welcomeFormErrDesc: "Se pondrá en contato contigo una vez la información haya sido actualizada.",
-        }});
+        navigate("/", {
+            state: {
+                welcomeFormErr: "¡Se notificó al arrendatario de la corrección!",
+                welcomeFormErrDesc: "Se pondrá en contato contigo una vez la información haya sido actualizada.",
+            }
+        });
     }
 
     return (

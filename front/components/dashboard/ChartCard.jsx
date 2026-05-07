@@ -11,7 +11,7 @@ export default function ChartCard({ title, children }) {
                 <p className="font-normal text-base! text-slate-500">Estadísticas</p>
             </div>
 
-            <h1 className="text-xl! font-medium! text-start! text-slate-800!">{title}</h1>
+            <h1 className="text-xl! font-semibold! text-start! text-slate-800!">{title}</h1>
 
             {children}
         </div>

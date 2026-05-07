@@ -11,7 +11,7 @@ export default function Globals({
     // Divide the charge-fee in the 'type-value' format.
     const initialChargeFee = chargeFee ? chargeFee.split("-") : "";
 
-    const [chargeType, setChargeType] = useState(chargeFee ? initialChargeFee[0] : "");
+    const [chargeType, setChargeType] = useState(chargeFee ? initialChargeFee[0] : "percentage");
     const [chargeVal, setChargeVal] = useState(chargeFee ? initialChargeFee[1] : "");
     const [minimumMonths, setMinimumMonths] = useState(minMonths);
 
