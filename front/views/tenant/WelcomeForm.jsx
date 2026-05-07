@@ -243,7 +243,7 @@ export default function WelcomeForm({ firstName }) {
                                 )}
 
                                 <Button disabled={currentStep === 4 && !signAuthorization} type="button" onClick={currentStep === 2 ? (e) => onSubmitData(e) : (currentStep === 4 ? handleFinishForm : () => setCurrentStep(currentStep + 1))} className='text-sm! w-full text-nowrap rounded-md! py-0! bg-sky-600 hover:bg-sky-700!' color="default">
-                                    {currentStep === 3 ? "Pasar a firmar" : (currentStep === 4 ? "Terminar" : "Avanzar al siguiente paso")}
+                                    {currentStep === 3 ? "Proceder a firmar" : (currentStep === 4 ? "Terminar" : "Avanzar al siguiente paso")}
                                 </Button>
                             </div>
 

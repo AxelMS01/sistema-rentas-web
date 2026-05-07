@@ -112,7 +112,7 @@ const Home = () => {
                                     <p className="font-medium! text-sm! text-slate-700">Ver detalles de mi contrato</p>
                                 </div>
 
-                                <div onClick={() => navigate("/mis-incidencias")} className="w-full flex! cursor-pointer py-2 px-3 flex-row! gap-2 items-center justify-start border border-slate-200 rounded-md hover:bg-sky-100 hover:border-sky-500!">
+                                <div onClick={() => navigate("/system/mis-incidencias")} className="w-full flex! cursor-pointer py-2 px-3 flex-row! gap-2 items-center justify-start border border-slate-200 rounded-md hover:bg-sky-100 hover:border-sky-500!">
                                     <TriangleAlert size={20} />
                                     <p className="font-medium! text-sm! text-slate-700">Mis incidencias</p>
                                 </div>
