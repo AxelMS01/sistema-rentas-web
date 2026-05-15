@@ -195,7 +195,7 @@ export default function CreateTenantModal({ onCloseModal, isModalOpen, onCreateS
 
                         <div>
                             <div className="mb-2 block">
-                                <label htmlFor="tenant-password" className="form-label fw-semibold text-dark">Contraseña</label>
+                                <label htmlFor="tenant-password" className="form-label fw-semibold text-dark">Contraseña test</label>
                             </div>
                             <input
                                 id="tenant-password"
