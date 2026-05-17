@@ -383,6 +383,14 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
                             </div>
                         </div>
                     </form>
+                    {!areOptionsLoading && (
+                        <NewContractForm
+                            selectedApartmentId={apartmentId}
+                            apartmentOptions={apartmentOptions}
+                            onSubmitForm={onSubmitData}
+                            onEditData={() => ""}
+                        />
+                    )}
                 </ModalBody>
                 <ModalFooter>
                     <div className="w-full flex sm:flex-row flex-col gap-2">

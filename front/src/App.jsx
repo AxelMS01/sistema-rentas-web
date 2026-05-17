@@ -16,6 +16,7 @@ import Reportes from "../views/owner/Reportes/Reportes";
 import ProtectedRoute from "../utils/ProtectedRoute";
 import Navbar from "../components/Navbar/Navbar";
 import Home from "../views/tenant/Home/NewHome";
+import { ThemeInit } from "../.flowbite-react/init.js";
 import WelcomeForm from "../views/tenant/WelcomeForm";
 import CheckAlreadyLogged from "../utils/CheckAlreadyLogged.jsx";
 import Settings from "../views/owner/Profile/Settings";
@@ -24,44 +25,47 @@ import Settings from "../views/owner/Profile/Settings";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Login */}
-        <Route path="/*" element={
-          <CheckAlreadyLogged>
-            <Routes>
-              <Route path="/login" element={<LoginForm />} />
-              <Route path="/signup" element={<RegisterPage />} />
-              <Route path="*" element={<Navigate to="/login" />} />
-            </Routes>
-          </CheckAlreadyLogged>
-        }>
-        </Route>
+    <>
+      <ThemeInit />
+      <Router>
+        <Routes>
+          {/* Login */}
+          <Route path="/*" element={
+            <CheckAlreadyLogged>
+              <Routes>
+                <Route path="/login" element={<LoginForm />} />
+                <Route path="/signup" element={<RegisterPage />} />
+                <Route path="*" element={<Navigate to="/login" />} />
+              </Routes>
+            </CheckAlreadyLogged>
+          }>
+          </Route>
 
-        {/* Rutas Privadas: Con Navbar */}
-        <Route path="/system/*" element={
-          <ProtectedRoute>
-            <Navbar />
-            <Routes>
-              <Route index path="dashboard" element={<Dashboard />} />
-              <Route path="viviendas" element={<Viviendas />} />
-              <Route path="incidencias" element={<Incidencias />} />
-              <Route path="mis-incidencias" element={<TenantRequests />} />
-              <Route path="contratos" element={<Contratos />} />
-              <Route path="home" element={<Home />} />
-              <Route path="bienvenida" element={<WelcomeForm />} />
-              <Route path="reportes" element={<Reportes />} />
-              <Route path="contratos/:id/detalles" element={<ContractDetails />} />
-              <Route path="viviendas/:id/detalles" element={<ViviendaDetalle />} />
-              <Route path="configuracion" element={<Settings />} />
+          {/* Rutas Privadas: Con Navbar */}
+          <Route path="/system/*" element={
+            <ProtectedRoute>
+              <Navbar />
+              <Routes>
+                <Route index path="dashboard" element={<Dashboard />} />
+                <Route path="viviendas" element={<Viviendas />} />
+                <Route path="incidencias" element={<Incidencias />} />
+                <Route path="mis-incidencias" element={<TenantRequests />} />
+                <Route path="contratos" element={<Contratos />} />
+                <Route path="home" element={<Home />} />
+                <Route path="bienvenida" element={<WelcomeForm />} />
+                <Route path="reportes" element={<Reportes />} />
+                <Route path="contratos/:id/detalles" element={<ContractDetails />} />
+                <Route path="viviendas/:id/detalles" element={<ViviendaDetalle />} />
+                <Route path="configuracion" element={<Settings />} />
 
-              {/* Redirección por defecto si no encuentra la ruta (SIEMPRE AL FINAL) */}
-              <Route path="*" element={<Navigate to="/system/viviendas" />} />
-            </Routes>
-          </ProtectedRoute>
-        } />
-      </Routes >
-    </Router >
+                {/* Redirección por defecto si no encuentra la ruta (SIEMPRE AL FINAL) */}
+                <Route path="*" element={<Navigate to="/system/viviendas" />} />
+              </Routes>
+            </ProtectedRoute>
+          } />
+        </Routes >
+      </Router >
+    </>
   );
 }
 

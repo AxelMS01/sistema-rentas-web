@@ -141,7 +141,7 @@ export default function RequestsTable({
 
                                         <TableCell>
                                             <div className="w-full flex flex-col gap-2">
-                                                <div className="w-full h-auto p-4 text-nowrap bg-slate-100 border border-slate-200 rounded-lg">
+                                                <div className="w-full h-auto p-3 text-nowrap bg-slate-100 border border-slate-200 rounded-lg">
                                                     {request.description}
                                                 </div>
                                             </div>

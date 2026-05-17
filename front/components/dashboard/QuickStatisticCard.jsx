@@ -5,7 +5,7 @@ export default function QuickStatisticCard({ name, number, comparisonNumber }) {
         monthlyEarnings: {
             iconBgColor: "bg-[rgb(171,69,255,0.1)]",
             icon: <TrendingUp className="text-purple-500" size={28} />,
-            title: "Ganancias mensuales"
+            title: "Ingresos mensuales"
         },
         occupiedHousings: {
             iconBgColor: "bg-[rgb(245,51,155,0.1)]",

@@ -7,12 +7,12 @@ import { supabase } from "../../config/supabase-client";
  * Represents an edition modal for the Setting's profile section.
  */
 
-export default function EditLocationModal({ onCloseModal, isModalOpen, onEditSuccess }) {
-    const [street, setStreet] = useState("");
-    const [extNum, setExtNum]  = useState("");
-    const [division, setDivision] = useState("");
-    const [city, setCity] = useState("");
-    const [state, setState] = useState("");
+export default function EditLocationModal({ onCloseModal, isModalOpen, onEditSuccess, editionData }) {
+    const [street, setStreet] = useState(editionData.street);
+    const [extNum, setExtNum]  = useState(editionData.extNum);
+    const [division, setDivision] = useState(editionData.division);
+    const [city, setCity] = useState(editionData.city);
+    const [state, setState] = useState(editionData.state);
 
     const loggedUserId = useUser((state) => state.loggedUser);
 
