@@ -6,17 +6,16 @@ import { useState, useEffect } from "react";
 import useUser from "../../stores/user-store";
 import { supabase } from "../../config/supabase-client";
 import { UserRoundKey } from "lucide-react";
+import NewContractForm from "./NewContractForm";
 
 export default function NewContractModal({ isModalOpen, onCloseModal, onSaveContract, isOnEdit, onEditData }) {
     const loggedUserId = useUser((state) => state.loggedUser);
+    const [apartmentOptions, setApartmentOptions] = useState([]);
 
     // Inputs for the apartment selection.
     const [apartmentId, setApartmentId] = useState(-1);
     const [tenantName, setTenantName] = useState("");
     const [tenantLastName, setTenantLastName] = useState("");
-    const [apartmentOptions, setApartmentOptions] = useState([{}]);
-
-    const [selectedTenantId, setSelectedTenantId] = useState();
 
     // Inputs for the guarantor.
     const [guarantorName, setGuarantorName] = useState(onEditData ? onEditData.guarantorName : "");
@@ -32,12 +31,7 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
     const [guarantorIdFront, setGuarantorIdFront] = useState(null);
     const [guarantorIdBack, setGuarantorIdBack] = useState(null);
     const [isLinkLoading, setIsLinkLoading] = useState(true);
-    const [linkFound, setLinkFound] = useState(false);
-
-    // Inputs for the contract.
-    const [contractStart, setContractStart] = useState();
-    const [contractEnd, setContractEnd] = useState();
-    const [rentalPrice, setRentalPrice] = useState();
+    const [areOptionsLoading, setAreOptionsLoading] = useState(true);
 
     useEffect(() => {
         if (isOnEdit) {
@@ -52,55 +46,33 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
             try {
                 const { data, error } = await supabase
                     .from("apartments")
-                    .select("id, name")
+                    .select("id, name, status")
                     .eq("ownerid", loggedUserId);
 
                 if (error) throw error;
 
                 console.log(data);
-                setApartmentOptions(data);
+
+                // Show only the apartment options whose status is available.
+                const availableOptions = data.filter((apartment) => {
+                    return apartment.status === "AVAILABLE"
+                });
+
+                setApartmentOptions(availableOptions);
             } catch (error) {
                 console.log(error);
-            };
+            } finally {
+                setAreOptionsLoading(false);
+            }
         };
 
         getApartmentsOptions();
     }, [])
 
-    useEffect(() => {
-        async function updateRelatedTenant() {
-            setIsLinkLoading(true);
+    async function onSubmitData(guarantorData, apartmentId, selectedTenantId, contractStart, contractEnd, rentalPrice, e) {
+        e.preventDefault();
 
-            console.log(apartmentId);
-            try {
-                const { data, error } = await supabase
-                    .from("tenants")
-                    .select("id, name, father_surname")
-                    .eq("apartment_id", apartmentId);
-
-                if (error) throw error;
-
-                if (data.length === 0) {
-                    setLinkFound(false);
-                } else {
-                    setLinkFound(true);
-                    setSelectedTenantId(data[0].id);
-                    setTenantName(data[0].name);
-                    setTenantLastName(data[0].father_surname);
-                };
-
-            } catch (error) {
-                console.log(error);
-            } finally {
-                setIsLinkLoading(false);
-            }
-        };
-
-        updateRelatedTenant();
-    }, [apartmentId]);
-
-    async function onSubmitData() {
-        if (!guarantorName || !guarantorFatSurn || !guarantorMotSurn || !guarantorNation || !contractStart || !contractEnd || !rentalPrice) {
+        if (!guarantorData.guarantorName || !guarantorData.guarantorFatSurn || !guarantorData.guarantorMotSurn || !guarantorData.guarantorNation || !contractStart || !contractEnd || !rentalPrice) {
             toast.error("Por favor, llena todos los campos del formulario.");
             return;
         };
@@ -111,28 +83,26 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
         }
 
         async function insertNewData() {
-            const { data: guarantorData, error: guarantorError } = await supabase
+            const { data: newGuarantor, error: guarantorError } = await supabase
                 .from("guarantors")
                 .insert({
                     apartment_id: apartmentId,
-                    name: guarantorName,
-                    father_surname: guarantorFatSurn,
-                    mother_surname: guarantorMotSurn,
-                    nationality: guarantorNation,
-                    street: guarantorStreet,
-                    ext_num: guarantorExtNum,
-                    division: guarantorDivision,
-                    city: guarantorCity,
-                    state: guarantorState,
-                    phone: guarantorPhone,
+                    name: guarantorData.guarantorName,
+                    father_surname: guarantorData.guarantorFatSurn,
+                    mother_surname: guarantorData.guarantorMotSurn,
+                    nationality: guarantorData.guarantorNation,
+                    street: guarantorData.guarantorStreet,
+                    ext_num: guarantorData.guarantorExtNum,
+                    division: guarantorData.guarantorDivision,
+                    city: guarantorData.guarantorCity,
+                    state: guarantorData.guarantorState,
+                    phone: guarantorData.guarantorPhone,
                 })
                 .select();
 
             if (guarantorError) throw guarantorError;
 
-            console.log(guarantorData);
-
-            let newGuarantorId = guarantorData[0].id;
+            let newGuarantorId = newGuarantor[0].id;
 
             const guarantorFiles = [
                 { file: guarantorIdFront, suffix: "front" },
@@ -204,7 +174,7 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
 
             onSaveContract();
 
-            // Pending: update either the apartments table or tenants table to relate these elements.
+            onSaveContract();
         };
 
         // Promise chain.
@@ -419,7 +389,7 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
                         <Button className="w-full text-sm! rounded-lg! px-4! py-2!" color={"alternative"} onClick={onCloseModal}>
                             Cancelar
                         </Button>
-                        <Button className="w-full text-sm! rounded-lg! bg-sky-600 hover:bg-sky-700! px-4! py-2!" onClick={onSubmitData}>
+                        <Button type="submit" form="contract-form" className="w-full text-sm! rounded-lg! bg-sky-600 hover:bg-sky-700! px-4! py-2!">
                             Generar contrato
                         </Button>
                     </div>
