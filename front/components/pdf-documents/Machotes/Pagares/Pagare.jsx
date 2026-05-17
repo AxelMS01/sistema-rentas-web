@@ -30,11 +30,24 @@ export function DocumentoPagare({ pagareInfo, ownerInfo, tenantInfo, guarantorIn
     const totalPaginas = divisorPaginasPagares(pagaresRestantes);
 
     const chargeFee = typeof ownerInfo?.charge_fee === "string" ? ownerInfo.charge_fee.split("-") : ["percentage", "0"];
-    const ownerSignature = ownerInfo?.signature_url || null;
-    const ownerFullName = `${ownerInfo?.name || ""} ${ownerInfo?.father_surname || ""} ${ownerInfo?.mother_surname || ""}`.trim().toUpperCase();
     const tenantSignature = tenantInfo?.signature_url || null;
     const tenantFullName = `${tenantInfo?.name || ""} ${tenantInfo?.father_surname || ""} ${tenantInfo?.mother_surname || ""}`.trim().toUpperCase();
+    const guarantorSignature = guarantorInfo?.signature_url || null;
     const guarantorFullName = `${guarantorInfo?.name || ""} ${guarantorInfo?.father_surname || ""} ${guarantorInfo?.mother_surname || ""}`.trim().toUpperCase();
+
+    function getSignatureNameStyle(fullName) {
+        const nameLength = fullName.length;
+
+        if (nameLength > 30) {
+            return [estilos.nombreFirma, estilos.nombreFirmaMuyLargo];
+        }
+
+        if (nameLength > 22) {
+            return [estilos.nombreFirma, estilos.nombreFirmaLargo];
+        }
+
+        return estilos.nombreFirma;
+    }
 
     const FullDocument = () => (
         <Document>
@@ -158,15 +171,19 @@ export function DocumentoPagare({ pagareInfo, ownerInfo, tenantInfo, guarantorIn
                                                     {tenantSignature && <Image src={tenantSignature} />}
                                                 </View>
 
-                                                <Text style={estilos.textoChico}>{tenantFullName}</Text>
+                                                <Text style={getSignatureNameStyle(tenantFullName)}>
+                                                    {tenantFullName}
+                                                </Text>
                                             </View>
 
                                             <View style={estilos.espacioFirma}>
                                                 <View style={estilos.contenedorFirma}>
-                                                    {ownerSignature && <Image src={ownerSignature} />}
+                                                    {guarantorSignature && <Image src={guarantorSignature} />}
                                                 </View>
 
-                                                <Text style={estilos.textoChico}>{ownerFullName}</Text>
+                                                <Text style={getSignatureNameStyle(guarantorFullName)}>
+                                                    {guarantorFullName}
+                                                </Text>
                                             </View>
                                         </View>
                                     </View>

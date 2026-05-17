@@ -24,6 +24,21 @@ export function DecimaClausula({
     const nombreComAval = nombreAval + " " + apellidoPatAval + " " + apellidoMatAval;
     const nombreComTestigo1 = nombreTestigo1 + " " + apellidoPatTestigo1 + " " + apellidoMatTestigo1;
 
+    function getSignatureNameStyle(fullName) {
+        const safeName = (fullName || "").trim();
+        const nameLength = safeName.length;
+
+        if (nameLength > 34) {
+            return [estilos.nombreFirmaContrato, estilos.nombreFirmaContratoMuyLargo];
+        }
+
+        if (nameLength > 26) {
+            return [estilos.nombreFirmaContrato, estilos.nombreFirmaContratoLargo];
+        }
+
+        return estilos.nombreFirmaContrato;
+    }
+
     return (
         <View style={estilos.seccion}>
             <Text style={estilos.textoBold}>
@@ -55,7 +70,7 @@ export function DecimaClausula({
                         )}
                     </View>
 
-                    <Text style={estilos.textoBold}>
+                    <Text style={getSignatureNameStyle(nombreComArrendador.toUpperCase())}>
                         {nombreComArrendador.toUpperCase()}
                     </Text>
                 </View>
@@ -69,7 +84,7 @@ export function DecimaClausula({
                         )}
                     </View>
 
-                    <Text style={estilos.textoBold}>
+                    <Text style={getSignatureNameStyle(nombreComArrendatario.toUpperCase())}>
                         {nombreComArrendatario.toUpperCase()}
                     </Text>
                 </View>
@@ -84,7 +99,7 @@ export function DecimaClausula({
                     )}
                 </View>
 
-                <Text style={estilos.textoBold}>
+                <Text style={getSignatureNameStyle(nombreComAval.toUpperCase())}>
                     {nombreComAval.toUpperCase()}
                 </Text>
             </View>
