@@ -90,13 +90,37 @@ const estilos = StyleSheet.create({
     espacioFirma: {
         display: "flex",
         flexDirection: "column",
-        gap: 10,
+        gap: 8,
         width: "100%",
         alignItems: "center",
         justifyContent: "center",
     },
+    firmaInferior: {
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+        width: "55%",
+        alignItems: "center",
+        justifyContent: "center",
+        alignSelf: "center",
+        marginTop: 24,
+    },
+    nombreFirmaContrato: {
+        fontSize: 10,
+        fontWeight: 600,
+        lineHeight: "130%",
+        textAlign: "center",
+        width: "100%",
+    },
+    nombreFirmaContratoLargo: {
+        fontSize: 9,
+    },
+    nombreFirmaContratoMuyLargo: {
+        fontSize: 8,
+    },
     contenedorFirmaImg: {
         padding: 5,
+        minHeight: 48,
         width: "100%",
         borderBottomWidth: 1,
         borderBottomStyle: "solid",

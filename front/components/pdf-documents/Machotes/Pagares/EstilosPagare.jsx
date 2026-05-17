@@ -64,13 +64,18 @@ const estilos = StyleSheet.create({
         flexDirection: "row",
         gap: 5,
         justifyContent: "flex-end",
-        justifySelf: "flex-end",
+        alignSelf: "stretch",
+    },
+    cuerpoContenedor: {
+        alignSelf: "stretch",
+        gap: 2,
+        paddingRight: 6,
     },
     cuerpo: {
         fontSize: 8,
         lineHeight: "150%",
-        flexWrap: "wrap",
-        textOverflow: "ellipsis",
+        textAlign: "justify",
+        flexShrink: 1,
     },
     parteInferior: {
         display: "flex",
@@ -91,6 +96,8 @@ const estilos = StyleSheet.create({
     },
     contenedorFirma: {
         padding: 5,
+        width: "100%",
+        minHeight: 34,
         borderBottomWidth: 1,
         borderBottomStyle: "solid",
         borderBottomColor: "black,"
@@ -105,11 +112,23 @@ const estilos = StyleSheet.create({
     espacioFirma: {
         display: "flex",
         flexDirection: "column",
-        columnGap: 10,
+        gap: 4,
         alignItems: "center",
         justifyContent: "center",
-        marginRight: 20,
-        maxWidth: "50%",
+        width: "50%",
+        paddingHorizontal: 6,
+    },
+    nombreFirma: {
+        fontSize: 7,
+        textAlign: "center",
+        width: "100%",
+        lineHeight: "130%",
+    },
+    nombreFirmaLargo: {
+        fontSize: 6.2,
+    },
+    nombreFirmaMuyLargo: {
+        fontSize: 5.4,
     },
 });
 

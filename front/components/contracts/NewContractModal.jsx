@@ -1,5 +1,5 @@
 
-import { Button, Label, Modal, ModalBody, ModalHeader, ModalFooter, TextInput, Select } from "flowbite-react";
+import { Button, Label, Modal, ModalBody, ModalHeader, ModalFooter, TextInput, Select, FileInput } from "flowbite-react";
 import { Datepicker } from "flowbite-react";
 import toast, { Toaster } from "react-hot-toast";
 import { useState, useEffect } from "react";
@@ -29,6 +29,8 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
     const [guarantorCity, setGuarantorCity] = useState("");
     const [guarantorState, setGuarantorState] = useState("");
     const [guarantorPhone, setGuarantorPhone] = useState("");
+    const [guarantorIdFront, setGuarantorIdFront] = useState(null);
+    const [guarantorIdBack, setGuarantorIdBack] = useState(null);
     const [isLinkLoading, setIsLinkLoading] = useState(true);
     const [linkFound, setLinkFound] = useState(false);
 
@@ -103,6 +105,11 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
             return;
         };
 
+        if (!guarantorIdFront || !guarantorIdBack) {
+            toast.error("Sube el frente y reverso de la identificación del aval.");
+            return;
+        }
+
         async function insertNewData() {
             const { data: guarantorData, error: guarantorError } = await supabase
                 .from("guarantors")
@@ -127,6 +134,55 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
 
             let newGuarantorId = guarantorData[0].id;
 
+            const guarantorFiles = [
+                { file: guarantorIdFront, suffix: "front" },
+                { file: guarantorIdBack, suffix: "back" },
+            ];
+
+            const uploadedFiles = await Promise.all(
+                guarantorFiles.map(async ({ file, suffix }) => {
+                    const fileExtension = file.name.split(".").pop();
+                    const filePath = `guarantors/${newGuarantorId}/ine-${suffix}-${Date.now()}.${fileExtension}`;
+
+                    const { error: uploadError } = await supabase
+                        .storage
+                        .from("gov_id_images")
+                        .upload(filePath, file, { upsert: true });
+
+                    if (uploadError) throw uploadError;
+
+                    const { data: publicUrlData } = supabase
+                        .storage
+                        .from("gov_id_images")
+                        .getPublicUrl(filePath);
+
+                    return {
+                        suffix,
+                        publicUrl: publicUrlData.publicUrl,
+                    };
+                })
+            );
+
+            const guarantorIdFrontUrl = uploadedFiles.find((file) => file.suffix === "front")?.publicUrl || null;
+            const guarantorIdBackUrl = uploadedFiles.find((file) => file.suffix === "back")?.publicUrl || null;
+
+            const { error: guarantorUpdateError } = await supabase
+                .from("guarantors")
+                .update({
+                    ine_front_url: guarantorIdFrontUrl,
+                    ine_back_url: guarantorIdBackUrl,
+                })
+                .eq("id", newGuarantorId);
+
+            const guarantorIdColumnsMissing =
+                guarantorUpdateError?.code === "PGRST204" &&
+                (
+                    guarantorUpdateError?.message?.includes("ine_front_url") ||
+                    guarantorUpdateError?.message?.includes("ine_back_url")
+                );
+
+            if (guarantorUpdateError && !guarantorIdColumnsMissing) throw guarantorUpdateError;
+
             const { error } = await supabase
                 .from("rentalcontracts")
                 .insert({
@@ -141,6 +197,11 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
                 });
 
             if (error) throw error;
+
+            if (guarantorIdColumnsMissing) {
+                toast("Se subieron las imágenes del INE del aval, pero falta guardar las URLs en la tabla guarantors.");
+            }
+
             onSaveContract();
 
             // Pending: update either the apartments table or tenants table to relate these elements.
@@ -187,7 +248,7 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
                         </div>
 
                         <div className="flex flex-col gap-4">
-                            <p className='text-lg font-semibold text-start'>Datos del aval</p>
+                            <p className='text-lg font-semibold text-start'>Datos del Fiador</p>
 
                             <div className='flex flex-col gap-2 items-start text-start'>
                                 <p className='text-sm font-medium!'>Nombre(s)</p>
@@ -293,6 +354,24 @@ export default function NewContractModal({ isModalOpen, onCloseModal, onSaveCont
                                     placeholder='Número de teléfono'
                                     value={guarantorPhone}
                                     onChange={(e) => setGuarantorPhone(e.target.value)}
+                                />
+                            </div>
+
+                            <div className='flex flex-col gap-2 items-start'>
+                                <p className='text-sm font-medium! text-start'>INE o identificación oficial del aval - Frente</p>
+                                <FileInput
+                                    className='w-full text-sm'
+                                    accept="image/png, image/jpeg, image/webp"
+                                    onChange={(e) => setGuarantorIdFront(e.target.files?.[0] || null)}
+                                />
+                            </div>
+
+                            <div className='flex flex-col gap-2 items-start'>
+                                <p className='text-sm font-medium! text-start'>INE o identificación oficial del aval - Reverso</p>
+                                <FileInput
+                                    className='w-full text-sm'
+                                    accept="image/png, image/jpeg, image/webp"
+                                    onChange={(e) => setGuarantorIdBack(e.target.files?.[0] || null)}
                                 />
                             </div>
                         </div>

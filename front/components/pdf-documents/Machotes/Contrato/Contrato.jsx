@@ -153,12 +153,16 @@ export function DocumentoContrato({ contractInfo, ownerInfo, tenantInfo, guarant
                         nombreArrendatario={tenantInfo.name}
                         apellidoPatArrendatario={tenantInfo.father_surname}
                         apellidoMatArrendatario={tenantInfo.mother_surname}
+                        nombreAval={guarantorInfo.name}
+                        apellidoPatAval={guarantorInfo.father_surname}
+                        apellidoMatAval={guarantorInfo.mother_surname}
                         nombreTestigo1=""
                         apellidoPatTestigo1=""
                         apellidoMatTestigo1=""
                         isActive={isActive}
                         signatureOwner={ownerInfo.signature_url}
                         signatureTenant={tenantInfo.signature_url}
+                        signatureGuarantor={guarantorInfo.signature_url}
                     />
                 </Page>
             </Document>

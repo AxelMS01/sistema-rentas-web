@@ -8,16 +8,36 @@ export function DecimaClausula({
     nombreArrendatario,
     apellidoPatArrendatario,
     apellidoMatArrendatario,
+    nombreAval,
+    apellidoPatAval,
+    apellidoMatAval,
     nombreTestigo1,
     apellidoPatTestigo1,
     signatureTenant,
     signatureOwner,
+    signatureGuarantor,
     apellidoMatTestigo1,
     isActive,
 }) {
     const nombreComArrendador = nombreArrendador + " " + apellidoPatArrendador + " " + apellidoMatArrendador;
     const nombreComArrendatario = nombreArrendatario + " " + apellidoPatArrendatario + " " + apellidoMatArrendatario;
+    const nombreComAval = nombreAval + " " + apellidoPatAval + " " + apellidoMatAval;
     const nombreComTestigo1 = nombreTestigo1 + " " + apellidoPatTestigo1 + " " + apellidoMatTestigo1;
+
+    function getSignatureNameStyle(fullName) {
+        const safeName = (fullName || "").trim();
+        const nameLength = safeName.length;
+
+        if (nameLength > 34) {
+            return [estilos.nombreFirmaContrato, estilos.nombreFirmaContratoMuyLargo];
+        }
+
+        if (nameLength > 26) {
+            return [estilos.nombreFirmaContrato, estilos.nombreFirmaContratoLargo];
+        }
+
+        return estilos.nombreFirmaContrato;
+    }
 
     return (
         <View style={estilos.seccion}>
@@ -45,12 +65,12 @@ export function DecimaClausula({
                     <Text style={estilos.textoBold}>EL ARRENDADOR</Text>
 
                     <View style={estilos.contenedorFirmaImg}>
-                        {isActive && (
+                        {isActive && signatureOwner && (
                             <Image src={signatureOwner} />
                         )}
                     </View>
 
-                    <Text style={estilos.textoBold}>
+                    <Text style={getSignatureNameStyle(nombreComArrendador.toUpperCase())}>
                         {nombreComArrendador.toUpperCase()}
                     </Text>
                 </View>
@@ -59,15 +79,29 @@ export function DecimaClausula({
                     <Text style={estilos.textoBold}>EL ARRENDATARIO</Text>
 
                     <View style={estilos.contenedorFirmaImg}>
-                        {isActive && (
+                        {isActive && signatureTenant && (
                             <Image src={signatureTenant} />
                         )}
                     </View>
 
-                    <Text style={estilos.textoBold}>
+                    <Text style={getSignatureNameStyle(nombreComArrendatario.toUpperCase())}>
                         {nombreComArrendatario.toUpperCase()}
                     </Text>
                 </View>
+            </View>
+
+            <View style={estilos.firmaInferior}>
+                <Text style={estilos.textoBold}>EL AVAL / FIADOR</Text>
+
+                <View style={estilos.contenedorFirmaImg}>
+                    {isActive && signatureGuarantor && (
+                        <Image src={signatureGuarantor} />
+                    )}
+                </View>
+
+                <Text style={getSignatureNameStyle(nombreComAval.toUpperCase())}>
+                    {nombreComAval.toUpperCase()}
+                </Text>
             </View>
 
             {/*</View>Text style={{textAlign: "center", marginTop: 20, fontWeight: 600, fontSize: 12}}>TESTIGOS</Text>

@@ -1,6 +1,4 @@
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
-import { TextInput } from "flowbite-react";
+import { Checkbox, Label, TextInput } from "flowbite-react";
 import { Grid2X2Check } from "lucide-react";
 import FormStep from "./FormStep";
 
@@ -14,6 +12,11 @@ export default function StepTwoContent({
     startDate,
     endDate,
     paymentAmount,
+    guarantorName,
+    guarantorFatherSurname,
+    guarantorMotherSurname,
+    guarantorConfirmed,
+    setGuarantorConfirmed,
 }) {
     return (
         <>
@@ -85,6 +88,51 @@ export default function StepTwoContent({
                     placeholder='Nombre'
                     value={paymentAmount}
                 />
+            </div>
+
+            <div className="w-full h-px bg-slate-200 my-2" />
+
+            <div className='flex flex-col gap-2 items-start text-start'>
+                <p className='text-base font-semibold text-slate-900'>Datos del aval</p>
+                <p className='text-sm text-slate-600 m-0'>Estos datos se tomaron del formulario con el que se generó el contrato.</p>
+            </div>
+
+            <div className='flex flex-col gap-2 items-start text-start'>
+                <p className='text-sm font-medium!'>Nombre(s) del aval</p>
+                <TextInput
+                    className='w-full text-sm'
+                    disabled
+                    value={guarantorName}
+                />
+            </div>
+
+            <div className='flex flex-col gap-2 items-start text-start'>
+                <p className='text-sm font-medium!'>Apellido paterno del aval</p>
+                <TextInput
+                    className='w-full text-sm'
+                    disabled
+                    value={guarantorFatherSurname}
+                />
+            </div>
+
+            <div className='flex flex-col gap-2 items-start text-start'>
+                <p className='text-sm font-medium!'>Apellido materno del aval</p>
+                <TextInput
+                    className='w-full text-sm'
+                    disabled
+                    value={guarantorMotherSurname}
+                />
+            </div>
+
+            <div className="flex items-start gap-2 mt-1">
+                <Checkbox
+                    id="guarantorConfirmation"
+                    checked={guarantorConfirmed}
+                    onChange={() => setGuarantorConfirmed(!guarantorConfirmed)}
+                />
+                <Label htmlFor="guarantorConfirmation" className="text-sm text-slate-700">
+                    Confirmo que los datos del aval son correctos.
+                </Label>
             </div>
         </>
     )
