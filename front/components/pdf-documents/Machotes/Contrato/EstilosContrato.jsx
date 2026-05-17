@@ -95,6 +95,16 @@ const estilos = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
     },
+    firmaInferior: {
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+        width: "55%",
+        alignItems: "center",
+        justifyContent: "center",
+        alignSelf: "center",
+        marginTop: 24,
+    },
     contenedorFirmaImg: {
         padding: 5,
         width: "100%",

@@ -9,7 +9,6 @@ import { supabase } from "../../config/supabase-client";
  */
 
 export default function useContractData(tenantId, ownerId) {
-    // State variables to save the fetched data into.
     const [isLoading, setIsLoading] = useState(true);
     const [contractInfo, setContractInfo] = useState();
     const [ownerInfo, setOwnerInfo] = useState();
@@ -28,64 +27,66 @@ export default function useContractData(tenantId, ownerId) {
         };
     };
 
-    const fetchData = useCallback(
-        async () => {
-            try {
-                const { data: contractData, error: contractError } = await supabase
-                    .from("rentalcontracts")
-                    .select()
-                    .eq("tenantid", tenantId)
+    const fetchData = useCallback(async () => {
+        setIsLoading(true);
 
-                if (contractError) throw contractError;
-                setContractInfo(contractData[0]);
+        try {
+            const { data: contractData, error: contractError } = await supabase
+                .from("rentalcontracts")
+                .select()
+                .eq("tenantid", tenantId)
+                .limit(1);
 
-                // Variables for the rest of the tables.
-                const ownerId = contractData[0].owner_id;
-                const guarantorId = contractData[0].guarantorid;
-                const apartmentId = contractData[0].apartmentid;
+            if (contractError) throw contractError;
 
-                const { data: ownerData, error: ownerError } = await supabase
-                    .from("owners")
-                    .select()
-                    .eq("id", ownerId);
+            const currentContract = contractData?.[0];
 
-                if (ownerError) throw ownerError;
-                setOwnerInfo(ownerData[0]);
-
-                const { data: tenantData, error: tenantError } = await supabase
-                    .from("tenants")
-                    .select()
-                    .eq("id", tenantId);
-
-                if (tenantError) throw tenantError;
-                setTenantInfo(tenantData[0]);
-
-                const { data: guarantorData, error: guarantorError } = await supabase
-                    .from("guarantors")
-                    .select()
-                    .eq("id", guarantorId);
-
-                if (guarantorError) throw guarantorError;
-                setGuarantorInfo(guarantorData[0]);
-
-                const { data: apartmentData, error: apartmentError } = await supabase
-                    .from("apartments")
-                    .select()
-                    .eq("id", apartmentId);
-
-                if (apartmentError) throw apartmentError;
-                setApartmentInfo(apartmentData[0]);
-            } catch (error) {
-                console.log(error);
-            } finally {
-                setIsLoading(false);
+            if (!currentContract) {
+                setContractInfo(undefined);
+                setOwnerInfo(undefined);
+                setTenantInfo(undefined);
+                setGuarantorInfo(undefined);
+                setApartmentInfo(undefined);
+                return;
             }
-        }, [tenantId, ownerId]
-    );
+
+            setContractInfo(currentContract);
+
+            const currentOwnerId = currentContract.owner_id;
+            const guarantorId = currentContract.guarantorid;
+            const apartmentId = currentContract.apartmentid;
+
+            const [
+                ownerResponse,
+                tenantResponse,
+                guarantorResponse,
+                apartmentResponse,
+            ] = await Promise.all([
+                supabase.from("owners").select().eq("id", currentOwnerId).limit(1),
+                supabase.from("tenants").select().eq("id", tenantId).limit(1),
+                supabase.from("guarantors").select().eq("id", guarantorId).limit(1),
+                supabase.from("apartments").select().eq("id", apartmentId).limit(1),
+            ]);
+
+            if (ownerResponse.error) throw ownerResponse.error;
+            if (tenantResponse.error) throw tenantResponse.error;
+            if (guarantorResponse.error) throw guarantorResponse.error;
+            if (apartmentResponse.error) throw apartmentResponse.error;
+
+            setOwnerInfo(ownerResponse.data?.[0]);
+            setTenantInfo(tenantResponse.data?.[0]);
+            setGuarantorInfo(guarantorResponse.data?.[0]);
+            setApartmentInfo(apartmentResponse.data?.[0]);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [tenantId, ownerId]);
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     return {
         isDataLoading: isLoading,
@@ -94,5 +95,6 @@ export default function useContractData(tenantId, ownerId) {
         tenantInfo: tenantInfo,
         guarantorInfo: guarantorInfo,
         apartmentInfo: apartmentInfo,
+        refetchContractData: fetchData,
     };
 }
